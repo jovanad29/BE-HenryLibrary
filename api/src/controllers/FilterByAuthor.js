@@ -9,7 +9,7 @@ getBookByCategory: async function (IdAuthor) {
         {include: Author, where:{
                            id: IdAuthor
     }},
-     {include: Category, Review,Author,Publisher})
+     {include: Category, Review ,Publisher})
    
 
     if (bookFound.length === 0) {
