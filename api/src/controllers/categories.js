@@ -6,24 +6,20 @@ const {Category} = require('../db');
 //    GETS
 //----------------------------------------------------------------------------------------------
 getAll= async function () {
-    const categories = await Category.findAll();
-    const categoriesJson = categories.map(category => category.toJSON());
-    const alphabeticalCategories = categoriesJson.sort((a, b) => a.name.localeCompare(b.name));
-
-    if(alphabeticalCategories.length > 0){
-
-    return alphabeticalCategories;
-    }else{
-        return undefined;
-    }
+    const categories = await Category.findAll({order: [['name', 'ASC']]});
+    return categories.length > 0 ? categories : undefined;
 }
+
+
 getById = async function (id) {
     const category = await Category.findByPk(id);
-    if(category){
-        return category;
-    }else{
-        return "No se encontro la categoria";
-    }
+    return category; //? categories : undefined;
+    
+    // if(category){
+    //     return category;
+    // }else{
+    //     return "No se encontro la categoria";
+    // }
 }
 
 //----------------------------------------------------------------------------------------------
