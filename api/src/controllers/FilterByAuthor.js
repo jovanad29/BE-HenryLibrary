@@ -3,15 +3,13 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const { Book,  Author, Category, Review } = require('../db');
 
-
-
 let BooksModel = {
-getBookByCategory: async function (IdCategory) {
+getBookByCategory: async function (IdAuthor) {
     const bookFound = await Book.findAll(
-        {include:Category, where:{
-                           id: IdCategory
+        {include: Author, where:{
+                           id: IdAuthor
     }},
-     {include: Review,Author,Publisher})
+     {include: Category, Review,Author,Publisher})
    
 
     if (bookFound.length === 0) {
