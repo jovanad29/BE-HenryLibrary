@@ -4,69 +4,46 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define(
-    'book',
+    'user',
     {
       ID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      title: {
+      fistname: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      description: {
+      surname: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      price: {
-        type: DataTypes.FLOAT,
+      email: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      image: {
+      password: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-     idPublisher: {
+     active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+      },
+      profilePic: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      publishedDate: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      pageCount: {
-        type: DataTypes.INTEGER,
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
         allowNull: true,
       },
      
-      language: {
+      address: {
         type: DataTypes.STRING,
         allowNull: true,
-      },
-      industryIdentifiers: {
-        type: DataTypes.STRING,
-        allowNull:true,
-      },
-      rating: {
-        type: DataTypes.FLOAT,
-        allowNull: true,
-      },
-      soldCopies: {
-        type: DataTypes.INTEGER,
-        defaultValue:0,
-        allowNull: true,
-      },
-      currentStock: {
-        type: DataTypes.INTEGER,
-        allowNull:false,
-        defaultValue:0,
-      },
-      active: {
-        type:  DataTypes.BOOLEAN,
-
-      }
-      
+      },      
 
     },
     {
