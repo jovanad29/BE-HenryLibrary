@@ -9,16 +9,29 @@ const {
     deleteCategory,
 } = require("../controllers/categories");
 
-router.get("/:id", getById);
+router.get("/:id", async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    try {
+        let dbCategory = await getById(id);
+        dbCategory
+            ? res.json(dbCategory)
+            : res.status(404).json({ message: "No se encontro la categoria" });
+    } catch (error) {
+        console.log(error);
+        res.status(404).json(error);
+    }
+});
+
 router.get("/", async (req, res) => {
     try {
         let dbCategories = await getAll();
         dbCategories
             ? res.json(dbCategories)
             : res.status(404).json({ message: "No se encontraron categorias" });
-    } catch (err) {
-        console.log(err);
-        res.status(404).json(err);
+    } catch (error) {
+        console.log(error);
+        res.status(404).json(error);
     }
 });
 router.post("/", createCategory);

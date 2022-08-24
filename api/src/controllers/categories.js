@@ -13,11 +13,13 @@ getAll= async function () {
 
 getById = async function (id) {
     const category = await Category.findByPk(id);
-    if(category){
-        return category;
-    }else{
-        return "No se encontro la categoria";
-    }
+    return category; //? categories : undefined;
+    
+    // if(category){
+    //     return category;
+    // }else{
+    //     return "No se encontro la categoria";
+    // }
 }
 
 //----------------------------------------------------------------------------------------------
