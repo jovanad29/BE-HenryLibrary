@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
   sequelize.define(
     'review',
     {
-      id: {
+      ID: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,

@@ -4,6 +4,10 @@ const Sequelize = require('sequelize');
 const { name } = require('../app');
 const Op = Sequelize.Op;
 const { Apibook, Book, Author, Category, Review ,Publisher} = require('../db');
+const url = require('url');
+const https = require('https');
+const sizeOf = require('image-size');
+
 // const { imageRegex } = require('../utils/validations/regex');
 // const { imgVerify } = require('./BooksWithLargeImage');
 
@@ -189,7 +193,101 @@ const LoadDb =async function ()
  
     publisherArray.map((a) => Publisher.create({ name: a }));
    }
+//-----------------------------------------------------------------------------------------
+  //                                  LOAD Book 
+  //-----------------------------------------------------------------------------------------
+  
+ async function imgVerify (img) {
+      //console.log(img);
+      // const imgUrl =
+      //   'https://images-na.ssl-images-amazon.com/images/P/0345247868.01._SX180_SCLZZZZZZZ_.jpg';
+      const options = url.parse(img);
+      return new Promise((resolve, reject) => {
+        https.get(options, function (response) {
+          const chunks = [];
+          let imgSize;
+          response
+            .on('data', function (chunk) {
+              chunks.push(chunk);
+            })
+  
+            .on('end', function () {
+              const buffer = Buffer.concat(chunks);
+              imgSize = sizeOf(buffer);
+  
+              resolve(imgSize);
+            });
+        });
+      });
+    
+    }
+ async function fillBook() {
+      let books = await Apibook.findAll();
+      const booksArray = [];
+      books = await books.map((b) =>
+             imgVerify(b.image).then(async (r) => {
+          let img;
+          img = r.width <= 1 ? undefined : b;
+          return img;
+        })
+      );
+      books = await Promise.all(books.map(async (v) => await v));
+      for (let i = 0; i < books.length; i++) {
+        if (books[i] !== undefined) {
+          booksArray.push(books[i]);
+        }
+      }
+  
+      booksArray &&
+        booksArray.map(async (b) => {
+          
+        let newBook=  await Book.findOrCreate({
+            where: {
+              title: b.title,
+              description: b.description ? b.description : 'No description',
+              price: b.price,
+              image: b.image,
+              //idpublisher:,// b.publisher ? b.publisher : 'NO PUBLISHER',
+              publishedDate: b.publishedDate ? b.publishedDate : 'NO DATE',
+              pageCount: b.pageCount ? b.pageCount : 0,
+              rating: 0,
+              language: b.language ? b.language : 'NO INFO',
+              
+            },
+          })
+          // Relation with Author
+          try {
+            if(b.authors.length>0){
+            for (const a of b.authors){
+          console.log(a)
+          if (a!==null || a!==undefined){
+             let authorBook=await Author.findOne({where: {name: a }})
+          if (!authorBook) authorBook=await Author.create({where: {name: a }})
+          await newBook.addAuthor(authorBook)
+          }  }  }
+          } catch (error) {
+            console.log(error);
+          }
+          
+        //Relation with Category
+
+        // if(b.categories.length){
+        //   for (const c of b.categories){
+        //     if (c!==null || c!==undefined){
+        //     let categoryBook=await Category.findOne({where: {name: c }})
+        //     await newBook.addCategory(categoryBook)
+        //    }
+        //   }
+         // }
+        
+        
+        })
+        
+      return booksArray;
+    
+  
+}
+  
 
 
-
-module.exports={LoadDb,fillCategories,fillAuthors,fillPublisher };
+module.exports={LoadDb,fillCategories,fillAuthors,fillPublisher,fillBook };
