@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
   sequelize.define(
     'book',
     {
-      ID: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       price: {
@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
      idPublisher: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: true,
       },
       publishedDate: {

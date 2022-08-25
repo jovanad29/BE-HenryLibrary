@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
   sequelize.define(
     'payment_method',
     {
-      ID: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
