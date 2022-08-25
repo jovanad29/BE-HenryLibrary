@@ -3,7 +3,7 @@ const { cls } = require('sequelize');
 const Sequelize = require('sequelize');
 const { name } = require('../app');
 const Op = Sequelize.Op;
-const { Book, Author, Category, Review ,Publisher} = require('../db');
+const { Apibook, Book, Author, Category, Review ,Publisher} = require('../db');
 // const { imageRegex } = require('../utils/validations/regex');
 // const { imgVerify } = require('./BooksWithLargeImage');
 
@@ -42,8 +42,6 @@ async function getImage(industryID) {
   }
   
 
-    
-    //pokemonCreate.addAuthor(foundType);
 
  
 
@@ -52,130 +50,97 @@ async function getImage(industryID) {
     //-----------------------------------------------------------------------------------------
 const LoadDb =async function () 
  {
-      try {
-        for (let i = 0; i < term.length; i++) {
-          for (let j = 0; j < 5; j++) {
-            let api = (
-              await axios.get(
-                `https://www.googleapis.com/books/v1/volumes?q=${
-                  term[i]
-                }&printType=books&maxResults=${maxResults}&startIndex=${j * 40}
-              `
-                //&startIndex=${i * 40}
-              )
-            ).data;
-  
-            api.items &&
-              api.items.map(async (b) => {
-                const industryID = b.volumeInfo.industryIdentifiers
-                  ? b.volumeInfo.industryIdentifiers
-                  : '';
-                const img = await getImage(
-                  industryID.length > 0 ? industryID : null
-                );
-                if (b.volumeInfo.title && b.volumeInfo.description) {
-                 console.log(b.volumeInfo.title) //, --b.volumeInfo.description)
-                  if (
-                    b.volumeInfo.title.length < 10000 &&
-                    b.volumeInfo.description.length < 10000
-                  ) {
-                    let newBook= await Book.create({
-                      
-                        title: b.volumeInfo.title,
-                        description: b.volumeInfo.description ? b.volumeInfo.description: 'No description',
-                        price:  (Math.random() * 100).toFixed(2),
-  
-                        image: img,
-                        //industryIdentifiers:b.volumeInfo.industryIdentifiers ,
-                       // idPublisher:,
-                       // authors: b.volumeInfo.authors ? b.volumeInfo.authors : [],
-                        //categories: b.volumeInfo.categories
-                        //  ? b.volumeInfo.categories
-                      //    : [],
-                        //publisher: b.volumeInfo.publisher
-                        //  ? b.volumeInfo.publisher
-                       //   : 'NO PUBLISHER',
-                        publishedDate: b.volumeInfo.publishedDate
-                          ? b.volumeInfo.publishedDate
-                          : 'NO DATE',
-                        pageCount: b.volumeInfo.pageCount
-                          ? b.volumeInfo.pageCount
-                          : 0,
-                        rating: 0,
-                        language: b.volumeInfo.language
-                          ? b.volumeInfo.language
-                          : 'NO INFO',
-                          currentStock:100,
-                          active:true,
-                      },
-                    );
-                    try {
-                      if(b.volumeInfo.authors===undefined) console.log(`que es?? ${b.volumeInfo.authors}`)
-                    //  b.volumeInfo.authors=['No Identificado']
+  try {
+    for (let i = 0; i < term.length; i++) {
+      for (let j = 0; j < 5; j++) {
+        let api = (
+          await axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${
+              term[i]
+            }&printType=books&maxResults=${maxResults}&startIndex=${j * 40}
+          `
+            //&startIndex=${i * 40}
+          )
+        ).data;
 
-                    if(!b.volumeInfo.authors){
-                      for (const a of b.volumeInfo.authors){
-                    console.log(a)
-                    if (a!==null || a!==undefined){
-                       let authorBook=await Author.findOne({where: {name: a }})
-                    if (!authorBook) authorBook=await Author.create({where: {name: a }})
-                    await newBook.addAuthor(authorBook)
-                    }
-                    }
-                   
-                       
+        api.items &&
+          api.items.map(async (b) => {
+            const industryID = b.volumeInfo.industryIdentifiers
+              ? b.volumeInfo.industryIdentifiers
+              : [];
+            const img = await getImage(
+              industryID.length > 0 ? industryID : null
+            );
+            if (b.volumeInfo.title && b.volumeInfo.description) {
+              if (
+                b.volumeInfo.title.length < 10000 &&
+                b.volumeInfo.description.length < 10000
+              ) {
+                await Apibook.findOrCreate({
+                  where: {
+                    title: b.volumeInfo.title,
+                    description: b.volumeInfo.description
+                      ? b.volumeInfo.description
+                      : 'No description',
+                    price: b.saleInfo.listPrice
+                      ? b.saleInfo.listPrice.amount
+                      : (Math.random() * 100).toFixed(2),
 
-                   }
-
-
-                    } catch (error) {
-                      console.log(error)
-                    }
-                  
-
-                      
-                    
-                    // if(b.volumeInfo.authors.length!==0){
-                    //   b.volumeInfo.authors.map( async  (a) =>{
-
-                    //    await  Author.findOrCreate({ name: a });
-
-                    //     let authorfound = getAuthor(a);
-                    //     if (authorfound)
-                    //       booAddAuto(authorfound);
-                    //   });
-                    // }
-                    if(b.volumeInfo.publisher!==undefined){
-                    console.log( 'publicacion: ' + b.volumeInfo.publisher)
-                    let publisherBook = await Publisher.findOrCreate({ where:{ name: b.volumeInfo.publisher }})
-                   // await newBook.idPublisher= publisherBook.id
-                    }
-
-                    if(b.volumeInfo.categories!==undefined){
-                    for (const c of b.volumeInfo.categories){
-                      if (c!==null || c!==undefined){
-                      let categoryBook=await Category.findOrCreate({where: {name: c }})
-                      await newBook.addCategory(categoryBook)
-  
-                     }
-                    }
-                    }
-                                                
-                    // b.volumeInfo.categories?.map(async (a) => { await  Category.findOrCreate( {name: a })
-                    // let categoryfound= getCategory(a)
-                    // if (authorfound)   addAuthor(categoryfound);
-                    // });    
-
-
-                                                      
-
-                  }
-                }
-              });
-          }
-        }
-      } catch (error) {
-        throw new Error(error.message);
+                    image: img,
+                    authors: b.volumeInfo.authors ? b.volumeInfo.authors : [],
+                    categories: b.volumeInfo.categories
+                      ? b.volumeInfo.categories
+                      : [],
+                    publisher: b.volumeInfo.publisher
+                      ? b.volumeInfo.publisher
+                      : 'NO PUBLISHER',
+                    publishedDate: b.volumeInfo.publishedDate
+                      ? b.volumeInfo.publishedDate
+                      : 'NO DATE',
+                    pageCount: b.volumeInfo.pageCount
+                      ? b.volumeInfo.pageCount
+                      : 0,
+                    rating: 0,
+                    language: b.volumeInfo.language
+                      ? b.volumeInfo.language
+                      : 'NO INFO',
+                  },
+                });
+              }
+            }
+          });
       }
     }
-module.exports=LoadDb;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+
+
+    }
+
+     //-----------------------------------------------------------------------------------------
+    //                                  LOAD CATEGORIES
+    //-----------------------------------------------------------------------------------------
+ async function fillCategories() {
+      const categoriesArray = [];
+      const books = await Apibook.findAll();
+      const categories = books.map((a) => a.dataValues.categories);
+      for (let i = 0; i < categories.length; i++) {
+        categories.map((category) => {
+          category.map((c) =>
+            !categoriesArray.includes(
+              c.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
+            )
+              ? categoriesArray.push(
+                  c.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
+                )
+              : null
+          );
+        });
+      }
+      if (categoriesArray.length === 0) {
+        return undefined;
+      }
+      categoriesArray.map((c) => Category.create({ name: c }));
+    }
+module.exports={LoadDb,fillCategories };
