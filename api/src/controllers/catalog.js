@@ -9,7 +9,7 @@ const { Op } = require("sequelize");
 getAll= async function () {
     const catalog = await Book.findAll({
         order: [['title', 'ASC']],
-        include: Category,Author
+        include: Author, Category
     });
     
     if(catalog.length > 0){
@@ -19,7 +19,7 @@ getAll= async function () {
         return undefined;
     }
 }
-//get by id
+
 getById = async function (id) {
     const book = await Book.findByPk(id,{
         include: Category,Author

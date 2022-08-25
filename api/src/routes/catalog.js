@@ -3,25 +3,37 @@ const { Router } = require('express');
 const router = Router();
 const {getAll,getBook,getById,createBook,updateBook,deleteBook} = require('../controllers/catalog');
 
-router.get('/:id', getById);
-// router.get('/', catalogController.getAll);
+router.get('/:id', async (req,res) => {
+    const book = await getById(req.params.id);
+    try {
+      if(book){
+          res.status(200).json(book);
+      }else{
+          res.status(501).json({message: 'No se encontro el libro'});
+      }
+    } catch (error) {
+        res.status(502).json(error);
+    }
+} );
+
+
 router.get('/', async (req, res) => {
     const { title } = req.query;
     try {
       if (title) {
         let book = await getBook(title);
         book
-          ? res.json(book)
-          : res.status(404).json({ message: 'No se encontro el libro' });
+          ? res.status(200).json(book)
+          : res.status(501).json({ message: 'No se encontro el libro' });
       } else {
         let dbBooks = await getAll();
         dbBooks
           ? res.json(dbBooks)
-          : res.status(404).json({ message: 'No se encontraron libros' });
+          : res.status(501).json({ message: 'No se encontraron libros' });
       }
     } catch (err) {
       console.log(err);
-      res.status(404).json(err);
+      res.status(502).json(err);
     }
   });
 router.post('/', createBook);
