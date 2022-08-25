@@ -143,4 +143,53 @@ const LoadDb =async function ()
       }
       categoriesArray.map((c) => Category.create({ name: c }));
     }
-module.exports={LoadDb,fillCategories };
+
+
+    ;
+
+     //-----------------------------------------------------------------------------------------
+    //                                  LOAD Author
+    //-----------------------------------------------------------------------------------------
+
+ async function fillAuthors() {
+   const authorsArray = [] 
+   const books = await Apibook.findAll();
+    const authors = books.map((a) => a.dataValues.authors);
+    for (let i = 0; i < authors.length; i++) {
+      authors.map((author) => {
+        author.map((a) =>
+          !authorsArray.includes(a) ? authorsArray.push(a) : null
+        );
+      });
+    }
+    if (authorsArray.length === 0) {
+      return undefined;
+    }
+
+    authorsArray.map((a) => Author.create({ name: a }));
+  }
+
+  //-----------------------------------------------------------------------------------------
+  //                                  LOAD Publisher 
+  //-----------------------------------------------------------------------------------------
+  async function fillPublisher() {
+    const publisherArray = [] 
+    const books = await Apibook.findAll();
+     const publishers = books.map((a) => a.dataValues.publisher);
+     for (let i = 0; i < publishers.length; i++) {
+       publishers.map((publisher) => {
+         
+           !publisherArray.includes(publisher) ? publisherArray.push(publisher) : null
+         
+       });
+     }
+     if (publisherArray.length === 0) {
+       return undefined;
+     }
+ 
+    publisherArray.map((a) => Publisher.create({ name: a }));
+   }
+
+
+
+module.exports={LoadDb,fillCategories,fillAuthors,fillPublisher };
