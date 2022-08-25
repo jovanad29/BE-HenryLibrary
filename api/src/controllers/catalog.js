@@ -8,14 +8,13 @@ const { Op } = require("sequelize");
 //----------------------------------------------------------------------------------------------
 getAll= async function () {
     const catalog = await Book.findAll({
+        order: [['title', 'ASC']],
         include: Category,Author
     });
-    const catalogJson = catalog.map(book => book.toJSON());
-    const alphabeticalCatalog = catalogJson.sort((a, b) => a.title.localeCompare(b.title));
+    
+    if(catalog.length > 0){
 
-    if(alphabeticalCatalog.length > 0){
-
-    return alphabeticalCatalog;
+    return catalog;
     }else{
         return undefined;
     }
@@ -34,7 +33,7 @@ getById = async function (id) {
 
 getBook = async function (title) {  
     const book = await Book.findAll({
-        order:[['title']],
+        order:[['title', 'ASC']],
         where: {
             title: {
             [Op.iLike]: `%${title}%`,}
