@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { cls } = require('sequelize');
 const Sequelize = require('sequelize');
 const { name } = require('../app');
 const Op = Sequelize.Op;
@@ -73,7 +74,7 @@ const LoadDb =async function ()
                   industryID.length > 0 ? industryID : null
                 );
                 if (b.volumeInfo.title && b.volumeInfo.description) {
-                 // console.log(b.volumeInfo.title, b.volumeInfo.description)
+                 console.log(b.volumeInfo.title) //, --b.volumeInfo.description)
                   if (
                     b.volumeInfo.title.length < 10000 &&
                     b.volumeInfo.description.length < 10000
@@ -109,17 +110,26 @@ const LoadDb =async function ()
                       },
                     );
                     try {
-                      if(b.volumeInfo.authors) b.volumeInfo.authors=['No Identificado']
-                       for (const a of b.volumeInfo.authors){
-                   // console.log(a)
-                    let authorBook=await Author.findOrCreate({where: {name: a }})
+                      if(b.volumeInfo.authors===undefined) console.log(`que es?? ${b.volumeInfo.authors}`)
+                    //  b.volumeInfo.authors=['No Identificado']
+
+                    if(!b.volumeInfo.authors){
+                      for (const a of b.volumeInfo.authors){
+                    console.log(a)
+                    if (a!==null || a!==undefined){
+                       let authorBook=await Author.findOne({where: {name: a }})
+                    if (!authorBook) authorBook=await Author.create({where: {name: a }})
                     await newBook.addAuthor(authorBook)
+                    }
+                    }
+                   
+                       
 
                    }
 
 
                     } catch (error) {
-                      //console.log(error)
+                      console.log(error)
                     }
                   
 
@@ -135,18 +145,21 @@ const LoadDb =async function ()
                     //       booAddAuto(authorfound);
                     //   });
                     // }
-                    
-
+                    if(b.volumeInfo.publisher!==undefined){
+                    console.log( 'publicacion: ' + b.volumeInfo.publisher)
                     let publisherBook = await Publisher.findOrCreate({ where:{ name: b.volumeInfo.publisher }})
-                    await newBook.addPublisher(publisherBook)
+                   // await newBook.idPublisher= publisherBook.id
+                    }
 
-
-
+                    if(b.volumeInfo.categories!==undefined){
                     for (const c of b.volumeInfo.categories){
-                      let categoryBook=await Author.findOrCreate({where: {name: c }})
+                      if (c!==null || c!==undefined){
+                      let categoryBook=await Category.findOrCreate({where: {name: c }})
                       await newBook.addCategory(categoryBook)
   
                      }
+                    }
+                    }
                                                 
                     // b.volumeInfo.categories?.map(async (a) => { await  Category.findOrCreate( {name: a })
                     // let categoryfound= getCategory(a)
