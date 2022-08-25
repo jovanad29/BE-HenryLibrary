@@ -53,24 +53,24 @@ const {
 Book.belongsToMany(Author,{through: "book_author"});
 Author.belongsToMany(Book,{through: "book_author"});
 
-Book.belongsToMany(Category,{through: "book_category"});
-Category.belongsToMany(Book,{through: "book_category"});
-Publisher.hasMany(Book);
+// Book.belongsToMany(Category,{through: "book_category"});
+// Category.belongsToMany(Book,{through: "book_category"});
+// Publisher.hasMany(Book);
 
 
-payment_book = sequelize.define("payment_book", {
-  quantity: Sequelize.INTEGER,
-  price:sequelize.Sequelize.FLOAT
-});
-Payment.belongsToMany(Book,{through: "payment_book"});
-Book.belongsToMany(Payment,{through: "payment_book"});
+// payment_book = sequelize.define("payment_book", {
+//   quantity: Sequelize.INTEGER,
+//   price:sequelize.Sequelize.FLOAT
+// });
+// Payment.belongsToMany(Book,{through: "payment_book"});
+// Book.belongsToMany(Payment,{through: "payment_book"});
 
-User.hasMany(Payment);
-Payment_method.hasMany(Payment);
-User.belongsToMany(Review,{through:"review_user"})
-Review.belongsToMany(User,{through:"review_user"})
-Review.belongsToMany(Book,{through:"review_book"})
-Book.belongsToMany(Review,{through:"review_book"})
+// User.hasMany(Payment);
+// Payment_method.hasMany(Payment);
+// User.belongsToMany(Review,{through:"review_user"})
+// Review.belongsToMany(User,{through:"review_user"})
+// Review.belongsToMany(Book,{through:"review_book"})
+// Book.belongsToMany(Review,{through:"review_book"})
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
