@@ -1,6 +1,7 @@
 const axios = require('axios');
 const Sequelize = require('sequelize');
 const {Book,Category,Author} = require('../db');
+const { Op } = require("sequelize");
 
 //----------------------------------------------------------------------------------------------
 //    GETS
@@ -19,7 +20,7 @@ getAll= async function () {
         return undefined;
     }
 }
-
+//get by id
 getById = async function (id) {
     const book = await Book.findByPk(id,{
         include: Category,Author
@@ -27,21 +28,23 @@ getById = async function (id) {
     if(book){
         return book;
     }else{
-        return "No se encontro el libro";
+        return undefined;
     }
 }
 
 getBook = async function (title) {  
-    const book = await Book.findOne({
+    const book = await Book.findAll({
+        order:[['title']],
         where: {
-            title: title
+            title: {
+            [Op.iLike]: `%${title}%`,}
         },
         include: Category,Author
     });
     if(book){
         return book;
     }else{
-        return "No se encontro el libro";
+        return undefined;
     }
 }
 
