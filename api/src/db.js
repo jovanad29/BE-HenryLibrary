@@ -37,6 +37,7 @@ sequelize.models = Object.fromEntries(capsEntries);
 // En sequelize.models están todos los modelos importados como propiedades
 // Para relacionarlos hacemos un destructuring
 const {
+  Apibook,
   Book, 
   Category, 
   Author,
@@ -51,9 +52,11 @@ const {
 // Aca vendrian las relaciones
 Book.belongsToMany(Author,{through: "book_author"});
 Author.belongsToMany(Book,{through: "book_author"});
+
 Book.belongsToMany(Category,{through: "book_category"});
 Category.belongsToMany(Book,{through: "book_category"});
 Publisher.hasMany(Book);
+
 
 payment_book = sequelize.define("payment_book", {
   quantity: Sequelize.INTEGER,
@@ -61,6 +64,7 @@ payment_book = sequelize.define("payment_book", {
 });
 Payment.belongsToMany(Book,{through: "payment_book"});
 Book.belongsToMany(Payment,{through: "payment_book"});
+
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
 User.belongsToMany(Review,{through:"review_user"})
