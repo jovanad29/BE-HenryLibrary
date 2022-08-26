@@ -1,62 +1,54 @@
-const axios = require('axios');
-const Sequelize = require('sequelize');
-const {Category} = require('../db');
+const axios = require("axios");
+const Sequelize = require("sequelize");
+const { Category } = require("../db");
 
 //----------------------------------------------------------------------------------------------
 //    GETS
 //----------------------------------------------------------------------------------------------
-getAll= async function () {
-    const categories = await Category.findAll({order: [['name', 'ASC']]});
+getAll = async function () {
+    const categories = await Category.findAll({ order: [["name", "ASC"]] });
     return categories.length > 0 ? categories : undefined;
-}
-
+};
 
 getById = async function (id) {
     const category = await Category.findByPk(id);
-    return category; //? categories : undefined;
-    
-    // if(category){
-    //     return category;
-    // }else{
-    //     return "No se encontro la categoria";
-    // }
-}
+    return category;
+};
 
 //----------------------------------------------------------------------------------------------
 //    POSTS
 //----------------------------------------------------------------------------------------------
 createCategory = async function (category) {
-    const newCategory = await Category.create(category);
+    const newCategory = await Category.create({ name: category });
     return newCategory;
-}
+};
 //----------------------------------------------------------------------------------------------
 //    PUTS
 //----------------------------------------------------------------------------------------------
 updateCategory = async function (id, category) {
-    const updatedCategory = await Category.update(category, {
-        where: {
-            id: id
-        }
-    });
-    if(updatedCategory){
-        return updatedCategory;
-    }else{
-        return "No se encontro la categoria";
+    let dbcategory = await Category.findByPk(id);
+    if (dbcategory) {
+        dbcategory.name = category;
+        await dbcategory.save();
     }
-}
+    return dbcategory;
+};
 //----------------------------------------------------------------------------------------------
 //    DELETES HACER EL DELETE LOGICO
 //----------------------------------------------------------------------------------------------
 deleteCategory = async function (id) {
-    const deletedCategory = await Category.destroy({
-        where: {
-            id: id
-        }
-    });
-    if(deletedCategory){
-        return deletedCategory;
-    }else{
-        return "No se encontro la categoria";
+    let dbcategory = await Category.findByPk(id);
+    if (dbcategory) {
+        dbcategory.isDeleted = true;
+        await dbcategory.save();
     }
-}
-module.exports = {getAll, getById,createCategory,updateCategory,deleteCategory};
+    return dbcategory;
+};
+
+module.exports = {
+    getAll,
+    getById,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+};

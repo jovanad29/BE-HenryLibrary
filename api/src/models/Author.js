@@ -6,11 +6,11 @@ module.exports = (sequelize) => {
   sequelize.define(
     'author',
     {
-      ID: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
+      // ID: {
+      //   type: DataTypes.INTEGER,
+      //   primaryKey: true,
+      //   autoIncrement: true,
+      // },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
