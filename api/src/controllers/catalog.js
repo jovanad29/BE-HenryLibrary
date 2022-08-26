@@ -9,8 +9,14 @@ const { Op } = require("sequelize");
 getAll = async function () {
     const catalog = await Book.findAll({
         order: [["title", "ASC"]],
-        include: Author,
-        Category,
+        include: [
+            {
+                model: Category,
+            },
+            {
+                model: Author,
+            },
+        ],
     });
 
     if (catalog.length > 0) {
