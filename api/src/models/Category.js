@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
       //   autoIncrement: true,
       // },
       name: {
-        type: DataTypes.STRING(10000),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       isDeleted: {
