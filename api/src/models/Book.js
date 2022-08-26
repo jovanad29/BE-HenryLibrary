@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
       //   autoIncrement: true,
       // },
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       description: {
@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       image: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
      idPublisher: {
@@ -66,13 +66,7 @@ module.exports = (sequelize) => {
         type:  DataTypes.BOOLEAN,
 
       }
-      
-
-    },
-    {
-      timestamps: false
-    }
-  );
+    });
 };
 
 
