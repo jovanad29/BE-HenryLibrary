@@ -4,19 +4,19 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
   sequelize.define(
-    'book',
+    'apibook',
     {
-      // ID: {
+      // id: {
       //   type: DataTypes.INTEGER,
       //   primaryKey: true,
       //   autoIncrement: true,
       // },
       title: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(10000),
         allowNull: false,
       },
       description: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(10000),
         allowNull: false,
       },
       price: {
@@ -24,49 +24,40 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       image: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
-     idPublisher: {
-        type: DataTypes.INTEGER,
+      authors: {
+        type: DataTypes.ARRAY(DataTypes.STRING(10000)),
+        allowNull: false,
+      },
+      categories: {
+        type: DataTypes.ARRAY(DataTypes.STRING(10000)),
+        allowNull: false,
+      },
+      publisher: {
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
       publishedDate: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
       pageCount: {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
-     
-      language: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      industryIdentifiers: {
-        type: DataTypes.STRING,
-        allowNull:true,
-      },
       rating: {
         type: DataTypes.FLOAT,
         allowNull: true,
       },
-      soldCopies: {
-        type: DataTypes.INTEGER,
-        defaultValue:0,
+      language: {
+        type: DataTypes.STRING(10000),
         allowNull: true,
       },
-      currentStock: {
-        type: DataTypes.INTEGER,
-        allowNull:false,
-        defaultValue:0,
-      },
-      active: {
-        type:  DataTypes.BOOLEAN,
-
-      }
-    });
+    },
+    {
+      timestamps: false
+    }
+  );
 };
-
-
