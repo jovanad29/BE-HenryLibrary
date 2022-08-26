@@ -1,3 +1,4 @@
+const express = require("express");
 const axios = require("axios");
 const { cls } = require("sequelize");
 const Sequelize = require("sequelize");
@@ -11,7 +12,7 @@ const sizeOf = require("image-size");
 // const { imageRegex } = require('../utils/validations/regex');
 // const { imgVerify } = require('./BooksWithLargeImage');
 
-const maxResults = 40;
+const maxResults = 10;
 const term = [
   "harry potter y",
   "harry potter and",
@@ -51,7 +52,7 @@ async function getImage(industryID) {
 async function fillApi() {
   try {
     for (let i = 0; i < term.length; i++) {
-      for (let j = 0; j < 5; j++) {
+      for (let j = 0; j < 1; j++) {
         let api = (
           await axios.get(
             `https://www.googleapis.com/books/v1/volumes?q=${
@@ -230,43 +231,50 @@ async function fillBook() {
   if (booksArray) { 
     try {
     for (const b of booksArray) {
-      let newBook = await Book.findOrCreate({
+
+      let publisherBook = await Publisher.findOne({ where:{ name: b.publisher }})
+
+      const newBook = await Book.findOrCreate({
         where: {
           title: b.title,
           description: b.description ? b.description : "No description",
           price: b.price,
           image: b.image,
-          //idpublisher:,// b.publisher ? b.publisher : 'NO PUBLISHER', Falta!!
+          idPublisher: publisherBook ? publisherBook.dataValues.id : 'NO PUBLISHER', 
           publishedDate: b.publishedDate ? b.publishedDate : "NO DATE",
           pageCount: b.pageCount ? b.pageCount : 0,
           rating: 0,
           language: b.language ? b.language : "NO INFO",
         },
       });
+
       // Relation with Author
-     
-        if (b.authors.length > 0) {
-          for (const a of b.authors) {
-            console.log(a);
-            if (a !== null || a !== undefined) {
-              let authorBook = await Author.findOne({ where: { name: a } });
-              //if (!authorBook) authorBook=await Author.findcreate({where: {name: a }})
-              await newBook.addAuthor(authorBook);
-             // console.log(authorBook)
-            }
-          }
-        }
+     //console.log(newBook[0])
+        b.authors.map( async (a)=>{
+           
+           // console.log(a);
+           
+            
+             const authorBook = await Author.findOne({
+               where: { name: a },
+                  });
+                  //console.log(authorBook )
+              if (authorBook) authorBook.addBook(newBook[0]);
+              
+            })
+          
+        
       
       //Relation with Category
 
-      // if (b.categories.length) {
-      //   for (const c of b.categories) {
-      //     if (c !== null || c !== undefined) {
-      //       let categoryBook = await Category.findOne({ where: { name: c } });
-      //       await newBook.addCategory(categoryBook);
-      //     }
-      //   }
-      // }
+      if (b.categories.length) {
+        for (const c of b.categories) {
+          if (c !== null || c !== undefined) {
+            let categoryBook = await Category.findOne({ where: { name: c } });
+            if (categoryBook) categoryBook.addBook(newBook[0]);
+          }
+        }
+      }
     }
     } catch (error) {
         console.log(error);

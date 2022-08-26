@@ -6,7 +6,7 @@ const {fillApi, fillCategories, fillAuthors, fillPublisher , fillBook }=require(
 
 
 // Syncing all the models at once.
-conn.sync({ force: false}).then(() => {
+conn.sync({ force: true}).then(() => {
         server.listen(3001, async () => {
         
        
@@ -49,9 +49,9 @@ conn.sync({ force: false}).then(() => {
               console.log('Table Books already with books, nothing to add');
             } else {
               console.log('Filling Books table...');
-              await fillBook();
+               fillBook();
               console.log('Done');
-           }
+          }
 
            
         
