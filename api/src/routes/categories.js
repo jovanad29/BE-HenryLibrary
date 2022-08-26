@@ -34,9 +34,43 @@ router.get("/", async (req, res) => {
         res.status(404).json(error);
     }
 });
-router.post("/", createCategory);
-router.put("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+router.post("/", async (req, res) => {
+    const { name } = req.body;
+    try {
+        let dbCategory = await createCategory(name);
+        dbCategory
+            ? res.json(dbCategory)
+            : res.status(404).json({ message: "No se creo la categoria" });
+    } catch (error) {
+        console.log(error);
+        res.status(404).json(error);
+    }
+});
+router.put("/:id", async (req, res) => { 
+    const { id } = req.params;
+    const { name } = req.body;
+    try {
+        let dbCategory = await updateCategory(id, name);
+        dbCategory
+            ? res.json(dbCategory)
+            : res.status(404).json({ message: "No se actualizo la categoria" });
+    } catch (error) {
+        console.log(error);
+        res.status(404).json(error);
+    }
+});
+router.delete("/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        let dbCategory = await deleteCategory(id);
+        dbCategory
+            ? res.json(dbCategory)
+            : res.status(404).json({ message: "No se elimino la categoria" });
+    } catch (error) {
+        console.log(error);
+        res.status(404).json(error);
+    }
+});
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;
