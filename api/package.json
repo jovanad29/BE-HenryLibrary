@@ -1,18 +1,20 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "",
+  "description": "BackEnd de Proyecto Grupal HenryLibrary",
   "main": "index.js",
   "scripts": {
     "start": "nodemon -L",
     "test": "jest --verbose --detectOpenHandles"
   },
-  "author": "Henry",
-  "license": "ISC",
-  "engines": {
-    "node": ">=12.18.3",
-    "npm": ">=6.14.6"
-  },
+  "keywords": [
+    "Henry",
+    "Library",
+    "Proyecto",
+    "Proyecto Grupal"
+  ],
+  "author": "Alicia Benitez, Hernan Camusso, Pablo S., Felipe Yepes, Flor Oldani, Gustavo Encinas, Jovana Davalillo",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2",
     "body-parser": "^1.19.0",
@@ -26,10 +28,8 @@
     "sequelize": "^6.21.3"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "jest": "^27.5.1",
-    "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
+    "jest": "^27.5.1",
     "supertest": "^6.2.4",
     "supertest-session": "^4.1.0"
   }
