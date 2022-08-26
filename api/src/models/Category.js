@@ -6,7 +6,7 @@ module.exports = (sequelize) => {
   sequelize.define(
     'category',
     {
-      // ID: {
+      // id: {
       //   type: DataTypes.INTEGER,
       //   primaryKey: true,
       //   autoIncrement: true,
