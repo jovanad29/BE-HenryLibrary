@@ -21,14 +21,15 @@ router.get('/:id', async (req,res) => {
 
 router.get('/', async (req, res) => {
     const { title } = req.query;
+    const { pagina = 0, items = 10 } = req.query;
     try {
       if (title) {
-        let book = await getBook(title);
+        let book = await getBook(title, pagina, items);
         book
           ? res.status(200).json(book)
           : res.status(501).json({ message: 'No se encontro el libro' });
       } else {
-        let dbBooks = await getAll();
+        let dbBooks = await getAll(pagina, items);
         dbBooks
           ? res.json(dbBooks)
           : res.status(501).json({ message: 'No se encontraron libros' });
