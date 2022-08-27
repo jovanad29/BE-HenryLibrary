@@ -40,7 +40,9 @@ getById = async function (id) {
             {
                 model: Author,
             },
-            // { include: Review, Publisher }
+            {
+               model: Publisher,
+            },
         ],
     });
     if (book) {
@@ -65,6 +67,9 @@ getBook = async function (title) {
             {
                 model: Author,
             },
+            {
+              model: Publisher,
+            },
             // { include: Review, Publisher }
         ],
     });
@@ -88,7 +93,10 @@ getBook = async function (title) {
         {
           model: Category,
         },
-        // { include: Review, Publisher }
+        {
+          model: Publisher,
+        },
+        // {model: Review }
       ],
     });
 
@@ -112,7 +120,9 @@ getBook = async function (title) {
           {
             model: Author,
           },
-          // { include: Review, Publisher }
+          {
+            model: Publisher,
+          },
         ],
 
       },
