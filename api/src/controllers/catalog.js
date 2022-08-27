@@ -180,7 +180,7 @@ getBook = async function (title, pagina, itemsPagina) {
     } catch (error) {
       return error;
     }
-  }
+  });
 
 //----------------------------------------------------------------------------------------------
 //    PUTS
