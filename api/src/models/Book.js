@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-     idPublisher: {
+     publisherId: {
         type: DataTypes.INTEGER,
         allowNull: true,
       },
@@ -62,10 +62,15 @@ module.exports = (sequelize) => {
         allowNull:false,
         defaultValue:0,
       },
-      active: {
+      isActive: {
         type:  DataTypes.BOOLEAN,
-
+        defaultValue:true,
+      },
+      isBanned: {
+        type:  DataTypes.BOOLEAN,
+        defaultValue:false,
       }
+
     });
 };
 

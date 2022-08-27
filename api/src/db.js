@@ -55,8 +55,12 @@ Author.belongsToMany(Book,{through: "book_author"});
 
 Book.belongsToMany(Category,{through: "book_category"});
 Category.belongsToMany(Book,{through: "book_category"});
-Publisher.hasMany(Book);
-
+Publisher.hasMany(Book, {foreignKey: 'bookId',
+                         sourceKey:'id'});
+Book.belongsTo(Publisher,{foreignKey:'bookId',
+                          targetKey:'id'
+  
+})
 
 payment_book = sequelize.define("payment_book", {
   quantity: Sequelize.INTEGER,
