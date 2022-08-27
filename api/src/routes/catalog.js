@@ -1,9 +1,13 @@
 //definir la ruta de la api hacia el controlador de catalogo
 const { Router } = require('express');  
+const { cls } = require('sequelize');
 const router = Router();
 const {getAll,getBook,getById,createBook,
-  updateBook, getBookByAuthor, getBookByCategory,
-   logicalDeleteBook} = require('../controllers/catalog');
+  modifyBook, 
+  getBookByAuthor, 
+  getBookByCategory,
+   logicalDeleteBook, 
+   } = require('../controllers/catalog');
 
 router.get('/:id', async (req,res) => {
     const book = await getById(req.params.id);
@@ -81,9 +85,62 @@ router.get('/category/:id', async (req, res) => {
   }
 });
 
+//create book
+router.post('/',  async (req, res) => {
 
-router.post('/', createBook);
-router.put('/:id', updateBook);
+  try {
+    
+    
+        const newBook = await createBook(req.body);
+        console.log(newBook)
+
+      newBook
+          ? res.status(201).json( newBook)
+          : res.status(400).json({ message: `Error creando  el libro` });
+ 
+    
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err.message);
+  }
+});
+
+
+
+
+
+
+
+
+// Update book
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (id) {
+      //const validate = await validateBook(req.body);
+     // if (!validate) {
+        const modified = await modifyBook(req.body, id);
+        modified
+          ? res.status(200).json({ message: 'Se modifico el libro existosamente' })
+          : res.status(400).json({ message: `Error modificandno el libro` });
+     // } //else {
+        //res.status(400).json(validate);
+     // }
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err.message);
+  }
+});
+
+
+
+
+
+
+
+
+
 //logical delete 
 
 router.put('/delete/:id', async (req, res) => {
