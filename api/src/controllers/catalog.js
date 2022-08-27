@@ -257,12 +257,27 @@ modifyBook=async function (changes, id) {
 logicalDeleteBook = async function (id) {
   const disabledBook = await Book.findByPk(id);
   if (disabledBook){
-       await disabledBook.update({ isActive: false });
+      const deleted= disabledBook.isActive === true? false: true;
+       await disabledBook.update({ isActive: deleted });
       return disabledBook;
   }
   return undefined
  
 }   
+
+//--------------------------------------------------------------------------------------------
+//    DISABLE A BOOK
+//--------------------------------------------------------------------------------------------
+bannedBook = async function (id) { 
+  const bannedBook = await Book.findByPk(id);
+  if (bannedBook){
+      const banned= bannedBook.isBanned === false? true: false;
+        await bannedBook.update({ isBanned : banned });
+        return bannedBook;
+  }
+  return undefined
+}
+
 
 
 module.exports = {  getAll,getBook,getById,createBook,modifyBook,logicalDeleteBook, getBookByAuthor, getBookByCategory};
