@@ -1,6 +1,6 @@
 const axios = require("axios");
 const Sequelize = require("sequelize");
-const { Book, Category, Author } = require("../db");
+const { Book, Category, Author ,Publisher, Review} = require("../db");
 const { Op } = require("sequelize");
 
 //----------------------------------------------------------------------------------------------
@@ -16,6 +16,11 @@ getAll = async function () {
             {
                 model: Author,
             },
+             {
+             model: Publisher,
+          },
+           
+          // { model: Review , }
         ],
     });
 
@@ -35,6 +40,7 @@ getById = async function (id) {
             {
                 model: Author,
             },
+            // { include: Review, Publisher }
         ],
     });
     if (book) {
@@ -59,6 +65,7 @@ getBook = async function (title) {
             {
                 model: Author,
             },
+            // { include: Review, Publisher }
         ],
     });
     if (book) {
@@ -68,13 +75,63 @@ getBook = async function (title) {
     }
 };
 
+//filter by Author
+  getBookByAuthor = async function (IdAuthor) {
+    const bookFound = await Book.findAll({
+      include: [
+        {
+          model: Author,
+          where: {
+            id: IdAuthor,
+          },
+        },
+        {
+          model: Category,
+        },
+        // { include: Review, Publisher }
+      ],
+    });
+
+    if (bookFound.length === 0) {
+      return undefined;
+    }
+    return bookFound;
+  },
+  
+//filter by Category
+  getBookByCategory = async function (IdCategory) {
+    const bookFound = await Book.findAll(
+      {
+        include: [
+          {
+            model: Category,
+            where: {
+              id: IdCategory
+            },
+          },
+          {
+            model: Author,
+          },
+          // { include: Review, Publisher }
+        ],
+
+      },
+      
+    );
+
+    if (bookFound.length === 0) {
+      return undefined;
+    }
+
+    return bookFound;
+  },
 //----------------------------------------------------------------------------------------------
 //    POSTS
 //----------------------------------------------------------------------------------------------
-createBook = async function (book) {
-    const newBook = await Book.create(book);
-    return newBook;
-};
+    (createBook = async function (book) {
+      const newBook = await Book.create(book);
+      return newBook;
+    });
 
 //----------------------------------------------------------------------------------------------
 //    PUTS
@@ -88,23 +145,19 @@ updateBook = async function (id, book) {
     return updatedBook;
 };
 
-//----------------------------------------------------------------------------------------------
-//    DELETES HACER EL DELETE LOGICO
-//----------------------------------------------------------------------------------------------
-deleteBook = async function (id) {
-    const deletedBook = await Book.destroy({
-        where: {
-            id: id,
-        },
-    });
-    return deletedBook;
-};
 
-module.exports = {
-    getAll,
-    getBook,
-    getById,
-    createBook,
-    updateBook,
-    deleteBook,
-};
+//----------------------------------------------------------------------------------------------
+//     DELETE LOGICO
+//----------------------------------------------------------------------------------------------
+logicalDeleteBook = async function (id) {
+  const disabledBook = await Book.findByPk(id);
+  if (disabledBook){
+       await disabledBook.update({ isActive: false });
+      return disabledBook;
+  }
+  return undefined
+ 
+}   
+
+
+module.exports = {  getAll,getBook,getById,createBook,updateBook,logicalDeleteBook, getBookByAuthor, getBookByCategory};

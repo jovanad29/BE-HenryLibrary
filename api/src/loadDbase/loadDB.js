@@ -127,10 +127,10 @@ async function fillCategories() {
     categories.map((category) => {
       category.map((c) =>
         !categoriesArray.includes(
-          c.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
+          c.trim() //.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
         )
           ? categoriesArray.push(
-              c.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
+              c.trim() //.charAt(0).toUpperCase() + c.toLowerCase().slice(1)
             )
           : null
       );
@@ -228,62 +228,65 @@ async function fillBook() {
     }
   }
 
-  if (booksArray) { 
+  if (booksArray) {
     try {
-    for (const b of booksArray) {
+      for (const b of booksArray) {
+        let publisherBook = await Publisher.findOne({
+          where: { name: b.publisher },
+        });
 
-      let publisherBook = await Publisher.findOne({ where:{ name: b.publisher }})
+        const newBook = await Book.findOrCreate({
+          where: {
+            title: b.title,
+            description: b.description ? b.description : "No description",
+            price: b.price ? (b.price *10).toFixed(2): (Math.random() * 100).toFixed(2),
+            image: b.image,
+            publisherId: publisherBook ? publisherBook.dataValues.id : null,
+            publishedDate: b.publishedDate ? b.publishedDate : "NO DATE",
+            pageCount: b.pageCount ? b.pageCount : 0,
+            rating: 0,
+            language: b.language ? b.language : "NO INFO",
+            currentStock: 50,
+          },
+        });
 
-      const newBook = await Book.findOrCreate({
-        where: {
-          title: b.title,
-          description: b.description ? b.description : "No description",
-          price: b.price,
-          image: b.image,
-          idPublisher: publisherBook ? publisherBook.dataValues.id : 'NO PUBLISHER', 
-          publishedDate: b.publishedDate ? b.publishedDate : "NO DATE",
-          pageCount: b.pageCount ? b.pageCount : 0,
-          rating: 0,
-          language: b.language ? b.language : "NO INFO",
-        },
-      });
-
-      // Relation with Author
-     //console.log(newBook[0])
-        b.authors.map( async (a)=>{
-           
-           // console.log(a);
-           
-            
-             const authorBook = await Author.findOne({
-               where: { name: a },
-                  });
-                  //console.log(authorBook )
-              if (authorBook) authorBook.addBook(newBook[0]);
-              
-            })
-          
         
-      
-      //Relation with Category
+        if (publisherBook) publisherBook.addBook(newBook[0])
 
-      if (b.categories.length) {
-        for (const c of b.categories) {
-          if (c !== null || c !== undefined) {
-            let categoryBook = await Category.findOne({ where: { name: c } });
-            if (categoryBook) categoryBook.addBook(newBook[0]);
+        // Relation with Author
+        //console.log(newBook[0])
+        b.authors.map(async (a) => {
+          // console.log(a);
+
+          const authorBook = await Author.findOne({
+            where: { name: a.trim() },
+          });
+          //console.log(authorBook )
+          if (authorBook) authorBook.addBook(newBook[0]);
+        });
+
+        //Relation with Category
+
+        if (b.categories.length) {
+          for (const c of b.categories) {
+            if (c !== null || c !== undefined)
+             {
+
+            // console.log(c)
+              let categoryBook = await Category.findOne({ where: { name: c.trim() } });
+              //console.log(categoryBook)
+              if (categoryBook) newBook[0].addCategory(categoryBook);
+            }
           }
         }
       }
-    }
     } catch (error) {
-        console.log(error);
-      }
+      console.log(error);
+    }
   }
 
   return booksArray;
 }
-
 module.exports = {
   fillApi,
   fillCategories,
