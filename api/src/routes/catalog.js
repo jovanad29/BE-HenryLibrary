@@ -7,6 +7,7 @@ const {getAll,getBook,getById,createBook,
   getBookByAuthor, 
   getBookByCategory,
    logicalDeleteBook, 
+   bannedBook
    } = require('../controllers/catalog');
 
 router.get('/:id', async (req,res) => {
@@ -92,10 +93,10 @@ router.post('/',  async (req, res) => {
     
     
         const newBook = await createBook(req.body);
-        console.log(newBook)
+       // console.log(newBook)
 
       newBook
-          ? res.status(201).json( newBook)
+          ? res.status(201).json(newBook)
           : res.status(400).json({ message: `Error creando  el libro` });
  
     

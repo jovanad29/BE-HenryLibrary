@@ -280,4 +280,4 @@ bannedBook = async function (id) {
 
 
 
-module.exports = {  getAll,getBook,getById,createBook,modifyBook,logicalDeleteBook, getBookByAuthor, getBookByCategory};
+module.exports = {  getAll,getBook,getById,createBook,modifyBook,logicalDeleteBook, getBookByAuthor, getBookByCategory, bannedBook};
