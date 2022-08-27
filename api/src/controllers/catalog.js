@@ -1,13 +1,15 @@
-const axios = require("axios");
-const Sequelize = require("sequelize");
-const { Book, Category, Author ,Publisher, Review} = require("../db");
+const { Book, Category, Author, Publisher, Review } = require("../db");
 const { Op } = require("sequelize");
 
 //----------------------------------------------------------------------------------------------
 //    GETS
 //----------------------------------------------------------------------------------------------
-getAll = async function () {
+getAll = async function (pagina, itemsPagina) {
+    const offset = pagina * itemsPagina;
+    const limit = itemsPagina;
     const catalog = await Book.findAll({
+        offset: offset,
+        limit: limit,
         order: [["title", "ASC"]],
         include: [
             {
@@ -16,19 +18,15 @@ getAll = async function () {
             {
                 model: Author,
             },
-             {
-             model: Publisher,
-          },
-           
-          // { model: Review , }
+            {
+                model: Publisher,
+            },
+
+            // { model: Review , }
         ],
     });
 
-    if (catalog.length > 0) {
-        return catalog;
-    } else {
-        return undefined;
-    }
+    return catalog.length > 0 ? catalog : undefined;
 };
 
 getById = async function (id) {
@@ -41,19 +39,20 @@ getById = async function (id) {
                 model: Author,
             },
             {
-               model: Publisher,
+                model: Publisher,
             },
         ],
     });
-    if (book) {
-        return book;
-    } else {
-        return undefined;
-    }
+
+    return book ? book : undefined;
 };
 
-getBook = async function (title) {
+getBook = async function (title, pagina, itemsPagina) {
+    const offset = pagina * itemsPagina;
+    const limit = itemsPagina;
     const book = await Book.findAll({
+        offset: offset,
+        limit: limit,
         order: [["title", "ASC"]],
         where: {
             title: {
@@ -68,79 +67,65 @@ getBook = async function (title) {
                 model: Author,
             },
             {
-              model: Publisher,
+                model: Publisher,
             },
             // { include: Review, Publisher }
         ],
     });
-    if (book) {
-        return book;
-    } else {
-        return undefined;
-    }
+
+    return book ? book : undefined;
 };
 
 //filter by Author
-  getBookByAuthor = async function (IdAuthor) {
+(getBookByAuthor = async function (IdAuthor) {
     const bookFound = await Book.findAll({
-      include: [
-        {
-          model: Author,
-          where: {
-            id: IdAuthor,
-          },
-        },
-        {
-          model: Category,
-        },
-        {
-          model: Publisher,
-        },
-        // {model: Review }
-      ],
+        include: [
+            {
+                model: Author,
+                where: {
+                    id: IdAuthor,
+                },
+            },
+            {
+                model: Category,
+            },
+            {
+                model: Publisher,
+            },
+            // {model: Review }
+        ],
     });
 
-    if (bookFound.length === 0) {
-      return undefined;
-    }
-    return bookFound;
-  },
-  
-//filter by Category
-  getBookByCategory = async function (IdCategory) {
-    const bookFound = await Book.findAll(
-      {
-        include: [
-          {
-            model: Category,
-            where: {
-              id: IdCategory
-            },
-          },
-          {
-            model: Author,
-          },
-          {
-            model: Publisher,
-          },
-        ],
+    return bookFound.length > 0 ? bookFound : undefined;
 
-      },
-      
-    );
+}),
+    //filter by Category
+    (getBookByCategory = async function (IdCategory) {
+        const bookFound = await Book.findAll({
+            include: [
+                {
+                    model: Category,
+                    where: {
+                        id: IdCategory,
+                    },
+                },
+                {
+                    model: Author,
+                },
+                {
+                    model: Publisher,
+                },
+            ],
+        });
 
-    if (bookFound.length === 0) {
-      return undefined;
-    }
-
-    return bookFound;
-  },
-//----------------------------------------------------------------------------------------------
-//    POSTS
-//----------------------------------------------------------------------------------------------
+        return bookFound.length > 0 ? bookFound : undefined;
+    }),
+    //----------------------------------------------------------------------------------------------
+    //    POSTS
+    //----------------------------------------------------------------------------------------------
     (createBook = async function (book) {
-      const newBook = await Book.create(book);
-      return newBook;
+        const newBook = await Book.create(book);
+        return newBook;
     });
 
 //----------------------------------------------------------------------------------------------
@@ -155,19 +140,25 @@ updateBook = async function (id, book) {
     return updatedBook;
 };
 
-
 //----------------------------------------------------------------------------------------------
 //     DELETE LOGICO
 //----------------------------------------------------------------------------------------------
 logicalDeleteBook = async function (id) {
-  const disabledBook = await Book.findByPk(id);
-  if (disabledBook){
-       await disabledBook.update({ isActive: false });
-      return disabledBook;
-  }
-  return undefined
- 
-}   
+    const disabledBook = await Book.findByPk(id);
+    if (disabledBook) {
+        await disabledBook.update({ isActive: false });
+        return disabledBook;
+    }
+    return undefined;
+};
 
-
-module.exports = {  getAll,getBook,getById,createBook,updateBook,logicalDeleteBook, getBookByAuthor, getBookByCategory};
+module.exports = {
+    getAll,
+    getBook,
+    getById,
+    createBook,
+    updateBook,
+    logicalDeleteBook,
+    getBookByAuthor,
+    getBookByCategory,
+};
