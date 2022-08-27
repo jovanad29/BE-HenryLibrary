@@ -2,12 +2,16 @@
 const { Router } = require('express');  
 const { cls } = require('sequelize');
 const router = Router();
-const {getAll,getBook,getById,createBook,
+const {getAll,
+  getBook,
+  getById,
+  createBook,
   modifyBook, 
   getBookByAuthor, 
   getBookByCategory,
-   logicalDeleteBook, 
-   } = require('../controllers/catalog');
+  logicalDeleteBook, 
+  bannedBook } = require('../controllers/catalog');
+  
 
 router.get('/:id', async (req,res) => {
     const book = await getById(req.params.id);
