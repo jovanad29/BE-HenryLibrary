@@ -18,9 +18,9 @@ module.exports = (sequelize) => {
       title: {
         type: DataTypes.TEXT,
         allowNull: false,
-        validate:{
-          is: ["^[A-Z]+$",'i'],
-        },
+        // validate:{
+        //   is: ["^[A-Z]+$",'i'],
+        // },
       },
       description: {
         type: DataTypes.TEXT,
