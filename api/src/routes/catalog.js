@@ -136,10 +136,11 @@ router.put("/:id", async (req, res) => {
             //const validate = await validateBook(req.body);
             // if (!validate) {
             const modified = await modifyBook(req.body, id);
+            console.log(modified)
             modified
                 ? res
                       .status(200)
-                      .json({ message: "Se modifico el libro existosamente" })
+                      .json(modified)
                 : res
                       .status(400)
                       .json({ message: `Error modificandno el libro` });
