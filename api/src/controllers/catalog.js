@@ -251,7 +251,19 @@ modifyBook = async function (
 //     DELETE LOGICO
 //----------------------------------------------------------------------------------------------
 logicalDeleteBook = async function (id) {
-  const disabledBook = await Book.findByPk(id);
+  const disabledBook = await Book.findByPk(id, {
+    include: [
+      {
+        model: Category,
+      },
+      {
+        model: Author,
+      },
+      {
+        model: Publisher,
+      },
+    ],
+  });
   if (disabledBook) {
     const deleted = disabledBook.isActive === true ? false : true;
     await disabledBook.update({ isActive: deleted });
@@ -264,7 +276,19 @@ logicalDeleteBook = async function (id) {
 //    DISABLE A BOOK
 //--------------------------------------------------------------------------------------------
 bannedBook = async function (id) {
-  const bannedBook = await Book.findByPk(id);
+  const bannedBook = await Book.findByPk(id, {
+    include: [
+      {
+        model: Category,
+      },
+      {
+        model: Author,
+      },
+      {
+        model: Publisher,
+      },
+    ],
+  });
   if (bannedBook) {
     const banned = bannedBook.isBanned === false ? true : false;
     await bannedBook.update({ isBanned: banned });
