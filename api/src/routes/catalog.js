@@ -2,6 +2,7 @@
 const { Router } = require("express");
 const { cls } = require("sequelize");
 const router = Router();
+
 const {
     getAll,
     getBook,
@@ -16,6 +17,7 @@ const {
 } = require("../controllers/catalog");
 
 router.get("/:id", async (req, res) => {
+
     const book = await getById(req.params.id);
     try {
         if (book) {
@@ -112,15 +114,18 @@ router.get("/category/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const newBook = await createBook(req.body);
-        console.log(newBook);
 
-        newBook
-            ? res.status(201).json(newBook)
-            : res.status(400).json({ message: `Error creando  el libro` });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(err.message);
-    }
+       // console.log(newBook)
+
+      newBook
+          ? res.status(201).json(newBook)
+          : res.status(400).json({ message: `Error creando  el libro` });
+ 
+    
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err.message);
+  }
 });
 
 // Update book

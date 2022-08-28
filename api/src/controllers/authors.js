@@ -1,65 +1,78 @@
-const axios = require('axios');
-const Sequelize = require('sequelize');
-const {Author} = require('../db');
+const axios = require("axios");
+const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
+const { Author } = require("../db");
 
 //----------------------------------------------------------------------------------------------
 //    GETS
 //----------------------------------------------------------------------------------------------
-getAll= async function () {
-    const authors = await Author.findAll();
-    const authorsJson = authors.map(author => author.toJSON());
-    const alphabeticalAuthors = authorsJson.sort((a, b) => a.name.localeCompare(b.name));
+getAll = async function () {
+    const authors = await Author.findAll({ order: [["name", "ASC"]] });
+    return authors.length > 0 ? authors : undefined;
+};
 
-    if(alphabeticalAuthors.length > 0){
+getByName = async function (name) {
+    const authors = await Author.findAll({
+        order: [["name", "ASC"]],
+        where: {
+            name: {
+                [Op.iLike]: `%${name}%`,
+            },
+        },
+    });
+    return authors.length > 0 ? authors : undefined;
+};
 
-    return alphabeticalAuthors;
-    }else{
-        return undefined;
-    }
-}
 getById = async function (id) {
     const author = await Author.findByPk(id);
-    if(author){
+    if (author) {
         return author;
-    }else{
+    } else {
         return "No se encontro el autor";
     }
-}
+};
 //----------------------------------------------------------------------------------------------
 //    POSTS
 //----------------------------------------------------------------------------------------------
 createAuthor = async function (author) {
     const newAuthor = await Author.create(author);
     return newAuthor;
-}
+};
 //----------------------------------------------------------------------------------------------
 //    PUTS
 //----------------------------------------------------------------------------------------------
 updateAuthor = async function (id, author) {
     const updatedAuthor = await Author.update(author, {
         where: {
-            id: id
-        }
+            id: id,
+        },
     });
-    if(updatedAuthor){
+    if (updatedAuthor) {
         return updatedAuthor;
-    }else{
+    } else {
         return "No se encontro el autor";
     }
-}
+};
 //----------------------------------------------------------------------------------------------
 //    DELETES HACER EL DELETE LOGICO
 //----------------------------------------------------------------------------------------------
 deleteAuthor = async function (id) {
     const deletedAuthor = await Author.destroy({
         where: {
-            id: id
-        }
+            id: id,
+        },
     });
-    if(deletedAuthor){
+    if (deletedAuthor) {
         return deletedAuthor;
-    }else{
+    } else {
         return "No se encontro el autor";
     }
-}
-module.exports = {getAll,getById,createAuthor,updateAuthor,deleteAuthor};
+};
+module.exports = {
+    getAll,
+    getByName,
+    getById,
+    createAuthor,
+    updateAuthor,
+    deleteAuthor,
+};
