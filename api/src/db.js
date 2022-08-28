@@ -50,17 +50,40 @@ const {
 } = sequelize.models;
 
 // Aca vendrian las relaciones
-Book.belongsToMany(Author,{through: "book_author"});
-Author.belongsToMany(Book,{through: "book_author"});
+Book.belongsToMany(Author, {
+  through: "book_author",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Author.belongsToMany(Book, {
+  through: "book_author",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
-Book.belongsToMany(Category,{through: "book_category"});
-Category.belongsToMany(Book,{through: "book_category"});
-Publisher.hasMany(Book, {foreignKey: 'bookId',
-                         sourceKey:'id'});
-Book.belongsTo(Publisher,{foreignKey:'bookId',
-                          targetKey:'id'
-  
-})
+Book.belongsToMany(Category, {
+  through: "book_category",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Category.belongsToMany(Book, {
+  through: "book_category",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+Publisher.hasMany(Book, {
+  foreignKey: "bookId",
+  sourceKey: "id",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Book.belongsTo(Publisher, {
+  foreignKey: "bookId",
+  targetKey: "id",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 payment_book = sequelize.define("payment_book", {
   quantity: Sequelize.INTEGER,

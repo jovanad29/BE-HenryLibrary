@@ -114,9 +114,6 @@ router.get("/category/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const newBook = await createBook(req.body);
-
-       // console.log(newBook)
-
       newBook
           ? res.status(201).json(newBook)
           : res.status(400).json({ message: `Error creando  el libro` });
@@ -139,7 +136,7 @@ router.put("/:id", async (req, res) => {
             modified
                 ? res
                       .status(200)
-                      .json({ message: "Se modifico el libro existosamente" })
+                      .json(modified)
                 : res
                       .status(400)
                       .json({ message: `Error modificandno el libro` });
