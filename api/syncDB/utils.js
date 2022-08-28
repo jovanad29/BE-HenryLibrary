@@ -182,43 +182,47 @@ async function imgVerify(img) {
 
 // Carga los libros registrados en Apibook en la tabla book y crea las relaciones correspondientes
 async function fillBook() {
-    let books = await Apibook.findAll();
-	for (let i = 0; i < books.length; i++) {
-		const book = books[i]
-		if (!book) continue
-			// booksArray.push(book);
-		let publisherBook = await Publisher.findOne({where: { name: book.dataValues.publisher }});
-		const newBook = await Book.findOrCreate({
-			where: {
-				title: book.dataValues.title,
-				description: book.dataValues.description ? book.dataValues.description : "NO DESCRIPTION",
-				price: book.dataValues.price ? (book.dataValues.price *10).toFixed(2): (Math.random()*100).toFixed(2),
-				image: book.dataValues.image,
-				publisherId: publisherBook ? publisherBook.dataValues.id : null,
-				publishedDate: book.dataValues.publishedDate ? book.dataValues.publishedDate : "NO DATE",
-				pageCount: book.dataValues.pageCount ? book.dataValues.pageCount : 0,
-				rating: 0,
-				language: book.dataValues.language ? book.dataValues.language : "NO INFO",
-				currentStock: 50
-			}
-		});
-		// Relacionar editorial
-        if (publisherBook) publisherBook.addBook(newBook[0])
-		// Relacionar autor/es
-		book.dataValues.authors.map(async (a) => {
-			const authorBook = await Author.findOne({where: { name: a.trim() }});
-			if (authorBook) authorBook.addBook(newBook[0]);
-		});
-		// Relacionar con categoría/s
-		if (book.dataValues.categories.length) {
-			for (const c of book.dataValues.categories) {
-				if (c !== null || c !== undefined) {
-					let categoryBook = await Category.findOne({ where: { name: c.trim() } });
-					if (categoryBook) newBook[0].addCategory(categoryBook);
+	try {
+		let books = await Apibook.findAll();
+		for (let i = 0; i < books.length; i++) {
+			const book = books[i]
+			if (!book) continue
+				// booksArray.push(book);
+			let publisherBook = await Publisher.findOne({where: { name: book.dataValues.publisher }});
+			const newBook = await Book.findOrCreate({
+				where: {
+					title: book.dataValues.title,
+					description: book.dataValues.description ? book.dataValues.description : "NO DESCRIPTION",
+					price: book.dataValues.price ? (book.dataValues.price *10).toFixed(2): (Math.random()*100).toFixed(2),
+					image: book.dataValues.image,
+					publisherId: publisherBook ? publisherBook.dataValues.id : null,
+					publishedDate: book.dataValues.publishedDate ? book.dataValues.publishedDate : "NO DATE",
+					pageCount: book.dataValues.pageCount ? book.dataValues.pageCount : 0,
+					rating: 0,
+					language: book.dataValues.language ? book.dataValues.language : "NO INFO",
+					currentStock: 50
+				}
+			});
+			// Relacionar editorial
+			if (publisherBook) publisherBook.addBook(newBook[0])
+			// Relacionar autor/es
+			book.dataValues.authors.map(async (a) => {
+				const authorBook = await Author.findOne({where: { name: a.trim() }});
+				if (authorBook) authorBook.addBook(newBook[0]);
+			});
+			// Relacionar con categoría/s
+			if (book.dataValues.categories.length) {
+				for (const c of book.dataValues.categories) {
+					if (c !== null || c !== undefined) {
+						let categoryBook = await Category.findOne({ where: { name: c.trim() } });
+						if (categoryBook) newBook[0].addCategory(categoryBook);
+					}
 				}
 			}
 		}
-	}
+	} catch (error) {
+		console.log(error)
+	}    
     return 'Done'
 }
 
