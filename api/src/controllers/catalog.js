@@ -158,7 +158,7 @@ getBookByAuthor = async function (IdAuthor) {
       // Relation with Author
       if (authors.length) {
         authors.map(async (a) => {
-          // console.log(a);
+
           const authorBook = await Author.findByPk(a);
           if (authorBook) authorBook.addBook(newBook);
         });
@@ -167,9 +167,9 @@ getBookByAuthor = async function (IdAuthor) {
         if (categories.length) {
           for (const c of categories) {
             if (c !== null || c !== undefined) {
-              // console.log(c)
+            
               let categoryBook = await Category.findByPk(c);
-              //console.log(categoryBook)
+
               if (categoryBook) newBook.addCategory(categoryBook);
             }
           }
@@ -182,9 +182,10 @@ getBookByAuthor = async function (IdAuthor) {
   };
 
 //----------------------------------------------------------------------------------------------
-//    PUTS
+//    PUTS  Modify Book
 //----------------------------------------------------------------------------------------------
-modifyBook = async function ({
+modifyBook = async function (
+  {
     title,
     description,
     price,
@@ -196,84 +197,55 @@ modifyBook = async function ({
     language,
     currentStock,
     categories,
-    authors
-  } , id) {
-   
- 
-
-//   if (Object.keys(changes).length === 0) {
-//     return null;
-//   }
-
+    authors,
+  },
+  id
+) {
   try {
     const bookUpdate = await Book.findByPk(id);
     if (bookUpdate === null) {
       return null;
     }
- bookUpdate.title=title
- bookUpdate.description=description
- bookUpdate.price=price
- bookUpdate.image=image
- bookUpdate.publisherId=publisherId
- bookUpdate.publishedDate=publishedDate
- bookUpdate.pageCount=pageCount
- bookUpdate.currentStock=currentStock
- bookUpdate.rating=rating
- bookUpdate.language=language
- await bookUpdate.save()
-    // await bookUpdate.update({
-    //   title,
-    //   description,
-    //   price,
-    //   image,
-    //   publishedDate,
-    //   publisherId,
-    //   pageCount,
-    //   language,
-    //   currentStock,
-    //   rating,
+    bookUpdate.title = title;
+    bookUpdate.description = description;
+    bookUpdate.price = price;
+    bookUpdate.image = image;
+    bookUpdate.publisherId = publisherId;
+    bookUpdate.publishedDate = publishedDate;
+    bookUpdate.pageCount = pageCount;
+    bookUpdate.currentStock = currentStock;
+    bookUpdate.rating = rating;
+    bookUpdate.language = language;
 
-    // });
-    console.log(bookUpdate)
-    // Relation with Publisher
-  
-    // let publisherBook = await Publisher.findByPk(publisherId);
-    // let newPublisher=[]
-    //     newPublisher.push(bookUpdate)
-    //      console.log(newPublisher)
-    // await   publisherBook.setBook([bookUpdate])
+    await bookUpdate.save();
+ 
+    //Relation with Publisher
+    let publisherBook = await Publisher.findByPk(publisherId);
+    await publisherBook.setBooks(bookUpdate);
 
     // Relation with Author
-
-    let authorBook=[]
+    let authorBook = [];
     if (authors.length) {
-        for (const a of authors) {
-         console.log(a);
-         authorBook.push( await Author.findByPk(a));
-       
-      };
-       await  bookUpdate.setAuthor(authorBook);
-    }
-
-      //Relation with Category
-      let categoryBook=[]
-      if (categories.length) {
-        for (const c of categories) {
-          if (c !== null || c !== undefined) {
-            // console.log(c)
-            categoryBook.push( await Category.findByPk(c));
-            //console.log(categoryBook)
-           
-          }
-        }
-        await bookUpdate.setCategory(categoryBook);
+      for (const a of authors) {
+        authorBook.push(await Author.findByPk(a));
       }
-      return bookUpdate;
-      
+      await bookUpdate.setAuthors(authorBook);
+    }
+    //Relation with Category
+    let categoryBook = [];
+    if (categories.length) {
+      for (const c of categories) {
+        if (c !== null || c !== undefined) {
+          categoryBook.push(await Category.findByPk(c));
+        }
+      }
+      await bookUpdate.setCategories(categoryBook);
+    }
+    return bookUpdate;
   } catch (error) {
     return error;
   }
-}
+};
 
 //----------------------------------------------------------------------------------------------
 //     DELETE LOGICO
