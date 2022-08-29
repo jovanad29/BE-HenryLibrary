@@ -13,7 +13,7 @@ const {
     logicalDeleteBook,
     // bannedBook,
     getCountBooks,
-} = require("../controllers/catalog");
+} = require("../controllers/catalogue");
 
 
 router.get("/:id", async (req, res) => {
