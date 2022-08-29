@@ -11,7 +11,6 @@ const {
 } = require('../controllers/authors');
 
 
-router.get('/:id', getById);
 router.get('/', async (req, res) => {
     const { name } = req.query;
     try {
@@ -19,18 +18,19 @@ router.get('/', async (req, res) => {
             let author = await getByName(name);
             author
                 ? res.status(200).json(author)
-                : res.status(501).json({ message: 'No se encontró el autor' });
+                : res.status(404).json({ message: 'No se encontró el autor' });
         } else {
             let dbAuthors = await getAll();
             dbAuthors
                 ? res.json(dbAuthors)
-                : res.status(501).json({ message: 'No se encontraron autores' });
+                : res.status(404).json({ message: 'No se encontraron autores' });
         }
     } catch (err) {
         console.log(err);
-        res.status(502).json(err);
+        res.status(500).json(err);
     }
 });
+router.get('/:id', getById);
 router.post('/', createAuthor);
 router.put('/:id', updateAuthor);
 router.delete('/:id', deleteAuthor);
