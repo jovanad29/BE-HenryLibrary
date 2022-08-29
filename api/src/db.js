@@ -38,7 +38,7 @@ const {
   User,
   Publisher ,
   Payment,
-  PaymentMethod,
+  Payment_method,
   Review
 } = sequelize.models;
 
@@ -82,7 +82,7 @@ payment_book = sequelize.define('payment_book', {
 Payment.belongsToMany(Book,{through: 'payment_book'});
 Book.belongsToMany(Payment,{through: 'payment_book'});
 User.hasMany(Payment);
-PaymentMethod.hasMany(Payment);
+Payment_method.hasMany(Payment);
 User.belongsToMany(Review,{through:'review_user'})
 Review.belongsToMany(User,{through:'review_user'})
 Review.belongsToMany(Book,{through:'review_book'})
