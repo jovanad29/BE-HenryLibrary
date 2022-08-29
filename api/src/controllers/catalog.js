@@ -123,6 +123,34 @@ getBookByAuthor = async function (IdAuthor) {
   //    POSTS
   //
   //-----------------------------------------------------------------------------------------
+  function validations(
+    title,
+    description,
+    price,
+    image,
+    pageCount,
+    currentStock,
+  ) {
+    if (!title || title === undefined || title.length > 300) return false;
+
+    if (!description ||  description === undefined ||  description.length  > 5200 )    return false;
+
+    if (!price || price < 0 || price === undefined) return false;
+
+    const patternURL = new RegExp(
+      /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
+    );
+
+    if (!image || image === undefined || !patternURL.test(image)) return false;
+
+    if (!pageCount || pageCount < 0 || pageCount === undefined) return false;
+
+    if (!currentStock || currentStock < 0 || currentStock === undefined) return false;
+
+    
+    return true;
+  }
+
   createBook = async function ({
     title,
     description,
@@ -131,22 +159,31 @@ getBookByAuthor = async function (IdAuthor) {
     publisherId,
     publishedDate,
     pageCount,
-    rating,
     language,
     currentStock,
     categories,
     authors,
   }) {
+    if (!validations(
+        title,
+        description,
+        price,
+        image,
+        pageCount,
+        language,
+        currentStock
+      )
+    )
+      return undefined;
     try {
-      const newBook = await Book.create({
+      let newBook = await Book.create({
         title: title,
-        description: description ? description : "No description",
+        description: description,
         price: price ? price.toFixed(2) : 0,
         image: image,
         publisherId: publisherId ? publisherId : null,
         publishedDate: publishedDate ? publishedDate : "NO DATE",
-        pageCount: pageCount ? pageCount : 0,
-        rating: rating ? rating : 0,
+        pageCount: pageCount,
         language: language ? language : "NO INFO",
         currentStock: currentStock ? currentStock : 0,
       });
@@ -158,7 +195,6 @@ getBookByAuthor = async function (IdAuthor) {
       // Relation with Author
       if (authors.length) {
         authors.map(async (a) => {
-
           const authorBook = await Author.findByPk(a);
           if (authorBook) authorBook.addBook(newBook);
         });
@@ -167,7 +203,6 @@ getBookByAuthor = async function (IdAuthor) {
         if (categories.length) {
           for (const c of categories) {
             if (c !== null || c !== undefined) {
-            
               let categoryBook = await Category.findByPk(c);
 
               if (categoryBook) newBook.addCategory(categoryBook);
@@ -193,7 +228,7 @@ modifyBook = async function (
     publisherId,
     publishedDate,
     pageCount,
-    rating,
+    //rating,
     language,
     currentStock,
     categories,
@@ -201,6 +236,17 @@ modifyBook = async function (
   },
   id
 ) {
+  if (!validations(
+    title,
+    description,
+    price,
+    image,
+    pageCount,
+    language,
+    currentStock
+  )
+)
+  return undefined;
   try {
     const bookUpdate = await Book.findByPk(id);
     if (bookUpdate === null) {
@@ -214,7 +260,7 @@ modifyBook = async function (
     bookUpdate.publishedDate = publishedDate;
     bookUpdate.pageCount = pageCount;
     bookUpdate.currentStock = currentStock;
-    bookUpdate.rating = rating;
+    //bookUpdate.rating = rating;
     bookUpdate.language = language;
 
     await bookUpdate.save();
