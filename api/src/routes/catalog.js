@@ -114,6 +114,7 @@ router.get("/category/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const newBook = await createBook(req.body);
+        //console.log(newBook)
       newBook
           ? res.status(201).json(newBook)
           : res.status(400).json({ message: `Error creando  el libro` });
@@ -130,8 +131,7 @@ router.put("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         if (id) {
-            //const validate = await validateBook(req.body);
-            // if (!validate) {
+           
             const modified = await modifyBook(req.body, id);
             modified
                 ? res
@@ -140,9 +140,7 @@ router.put("/:id", async (req, res) => {
                 : res
                       .status(400)
                       .json({ message: `Error modificandno el libro` });
-            // } //else {
-            //res.status(400).json(validate);
-            // }
+            
         }
     } catch (err) {
         console.log(err);
