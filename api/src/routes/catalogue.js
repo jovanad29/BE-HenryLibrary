@@ -149,14 +149,14 @@ router.put('/delete/:id', async (req, res) => {
                 ? res.status(200).json(book)
                 : res
                     .status(404)
-                    .json({ message: 'No se encontro el libro a eliminar' });
+                    .json({ message: 'No se encontró el libro a eliminar' });
         } else {
             let dbBooks = await getAll();
             dbBooks
                 ? res.json(dbBooks)
                 : res
                     .status(501)
-                    .json({ message: 'No se ingreso el id para eliminar' });
+                    .json({ message: 'No se ingresó el id para eliminar' });
         }
     } catch (err) {
         console.log(err);

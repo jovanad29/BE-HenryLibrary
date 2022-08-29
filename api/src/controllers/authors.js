@@ -24,7 +24,7 @@ exports.getById = async function(id) {
     if (author) {
         return author;
     } else {
-        return 'No se encontro el autor';
+        return 'No se encontró el autor';
     }
 };
 
@@ -44,7 +44,7 @@ exports.updateAuthor = async function(id, author) {
     if (updatedAuthor) {
         return updatedAuthor;
     } else {
-        return 'No se encontro el autor';
+        return 'No se encontró el autor';
     }
 };
 
@@ -58,6 +58,6 @@ exports.deleteAuthor = async function(id) {
     if (deletedAuthor) {
         return deletedAuthor;
     } else {
-        return 'No se encontro el autor';
+        return 'No se encontró el autor';
     }
 };

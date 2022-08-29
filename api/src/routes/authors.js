@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
             let author = await getByName(name);
             author
                 ? res.status(200).json(author)
-                : res.status(501).json({ message: 'No se encontro el autor' });
+                : res.status(501).json({ message: 'No se encontró el autor' });
         } else {
             let dbAuthors = await getAll();
             dbAuthors
