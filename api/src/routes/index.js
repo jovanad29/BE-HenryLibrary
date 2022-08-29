@@ -11,6 +11,6 @@ router.use('/user', require('./user'));
 router.use('/reviews', require('./reviews'));
 router.use('/payment', require('./payment'));
 router.use('/publisher', require('./publisher'));
-router.use('/paymentMethod', require('./paymentMethod'));
+router.use('/payment-method', require('./paymentMethod'));
 
 module.exports = router;
