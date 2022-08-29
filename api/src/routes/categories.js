@@ -12,7 +12,6 @@ const {
 
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    console.log(id);
     try {
         let dbCategory = await getById(id);
         dbCategory

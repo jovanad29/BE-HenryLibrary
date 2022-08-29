@@ -38,7 +38,7 @@ exports.getBook = async function(title, pagina, itemsPagina) {
 		order: [['title', 'ASC']],
 		where: {
 			title: {
-			[Op.iLike]: `%${title}%`,
+				[Op.iLike]: `%${title}%`,
 			},
 		},
 		include: [
@@ -51,14 +51,14 @@ exports.getBook = async function(title, pagina, itemsPagina) {
 	return book ? book : undefined;
 };
 //filter by Author
-exports.getBookByAuthor = async function(IdAuthor) {
+exports.getBookByAuthor = async function(idAuthor) {
 	const bookFound = await Book.findAll({
 		include: [
 			{
-			model: Author,
-			where: {
-				id: IdAuthor,
-			},
+				model: Author,
+				where: {
+					id: idAuthor,
+				},
 			},
 			{ model: Category },
 			{ model: Publisher },
@@ -68,13 +68,13 @@ exports.getBookByAuthor = async function(IdAuthor) {
 	return bookFound.length > 0 ? bookFound : undefined;
 }
 //filter by Category
-exports.getBookByCategory = async function(IdCategory) {
+exports.getBookByCategory = async function(idCategory) {
 	const bookFound = await Book.findAll({
 		include: [
 			{
 				model: Category,
 				where: {
-					id: IdCategory,
+					id: idCategory,
 				},
 			},
 			{ model: Author },
@@ -111,14 +111,14 @@ exports.createBook = async function(body) {
 	try {
 		const newBook = await Book.create({
 			title: title,
-			description: description ? description : 'No description',
+			description: description ? description : 'NO DESCRIPTION AVAILABLE',
 			price: price ? price.toFixed(2) : 0,
 			image: image,
 			publisherId: publisherId ? publisherId : null,
-			publishedDate: publishedDate ? publishedDate : 'NO DATE',
+			publishedDate: publishedDate ? publishedDate : null,
 			pageCount: pageCount ? pageCount : 0,
 			rating: rating ? rating : 0,
-			language: language ? language : 'NO INFO',
+			language: language ? language : null,
 			currentStock: currentStock ? currentStock : 0,
 		});
 		// Relation with Publisher
@@ -147,7 +147,7 @@ exports.createBook = async function(body) {
 };
 
 //----------- PUT -----------//
-exports.modifyBook = async function(body,id) {
+exports.modifyBook = async function(body, id) {
 	const {
 		title,
 		description,
@@ -215,7 +215,7 @@ exports.logicalDeleteBook = async function(id) {
     ],
   });
   if (disabledBook) {
-    const deleted = disabledBook.isActive === true ? false : true;
+    const deleted = disabledBook.isActive ? false : true;
     await disabledBook.update({ isActive: deleted });
     return disabledBook;
   }

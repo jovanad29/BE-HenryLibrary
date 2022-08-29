@@ -10,11 +10,11 @@ module.exports = (sequelize) => {
 				type: DataTypes.INTEGER,
 				allowNull:true,
 			},
-			user_id: {
+			userId: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
-			method_id: {
+			methodId: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},
@@ -22,7 +22,7 @@ module.exports = (sequelize) => {
 				type: DataTypes.FLOAT,
 				allowNull: false,
 			},
-			status_id: {
+			statusId: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 			},

@@ -16,7 +16,6 @@ const {
 
 
 router.get('/:id', async (req, res) => {
-
     const book = await getById(req.params.id);
     try {
         if (book) {

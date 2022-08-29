@@ -20,20 +20,20 @@ exports.createCategory = async function(category) {
 
 //----------- PUT -----------//
 exports.updateCategory = async function(id, category) {
-    let dbcategory = await Category.findByPk(id);
-    if (dbcategory) {
-        dbcategory.name = category;
-        await dbcategory.save();
+    let dbCategory = await Category.findByPk(id);
+    if (dbCategory) {
+        dbCategory.name = category;
+        await dbCategory.save();
     }
-    return dbcategory;
+    return dbCategory;
 };
 
 //----------- DELETE -----------//
 exports.deleteCategory = async function(id) {
-    let dbcategory = await Category.findByPk(id);
-    if (dbcategory) {
-        dbcategory.isActive = false;
-        await dbcategory.save();
+    let dbCategory = await Category.findByPk(id);
+    if (dbCategory) {
+        dbCategory.isActive = false;
+        await dbCategory.save();
     }
-    return dbcategory;
+    return dbCategory;
 };

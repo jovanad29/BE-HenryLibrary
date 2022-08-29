@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
-			surname: {
+			lastname: {
 				type: DataTypes.STRING,
 				allowNull: false,
 			},
@@ -33,8 +33,7 @@ module.exports = (sequelize) => {
 			isAdmin: {
 				type: DataTypes.BOOLEAN,
 				allowNull: true,
-			},
-			
+			},			
 			address: {
 				type: DataTypes.STRING,
 				allowNull: true,
