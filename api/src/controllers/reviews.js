@@ -4,14 +4,14 @@ const { Review } = require('../db');
 
 //----------- GET -----------//
 exports.getAll = async function() {
-    const reviews = await Review.findAll({
-        order:[['id']],
-    });
-    const orderReviews = reviews.map(review => review.toJSON());
-    
-    if(orderReviews.length > 0){
+    try {
+        const reviews = await Review.findAll({
+            order:[['id']],
+        });
+        const orderReviews = reviews.map(review => review.toJSON());
         return orderReviews;
-    }else{
+    } catch (error) {
+        console.log(error)
         return undefined;
     }
 }

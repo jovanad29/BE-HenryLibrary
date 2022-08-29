@@ -4,84 +4,108 @@ const { Op } = require('sequelize');
 
 //----------- GET -----------//
 exports.getAll = async function(pagina, itemsPagina) {
-	const offset = pagina * itemsPagina;
-	const limit = itemsPagina;
-	const catalog = await Book.findAll({
-		offset: offset,
-		limit: limit,
-		order: [['title', 'ASC']],
-		include: [
-			{ model: Category },
-			{ model: Author },
-			{ model: Publisher },
-			// { model: Review }
-		],
-	});
-	return catalog.length > 0 ? catalog : undefined;
+	try {
+		const offset = pagina * itemsPagina;
+		const limit = itemsPagina;
+		const catalog = await Book.findAll({
+			offset: offset,
+			limit: limit,
+			order: [['title', 'ASC']],
+			include: [
+				{ model: Category },
+				{ model: Author },
+				{ model: Publisher },
+				// { model: Review }
+			],
+		});
+		return catalog
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 };
 exports.getById = async function(id) {
-	const book = await Book.findByPk(id, {
-		include: [
-			{ model: Category },
-			{ model: Author },
-			{ model: Publisher },
-		],
-	});
-	return book ? book : undefined;
+	try {
+		const book = await Book.findByPk(id, {
+			include: [
+				{ model: Category },
+				{ model: Author },
+				{ model: Publisher },
+			],
+		});
+		return book
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 };
 exports.getBook = async function(title, pagina, itemsPagina) {
-  	const offset = pagina * itemsPagina;
-  	const limit = itemsPagina;
-  	const book = await Book.findAll({
-		offset: offset,
-		limit: limit,
-		order: [['title', 'ASC']],
-		where: {
-			title: {
-				[Op.iLike]: `%${title}%`,
+	try {
+		const offset = pagina * itemsPagina;
+		const limit = itemsPagina;
+		const book = await Book.findAll({
+			offset: offset,
+			limit: limit,
+			order: [['title', 'ASC']],
+			where: {
+				title: {
+					[Op.iLike]: `%${title}%`,
+				},
 			},
-		},
-		include: [
-			{ model: Category },
-			{ model: Author },
-			{ model: Publisher },
-			// { model: Review }
-		],
-	});
-	return book ? book : undefined;
+			include: [
+				{ model: Category },
+				{ model: Author },
+				{ model: Publisher },
+				// { model: Review }
+			],
+		});
+		return book
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 };
 //filter by Author
 exports.getBookByAuthor = async function(idAuthor) {
-	const bookFound = await Book.findAll({
-		include: [
-			{
-				model: Author,
-				where: {
-					id: idAuthor,
+	try {
+		const bookFound = await Book.findAll({
+			include: [
+				{
+					model: Author,
+					where: {
+						id: idAuthor,
+					},
 				},
-			},
-			{ model: Category },
-			{ model: Publisher },
-			// {model: Review }
-		],
-	});
-	return bookFound.length > 0 ? bookFound : undefined;
+				{ model: Category },
+				{ model: Publisher },
+				// {model: Review }
+			],
+		});
+		return bookFound
+	} catch (error) {
+		console.log(error)
+		return undefined
+	}
 }
 //filter by Category
 exports.getBookByCategory = async function(idCategory) {
-	const bookFound = await Book.findAll({
-		include: [
-			{
-				model: Category,
-				where: {
-					id: idCategory,
+	try {
+		const bookFound = await Book.findAll({
+			include: [
+				{
+					model: Category,
+					where: {
+						id: idCategory,
+					},
 				},
-			},
-			{ model: Author },
-			{ model: Publisher },
-		],
-	});
-	return bookFound;
+				{ model: Author },
+				{ model: Publisher },
+			],
+		});
+		return bookFound;		
+	} catch (error) {
+		console.log(error)
+	}
 }
 exports.getCountBooks = async function() {
 	try {
@@ -142,6 +166,7 @@ exports.createBook = async function(body) {
 			return newBook;
 		}
 	} catch (error) {
+		console.log(error)
 		return error;
 	}
 };
@@ -201,25 +226,30 @@ exports.modifyBook = async function(body, id) {
 		}
 		return bookUpdate;
 	} catch (error) {
+		console.log(error)
 		return error;
 	}
 };
 
 //----------- DELETE -----------//
-exports.logicalDeleteBook = async function(id) {
-  const disabledBook = await Book.findByPk(id, {
-    include: [
-      { model: Category },
-      { model: Author },
-      { model: Publisher },
-    ],
-  });
-  if (disabledBook) {
-    const deleted = disabledBook.isActive ? false : true;
-    await disabledBook.update({ isActive: deleted });
-    return disabledBook;
-  }
-  return undefined;
+exports.logicalDeleteBook = async function(id) { // switch deleting?
+	try {
+		const disabledBook = await Book.findByPk(id, {
+		  include: [
+			{ model: Category },
+			{ model: Author },
+			{ model: Publisher },
+		  ],
+		});
+		if (disabledBook) {
+		  const deleted = disabledBook.isActive ? false : true;
+		  await disabledBook.update({ isActive: deleted });
+		}		
+		return disabledBook;
+	} catch (error) {
+		console.log(error)
+		return undefined;
+	}
 };
 
 //--------------------------------------------------------------------------------------------

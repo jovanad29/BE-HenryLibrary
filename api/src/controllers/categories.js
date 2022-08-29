@@ -4,36 +4,58 @@ const { Category } = require('../db');
 
 //----------- GET -----------//
 exports.getAll = async function() {
-    const categories = await Category.findAll({ order: [['name', 'ASC']] });
-    return categories.length > 0 ? categories : undefined;
+    try {
+        const categories = await Category.findAll({ order: [['name', 'ASC']] });
+        return categories
+    } catch (error) {
+        console.log(error)
+        return undefined
+    }
 };
 exports.getById = async function (id) {
-    const category = await Category.findByPk(id);
-    return category;
+    try {
+        const category = await Category.findByPk(id);
+        return category;        
+    } catch (error) {
+        console.log(error)
+        return undefined
+    }
 };
 
 //----------- POST -----------//
 exports.createCategory = async function(category) {
-    const newCategory = await Category.create({ name: category });
-    return newCategory;
+    try {
+        const newCategory = await Category.create({ name: category });
+        return newCategory;        
+    } catch (error) {
+        console.log(error)
+    }
 };
 
 //----------- PUT -----------//
 exports.updateCategory = async function(id, category) {
-    let dbCategory = await Category.findByPk(id);
-    if (dbCategory) {
-        dbCategory.name = category;
-        await dbCategory.save();
+    try {
+        let dbCategory = await Category.findByPk(id);
+        if (dbCategory) {
+            dbCategory.name = category;
+            await dbCategory.save();
+        }
+        return dbCategory;        
+    } catch (error) {
+        console.log(error)
     }
-    return dbCategory;
 };
 
 //----------- DELETE -----------//
 exports.deleteCategory = async function(id) {
-    let dbCategory = await Category.findByPk(id);
-    if (dbCategory) {
-        dbCategory.isActive = false;
-        await dbCategory.save();
+    try {
+        let dbCategory = await Category.findByPk(id);
+        if (dbCategory) {
+            dbCategory.isActive = false;
+            await dbCategory.save();
+        }
+        return dbCategory;        
+    } catch (error) {
+        console.log(error)
     }
-    return dbCategory;
 };
