@@ -1,5 +1,5 @@
-const { Book, Category, Author, Publisher, Review } = require("../db");
-const { Op } = require("sequelize");
+const { Book, Category, Author, Publisher, Review } = require('../db');
+const { Op } = require('sequelize');
 
 
 //----------- GET -----------//
@@ -9,7 +9,7 @@ exports.getAll = async function(pagina, itemsPagina) {
 	const catalog = await Book.findAll({
 		offset: offset,
 		limit: limit,
-		order: [["title", "ASC"]],
+		order: [['title', 'ASC']],
 		include: [
 			{ model: Category },
 			{ model: Author },
@@ -35,7 +35,7 @@ exports.getBook = async function(title, pagina, itemsPagina) {
   	const book = await Book.findAll({
 		offset: offset,
 		limit: limit,
-		order: [["title", "ASC"]],
+		order: [['title', 'ASC']],
 		where: {
 			title: {
 			[Op.iLike]: `%${title}%`,
@@ -111,14 +111,14 @@ exports.createBook = async function(body) {
 	try {
 		const newBook = await Book.create({
 			title: title,
-			description: description ? description : "No description",
+			description: description ? description : 'No description',
 			price: price ? price.toFixed(2) : 0,
 			image: image,
 			publisherId: publisherId ? publisherId : null,
-			publishedDate: publishedDate ? publishedDate : "NO DATE",
+			publishedDate: publishedDate ? publishedDate : 'NO DATE',
 			pageCount: pageCount ? pageCount : 0,
 			rating: rating ? rating : 0,
-			language: language ? language : "NO INFO",
+			language: language ? language : 'NO INFO',
 			currentStock: currentStock ? currentStock : 0,
 		});
 		// Relation with Publisher

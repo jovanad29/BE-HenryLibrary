@@ -1,11 +1,11 @@
-const axios = require("axios");
-const Sequelize = require("sequelize");
-const { Category } = require("../db");
+const axios = require('axios');
+const Sequelize = require('sequelize');
+const { Category } = require('../db');
 
 
 //----------- GET -----------//
 exports.getAll = async function() {
-    const categories = await Category.findAll({ order: [["name", "ASC"]] });
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
     return categories.length > 0 ? categories : undefined;
 };
 exports.getById = async function (id) {

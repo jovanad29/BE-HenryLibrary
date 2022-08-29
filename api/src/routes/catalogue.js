@@ -1,6 +1,6 @@
 //definir la ruta de la api hacia el controlador de catalogo
-const { Router } = require("express");
-const { cls } = require("sequelize");
+const { Router } = require('express');
+const { cls } = require('sequelize');
 const router = Router();
 const {
     getAll,
@@ -13,23 +13,23 @@ const {
     logicalDeleteBook,
     // bannedBook,
     getCountBooks,
-} = require("../controllers/catalogue");
+} = require('../controllers/catalogue');
 
 
-router.get("/:id", async (req, res) => {
+router.get('/:id', async (req, res) => {
 
     const book = await getById(req.params.id);
     try {
         if (book) {
             res.status(200).json(book);
         } else {
-            res.status(501).json({ message: "No se encontro el libro" });
+            res.status(501).json({ message: 'No se encontro el libro' });
         }
     } catch (error) {
         res.status(502).json(error);
     }
 });
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
     const { title } = req.query;
     const { pagina = 0, items = 10 } = req.query;
     try {
@@ -37,12 +37,12 @@ router.get("/", async (req, res) => {
             let book = await getBook(title, pagina, items);
             book
                 ? res.status(200).json(book)
-                : res.status(501).json({ message: "No se encontro el libro" });
+                : res.status(501).json({ message: 'No se encontro el libro' });
         } else {
             let dbBooks = await getAll(pagina, items);
             dbBooks
                 ? res.json(dbBooks)
-                : res.status(501).json({ message: "No se encontraron libros" });
+                : res.status(501).json({ message: 'No se encontraron libros' });
         }
     } catch (err) {
         console.log(err);
@@ -50,7 +50,7 @@ router.get("/", async (req, res) => {
     }
 });
 //filter by author
-router.get("/author/:id", async (req, res) => {
+router.get('/author/:id', async (req, res) => {
     const { id } = req.params;
     try {
         if (id) {
@@ -58,13 +58,13 @@ router.get("/author/:id", async (req, res) => {
             book
                 ? res.status(200).json(book)
                 : res.status(501).json({
-                      message: "No se encontraron libros para ese author",
+                      message: 'No se encontraron libros para ese author',
                   });
         } else {
             let dbBooks = await getAll();
             dbBooks
                 ? res.json(dbBooks)
-                : res.status(404).json({ message: "No se encontraron libros" });
+                : res.status(404).json({ message: 'No se encontraron libros' });
         }
     } catch (err) {
         console.log(err);
@@ -72,19 +72,19 @@ router.get("/author/:id", async (req, res) => {
     }
 });
 //count all books
-router.get("/contar/:id", async (req, res) => {
+router.get('/contar/:id', async (req, res) => {
     try {
         let countBooks = await getCountBooks();
         countBooks
             ? res.json(countBooks)
-            : res.status(404).json({ message: "No se pudieron contar los libros" });
+            : res.status(404).json({ message: 'No se pudieron contar los libros' });
     } catch (err) {
         console.log(err);
         res.status(502).json(err);
     }
 });
 //filter by category
-router.get("/category/:id", async (req, res) => {
+router.get('/category/:id', async (req, res) => {
     const { id } = req.params;
     try {
         if (id) {
@@ -92,13 +92,13 @@ router.get("/category/:id", async (req, res) => {
             book
                 ? res.status(200).json(book)
                 : res.status(501).json({
-                      message: "No se encontraron libros para ese género",
+                      message: 'No se encontraron libros para ese género',
                   });
         } else {
             let dbBooks = await getAll();
             dbBooks
                 ? res.json(dbBooks)
-                : res.status(404).json({ message: "No se encontraron libros" });
+                : res.status(404).json({ message: 'No se encontraron libros' });
         }
     } catch (err) {
         console.log(err);
@@ -106,7 +106,7 @@ router.get("/category/:id", async (req, res) => {
     }
 });
 //create book
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const newBook = await createBook(req.body);
         newBook
@@ -118,7 +118,7 @@ router.post("/", async (req, res) => {
     }
 });
 // Update book
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
     const { id } = req.params;
     try {
         if (id) {
@@ -142,7 +142,7 @@ router.put("/:id", async (req, res) => {
     }
 });
 //logical delete
-router.put("/delete/:id", async (req, res) => {
+router.put('/delete/:id', async (req, res) => {
     const { id } = req.params;
     try {
         if (id) {
@@ -151,14 +151,14 @@ router.put("/delete/:id", async (req, res) => {
                 ? res.status(200).json(book)
                 : res
                     .status(404)
-                    .json({ message: "No se encontro el libro a eliminar" });
+                    .json({ message: 'No se encontro el libro a eliminar' });
         } else {
             let dbBooks = await getAll();
             dbBooks
                 ? res.json(dbBooks)
                 : res
                     .status(501)
-                    .json({ message: "No se ingreso el id para eliminar" });
+                    .json({ message: 'No se ingreso el id para eliminar' });
         }
     } catch (err) {
         console.log(err);
@@ -167,7 +167,7 @@ router.put("/delete/:id", async (req, res) => {
 });
 
 //banned book
-// router.put("/banned/:id", async (req, res) => {
+// router.put('/banned/:id', async (req, res) => {
 //     const { id } = req.params;
 //     try {
 //         if (id) {
@@ -175,7 +175,7 @@ router.put("/delete/:id", async (req, res) => {
 //             book
 //                 ? res.status(200).json(book)
 //                 : res.status(404).json({
-//                       message: "No se encontro el libro a dehabilitar",
+//                       message: 'No se encontro el libro a dehabilitar',
 //                   });
 //         } else {
 //             let dbBooks = await getAll();
@@ -183,7 +183,7 @@ router.put("/delete/:id", async (req, res) => {
 //                 ? res.json(dbBooks)
 //                 : res
 //                       .status(501)
-//                       .json({ message: "No se ingreso el id para eliminar" });
+//                       .json({ message: 'No se ingreso el id para eliminar' });
 //         }
 //     } catch (err) {
 //         console.log(err);

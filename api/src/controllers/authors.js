@@ -1,17 +1,17 @@
-const axios = require("axios");
-const Sequelize = require("sequelize");
-const { Op } = require("sequelize");
-const { Author } = require("../db");
+const axios = require('axios');
+const Sequelize = require('sequelize');
+const { Op } = require('sequelize');
+const { Author } = require('../db');
 
 
 //----------- GET -----------//
 exports.getAll = async function() {
-    const authors = await Author.findAll({ order: [["name", "ASC"]] });
+    const authors = await Author.findAll({ order: [['name', 'ASC']] });
     return authors.length > 0 ? authors : undefined;
 };
 exports.getByName = async function(name) {
     const authors = await Author.findAll({
-        order: [["name", "ASC"]],
+        order: [['name', 'ASC']],
         where: {
             name: {
                 [Op.iLike]: `%${name}%`,
@@ -25,7 +25,7 @@ exports.getById = async function(id) {
     if (author) {
         return author;
     } else {
-        return "No se encontro el autor";
+        return 'No se encontro el autor';
     }
 };
 
@@ -45,7 +45,7 @@ exports.updateAuthor = async function(id, author) {
     if (updatedAuthor) {
         return updatedAuthor;
     } else {
-        return "No se encontro el autor";
+        return 'No se encontro el autor';
     }
 };
 
@@ -59,6 +59,6 @@ exports.deleteAuthor = async function(id) {
     if (deletedAuthor) {
         return deletedAuthor;
     } else {
-        return "No se encontro el autor";
+        return 'No se encontro el autor';
     }
 };
