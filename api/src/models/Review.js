@@ -6,11 +6,6 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'review',
 		{
-			// ID: {
-			//   type: DataTypes.INTEGER,
-			//   primaryKey: true,
-			//   autoIncrement: true,
-			// },
 			rating: {
 				type: DataTypes.INTEGER,
 				allowNull: false,

@@ -6,11 +6,6 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'user',
 		{
-			// ID: {
-			//   type: DataTypes.INTEGER,
-			//   primaryKey: true,
-			//   autoIncrement: true,
-			// },
 			fistname: {
 				type: DataTypes.STRING,
 				allowNull: false,

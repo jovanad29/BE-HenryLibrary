@@ -6,11 +6,6 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'payment',
 		{
-			// ID: {
-			//   type: DataTypes.INTEGER,
-			//   primaryKey: true,
-			//   autoIncrement: true,
-			// },
 			transactionId: { 
 				type: DataTypes.INTEGER,
 				allowNull:true,

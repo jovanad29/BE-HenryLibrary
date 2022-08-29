@@ -10,11 +10,6 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'book',
 		{
-			// ID: {
-			//   type: DataTypes.INTEGER,
-			//   primaryKey: true,
-			//   autoIncrement: true,
-			// },
 			title: {
 				type: DataTypes.TEXT,
 				allowNull: false,
