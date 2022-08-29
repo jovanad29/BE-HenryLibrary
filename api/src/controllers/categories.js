@@ -4,23 +4,23 @@ const { Category } = require("../db");
 
 
 //----------- GET -----------//
-getAll = async function () {
+exports.getAll = async function () {
     const categories = await Category.findAll({ order: [["name", "ASC"]] });
     return categories.length > 0 ? categories : undefined;
 };
-getById = async function (id) {
+exports.getById = async function (id) {
     const category = await Category.findByPk(id);
     return category;
 };
 
 //----------- POST -----------//
-createCategory = async function (category) {
+exports.createCategory = async function (category) {
     const newCategory = await Category.create({ name: category });
     return newCategory;
 };
 
 //----------- PUT -----------//
-updateCategory = async function (id, category) {
+exports.updateCategory = async function (id, category) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
         dbcategory.name = category;
@@ -30,19 +30,11 @@ updateCategory = async function (id, category) {
 };
 
 //----------- DELETE -----------//
-deleteCategory = async function (id) {
+exports.deleteCategory = async function (id) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
         dbcategory.isDeleted = true;
         await dbcategory.save();
     }
     return dbcategory;
-};
-
-module.exports = {
-    getAll,
-    getById,
-    createCategory,
-    updateCategory,
-    deleteCategory,
 };

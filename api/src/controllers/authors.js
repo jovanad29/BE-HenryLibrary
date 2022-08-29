@@ -5,11 +5,11 @@ const { Author } = require("../db");
 
 
 //----------- GET -----------//
-getAll = async function () {
+exports.getAll = async function () {
     const authors = await Author.findAll({ order: [["name", "ASC"]] });
     return authors.length > 0 ? authors : undefined;
 };
-getByName = async function (name) {
+exports.getByName = async function (name) {
     const authors = await Author.findAll({
         order: [["name", "ASC"]],
         where: {
@@ -20,7 +20,7 @@ getByName = async function (name) {
     });
     return authors.length > 0 ? authors : undefined;
 };
-getById = async function (id) {
+exports.getById = async function (id) {
     const author = await Author.findByPk(id);
     if (author) {
         return author;
@@ -30,13 +30,13 @@ getById = async function (id) {
 };
 
 //----------- POST -----------//
-createAuthor = async function (author) {
+exports.createAuthor = async function (author) {
     const newAuthor = await Author.create(author);
     return newAuthor;
 };
 
 //----------- PUT -----------//
-updateAuthor = async function (id, author) {
+exports.updateAuthor = async function (id, author) {
     const updatedAuthor = await Author.update(author, {
         where: {
             id: id,
@@ -50,7 +50,7 @@ updateAuthor = async function (id, author) {
 };
 
 //----------- DELETE -----------//
-deleteAuthor = async function (id) {
+exports.deleteAuthor = async function (id) {
     const deletedAuthor = await Author.destroy({
         where: {
             id: id,
@@ -61,13 +61,4 @@ deleteAuthor = async function (id) {
     } else {
         return "No se encontro el autor";
     }
-};
-
-module.exports = {
-    getAll,
-    getByName,
-    getById,
-    createAuthor,
-    updateAuthor,
-    deleteAuthor,
 };

@@ -4,7 +4,7 @@ const {Review} = require('../db');
 
 
 //----------- GET -----------//
-getAll = async function () {
+exports.getAll = async function () {
     const reviews = await Review.findAll({
         order:[["ID"]],
     });

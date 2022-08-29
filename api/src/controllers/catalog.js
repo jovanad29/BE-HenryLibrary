@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 
 
 //----------- GET -----------//
-getAll = async function (pagina, itemsPagina) {
+exports.getAll = async function (pagina, itemsPagina) {
   const offset = pagina * itemsPagina;
   const limit = itemsPagina;
   const catalog = await Book.findAll({
@@ -27,7 +27,7 @@ getAll = async function (pagina, itemsPagina) {
 
   return catalog.length > 0 ? catalog : undefined;
 };
-getById = async function (id) {
+exports.getById = async function (id) {
   const book = await Book.findByPk(id, {
     include: [
       {
@@ -43,7 +43,7 @@ getById = async function (id) {
   });
   return book ? book : undefined;
 };
-getBook = async function (title, pagina, itemsPagina) {
+exports.getBook = async function (title, pagina, itemsPagina) {
   const offset = pagina * itemsPagina;
   const limit = itemsPagina;
   const book = await Book.findAll({
@@ -71,7 +71,7 @@ getBook = async function (title, pagina, itemsPagina) {
   return book ? book : undefined;
 };
 //filter by Author
-getBookByAuthor = async function (IdAuthor) {
+exports.getBookByAuthor = async function (IdAuthor) {
   const bookFound = await Book.findAll({
     include: [
       {
@@ -93,7 +93,7 @@ getBookByAuthor = async function (IdAuthor) {
   return bookFound.length > 0 ? bookFound : undefined;
 }
 //filter by Category
-getBookByCategory = async function (IdCategory) {
+exports.getBookByCategory = async function (IdCategory) {
   const bookFound = await Book.findAll({
     include: [
       {
@@ -112,13 +112,13 @@ getBookByCategory = async function (IdCategory) {
   });
   return bookFound;
 }
-getCountBooks = async function () {
+exports.getCountBooks = async function () {
   const count = await Book.count();
   return count ? count : undefined;
 };
 
 //----------- POST -----------//
-createBook = async function ({
+exports.createBook = async function ({
   title,
   description,
   price,
@@ -177,7 +177,7 @@ createBook = async function ({
 };
 
 //----------- PUT -----------//
-modifyBook = async function (
+exports.modifyBook = async function (
   {
     title,
     description,
@@ -241,7 +241,7 @@ modifyBook = async function (
 };
 
 //----------- DELETE -----------//
-logicalDeleteBook = async function (id) {
+exports.logicalDeleteBook = async function (id) {
   const disabledBook = await Book.findByPk(id, {
     include: [
       {
@@ -287,16 +287,3 @@ logicalDeleteBook = async function (id) {
 //   }
 //   return undefined;
 // };
-
-module.exports = {
-  getAll,
-  getBook,
-  getById,
-  createBook,
-  modifyBook,
-  logicalDeleteBook,
-  getBookByAuthor,
-  getBookByCategory,
-  // bannedBook,
-  getCountBooks,
-};
