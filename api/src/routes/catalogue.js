@@ -1,6 +1,5 @@
 //definir la ruta de la api hacia el controlador de catalogo
 const { Router } = require('express');
-const { cls } = require('sequelize');
 const router = Router();
 const {
     getAll,

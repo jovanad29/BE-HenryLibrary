@@ -1,5 +1,4 @@
-const axios = require('axios');
-const Sequelize = require('sequelize');
+
 const { Op } = require('sequelize');
 const { Author } = require('../db');
 

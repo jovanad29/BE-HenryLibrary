@@ -1,5 +1,4 @@
-const axios = require('axios');
-const Sequelize = require('sequelize');
+
 const { Review } = require('../db');
 
 
