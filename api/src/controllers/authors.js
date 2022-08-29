@@ -29,13 +29,14 @@ exports.getByName = async function(name) {
         return undefined
     }
 };
-exports.getById = async function(id) {
+exports.getById = async function(req, res) {
     try {
-        const author = await Author.findByPk(id);
+        const author = await Author.findByPk(req.params.id);
+        console.log(author)
         if (author) {
-            return author;
+            return res.json(author);
         } else {
-            return 'No se encontró el autor';
+            return res.status(404).json({message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
@@ -43,27 +44,31 @@ exports.getById = async function(id) {
 };
 
 //----------- POST -----------//
-exports.createAuthor = async function(author) {
+exports.createAuthor = async function(req,res) {
+    const author = req.body
     try {
         const newAuthor = await Author.create(author);
-        return newAuthor;        
+        return res.status(201).json(newAuthor);        
     } catch (error) {
         console.log(error)
     }
 };
 
 //----------- PUT -----------//
-exports.updateAuthor = async function(id, author) {
+exports.updateAuthor = async function(req, res) {
+    const { id } = req.params
+    const { name } = req.body
+    console.log(id, name)
     try {
-        const updatedAuthor = await Author.update(author, {
+        const updatedAuthor = await Author.update({name: name}, {
             where: {
                 id: id,
             },
         });
         if (updatedAuthor) {
-            return updatedAuthor;
+            return res.status(204).json({});
         } else {
-            return 'No se encontró el autor';
+            return res.status(404).json({message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
