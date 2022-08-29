@@ -2,7 +2,9 @@
 const { Router } = require('express');
 const router = Router();
 // requerir los metodos del controlador de review
-const {getAll} = require('../controllers/review');
+const { getAll } = require('../controllers/review');
+
+
 // definir los metodos de la ruta de la api hacia el controlador de review
 router.get('/', async (req, res) => {   
     try {
@@ -15,7 +17,6 @@ router.get('/', async (req, res) => {
         res.status(404).json(err);
     }
 } );
-
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;

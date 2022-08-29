@@ -4,7 +4,7 @@ const { Category } = require("../db");
 
 
 //----------- GET -----------//
-exports.getAll = async function () {
+exports.getAll = async function() {
     const categories = await Category.findAll({ order: [["name", "ASC"]] });
     return categories.length > 0 ? categories : undefined;
 };
@@ -14,13 +14,13 @@ exports.getById = async function (id) {
 };
 
 //----------- POST -----------//
-exports.createCategory = async function (category) {
+exports.createCategory = async function(category) {
     const newCategory = await Category.create({ name: category });
     return newCategory;
 };
 
 //----------- PUT -----------//
-exports.updateCategory = async function (id, category) {
+exports.updateCategory = async function(id, category) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
         dbcategory.name = category;
@@ -30,7 +30,7 @@ exports.updateCategory = async function (id, category) {
 };
 
 //----------- DELETE -----------//
-exports.deleteCategory = async function (id) {
+exports.deleteCategory = async function(id) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
         dbcategory.isDeleted = true;

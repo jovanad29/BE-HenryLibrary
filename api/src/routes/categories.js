@@ -9,6 +9,7 @@ const {
     deleteCategory,
 } = require("../controllers/categories");
 
+
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
     console.log(id);
@@ -22,7 +23,6 @@ router.get("/:id", async (req, res) => {
         res.status(404).json(error);
     }
 });
-
 router.get("/", async (req, res) => {
     try {
         let dbCategories = await getAll();

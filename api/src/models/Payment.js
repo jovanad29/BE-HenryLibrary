@@ -11,10 +11,9 @@ module.exports = (sequelize) => {
       //   primaryKey: true,
       //   autoIncrement: true,
       // },
-      transactionId:{ 
+      transactionId: { 
         type: DataTypes.INTEGER,
         allowNull:true,
-
       },
       user_id: {
         type: DataTypes.INTEGER,
@@ -35,8 +34,7 @@ module.exports = (sequelize) => {
      deliveryAddress: {
         type: DataTypes.STRING,
         allowNull: true,
-      },
-     
+      },     
     },
     {
       timestamps: false

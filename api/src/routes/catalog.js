@@ -2,7 +2,6 @@
 const { Router } = require("express");
 const { cls } = require("sequelize");
 const router = Router();
-
 const {
     getAll,
     getBook,
@@ -12,9 +11,10 @@ const {
     getBookByAuthor,
     getBookByCategory,
     logicalDeleteBook,
-    bannedBook,
+    // bannedBook,
     getCountBooks,
 } = require("../controllers/catalog");
+
 
 router.get("/:id", async (req, res) => {
 
@@ -29,7 +29,6 @@ router.get("/:id", async (req, res) => {
         res.status(502).json(error);
     }
 });
-
 router.get("/", async (req, res) => {
     const { title } = req.query;
     const { pagina = 0, items = 10 } = req.query;
@@ -50,7 +49,6 @@ router.get("/", async (req, res) => {
         res.status(502).json(err);
     }
 });
-
 //filter by author
 router.get("/author/:id", async (req, res) => {
     const { id } = req.params;
@@ -73,7 +71,6 @@ router.get("/author/:id", async (req, res) => {
         res.status(502).json(err);
     }
 });
-
 //count all books
 router.get("/contar/:id", async (req, res) => {
     try {
@@ -86,7 +83,6 @@ router.get("/contar/:id", async (req, res) => {
         res.status(502).json(err);
     }
 });
-
 //filter by category
 router.get("/category/:id", async (req, res) => {
     const { id } = req.params;
@@ -109,22 +105,18 @@ router.get("/category/:id", async (req, res) => {
         res.status(502).json(err);
     }
 });
-
 //create book
 router.post("/", async (req, res) => {
     try {
         const newBook = await createBook(req.body);
       newBook
           ? res.status(201).json(newBook)
-          : res.status(400).json({ message: `Error creando  el libro` });
- 
-    
+          : res.status(400).json({ message: `Error creando  el libro` });    
   } catch (err) {
     console.log(err);
     res.status(400).json(err.message);
   }
 });
-
 // Update book
 router.put("/:id", async (req, res) => {
     const { id } = req.params;
@@ -149,9 +141,7 @@ router.put("/:id", async (req, res) => {
         res.status(400).json(err.message);
     }
 });
-
 //logical delete
-
 router.put("/delete/:id", async (req, res) => {
     const { id } = req.params;
     try {

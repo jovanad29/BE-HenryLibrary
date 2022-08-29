@@ -1,18 +1,17 @@
 const axios = require('axios');
 const Sequelize = require('sequelize');
-const {Review} = require('../db');
+const { Review } = require('../db');
 
 
 //----------- GET -----------//
-exports.getAll = async function () {
+exports.getAll = async function() {
     const reviews = await Review.findAll({
         order:[["ID"]],
     });
     const orderReviews = reviews.map(review => review.toJSON());
     
     if(orderReviews.length > 0){
-
-    return orderReviews;
+        return orderReviews;
     }else{
         return undefined;
     }
@@ -25,5 +24,3 @@ exports.getAll = async function () {
 
 
 //----------- DELETE -----------//
-
-module.exports = {getAll};
