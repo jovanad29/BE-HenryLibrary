@@ -132,20 +132,22 @@ getBookByAuthor = async function (IdAuthor) {
     currentStock,
   ) {
     if (!title || title === undefined || title.length > 300) return false;
-    if (
-      !description ||
-      description === undefined ||
-      description.length  > 5200
-    )    return false;
+
+    if (!description ||  description === undefined ||  description.length  > 5200 )    return false;
+
     if (!price || price < 0 || price === undefined) return false;
 
     const patternURL = new RegExp(
       /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
     );
+
     if (!image || image === undefined || !patternURL.test(image)) return false;
+
     if (!pageCount || pageCount < 0 || pageCount === undefined) return false;
-    if (!currentStock || currentStock < 0 || currentStock === undefined)
-      return false;
+
+    if (!currentStock || currentStock < 0 || currentStock === undefined) return false;
+
+    
     return true;
   }
 
