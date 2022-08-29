@@ -109,13 +109,13 @@ router.get("/category/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         const newBook = await createBook(req.body);
-      newBook
-          ? res.status(201).json(newBook)
-          : res.status(400).json({ message: `Error creando  el libro` });    
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err.message);
-  }
+        newBook
+            ? res.status(201).json(newBook)
+            : res.status(400).json({ message: `Error creando  el libro` });
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err.message);
+    }
 });
 // Update book
 router.put("/:id", async (req, res) => {
@@ -127,18 +127,18 @@ router.put("/:id", async (req, res) => {
             const modified = await modifyBook(req.body, id);
             modified
                 ? res
-                      .status(200)
-                      .json(modified)
+                    .status(200)
+                    .json(modified)
                 : res
-                      .status(400)
-                      .json({ message: `Error modificandno el libro` });
+                    .status(400)
+                    .json({ message: `Error modificando el libro` });
             // } //else {
             //res.status(400).json(validate);
             // }
         }
     } catch (err) {
         console.log(err);
-        res.status(400).json(err.message);
+        res.status(400).json(err);
     }
 });
 //logical delete
@@ -150,15 +150,15 @@ router.put("/delete/:id", async (req, res) => {
             book
                 ? res.status(200).json(book)
                 : res
-                      .status(404)
-                      .json({ message: "No se encontro el libro a eliminar" });
+                    .status(404)
+                    .json({ message: "No se encontro el libro a eliminar" });
         } else {
             let dbBooks = await getAll();
             dbBooks
                 ? res.json(dbBooks)
                 : res
-                      .status(501)
-                      .json({ message: "No se ingreso el id para eliminar" });
+                    .status(501)
+                    .json({ message: "No se ingreso el id para eliminar" });
         }
     } catch (err) {
         console.log(err);
