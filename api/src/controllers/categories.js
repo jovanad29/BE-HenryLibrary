@@ -33,7 +33,7 @@ exports.updateCategory = async function(id, category) {
 exports.deleteCategory = async function(id) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
-        dbcategory.isDeleted = true;
+        dbcategory.isActive = false;
         await dbcategory.save();
     }
     return dbcategory;
