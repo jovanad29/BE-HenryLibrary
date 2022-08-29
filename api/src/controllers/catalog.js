@@ -113,8 +113,12 @@ exports.getBookByCategory = async function (IdCategory) {
   return bookFound;
 }
 exports.getCountBooks = async function () {
-  const count = await Book.count();
-  return count ? count : undefined;
+  try {
+    return await Book.count()
+  } catch (error) {
+    console.log(error)
+    return undefined
+  }
 };
 
 //----------- POST -----------//
