@@ -2,29 +2,24 @@ const axios = require("axios");
 const Sequelize = require("sequelize");
 const { Category } = require("../db");
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
+
+//----------- GET -----------//
 getAll = async function () {
     const categories = await Category.findAll({ order: [["name", "ASC"]] });
     return categories.length > 0 ? categories : undefined;
 };
-
 getById = async function (id) {
     const category = await Category.findByPk(id);
     return category;
 };
 
-//----------------------------------------------------------------------------------------------
-//    POSTS
-//----------------------------------------------------------------------------------------------
+//----------- POST -----------//
 createCategory = async function (category) {
     const newCategory = await Category.create({ name: category });
     return newCategory;
 };
-//----------------------------------------------------------------------------------------------
-//    PUTS
-//----------------------------------------------------------------------------------------------
+
+//----------- PUT -----------//
 updateCategory = async function (id, category) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {
@@ -33,9 +28,8 @@ updateCategory = async function (id, category) {
     }
     return dbcategory;
 };
-//----------------------------------------------------------------------------------------------
-//    DELETES HACER EL DELETE LOGICO
-//----------------------------------------------------------------------------------------------
+
+//----------- DELETE -----------//
 deleteCategory = async function (id) {
     let dbcategory = await Category.findByPk(id);
     if (dbcategory) {

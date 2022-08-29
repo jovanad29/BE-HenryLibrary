@@ -1,9 +1,8 @@
 const { Book, Category, Author, Publisher, Review } = require("../db");
 const { Op } = require("sequelize");
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
+
+//----------- GET -----------//
 getAll = async function (pagina, itemsPagina) {
   const offset = pagina * itemsPagina;
   const limit = itemsPagina;
@@ -28,7 +27,6 @@ getAll = async function (pagina, itemsPagina) {
 
   return catalog.length > 0 ? catalog : undefined;
 };
-
 getById = async function (id) {
   const book = await Book.findByPk(id, {
     include: [
@@ -43,10 +41,8 @@ getById = async function (id) {
       },
     ],
   });
-
   return book ? book : undefined;
 };
-
 getBook = async function (title, pagina, itemsPagina) {
   const offset = pagina * itemsPagina;
   const limit = itemsPagina;
@@ -72,10 +68,8 @@ getBook = async function (title, pagina, itemsPagina) {
       // { model: Review, }
     ],
   });
-
   return book ? book : undefined;
 };
-
 //filter by Author
 getBookByAuthor = async function (IdAuthor) {
   const bookFound = await Book.findAll({
@@ -98,92 +92,91 @@ getBookByAuthor = async function (IdAuthor) {
 
   return bookFound.length > 0 ? bookFound : undefined;
 }
-  //filter by Category
- getBookByCategory = async function (IdCategory) {
-    const bookFound = await Book.findAll({
-      include: [
-        {
-          model: Category,
-          where: {
-            id: IdCategory,
-          },
+//filter by Category
+getBookByCategory = async function (IdCategory) {
+  const bookFound = await Book.findAll({
+    include: [
+      {
+        model: Category,
+        where: {
+          id: IdCategory,
         },
-        {
-          model: Author,
-        },
-        {
-          model: Publisher,
-        },
-      ],
+      },
+      {
+        model: Author,
+      },
+      {
+        model: Publisher,
+      },
+    ],
+  });
+  return bookFound;
+}
+getCountBooks = async function () {
+  const count = await Book.count();
+  return count ? count : undefined;
+};
+
+//----------- POST -----------//
+createBook = async function ({
+  title,
+  description,
+  price,
+  image,
+  publisherId,
+  publishedDate,
+  pageCount,
+  rating,
+  language,
+  currentStock,
+  categories,
+  authors,
+}) {
+  try {
+    const newBook = await Book.create({
+      title: title,
+      description: description ? description : "No description",
+      price: price ? price.toFixed(2) : 0,
+      image: image,
+      publisherId: publisherId ? publisherId : null,
+      publishedDate: publishedDate ? publishedDate : "NO DATE",
+      pageCount: pageCount ? pageCount : 0,
+      rating: rating ? rating : 0,
+      language: language ? language : "NO INFO",
+      currentStock: currentStock ? currentStock : 0,
     });
 
-    return bookFound;
-  }
-  //----------------------------------------------------------------------------------------------
-  //    POSTS
-  //
-  //-----------------------------------------------------------------------------------------
-  createBook = async function ({
-    title,
-    description,
-    price,
-    image,
-    publisherId,
-    publishedDate,
-    pageCount,
-    rating,
-    language,
-    currentStock,
-    categories,
-    authors,
-  }) {
-    try {
-      const newBook = await Book.create({
-        title: title,
-        description: description ? description : "No description",
-        price: price ? price.toFixed(2) : 0,
-        image: image,
-        publisherId: publisherId ? publisherId : null,
-        publishedDate: publishedDate ? publishedDate : "NO DATE",
-        pageCount: pageCount ? pageCount : 0,
-        rating: rating ? rating : 0,
-        language: language ? language : "NO INFO",
-        currentStock: currentStock ? currentStock : 0,
+    // Relation with Publisher
+    let publisherBook = await Publisher.findByPk(publisherId);
+    if (publisherBook) publisherBook.addBook(newBook);
+
+    // Relation with Author
+    if (authors.length) {
+      authors.map(async (a) => {
+
+        const authorBook = await Author.findByPk(a);
+        if (authorBook) authorBook.addBook(newBook);
       });
 
-      // Relation with Publisher
-      let publisherBook = await Publisher.findByPk(publisherId);
-      if (publisherBook) publisherBook.addBook(newBook);
+      //Relation with Category
+      if (categories.length) {
+        for (const c of categories) {
+          if (c !== null || c !== undefined) {
+          
+            let categoryBook = await Category.findByPk(c);
 
-      // Relation with Author
-      if (authors.length) {
-        authors.map(async (a) => {
-
-          const authorBook = await Author.findByPk(a);
-          if (authorBook) authorBook.addBook(newBook);
-        });
-
-        //Relation with Category
-        if (categories.length) {
-          for (const c of categories) {
-            if (c !== null || c !== undefined) {
-            
-              let categoryBook = await Category.findByPk(c);
-
-              if (categoryBook) newBook.addCategory(categoryBook);
-            }
+            if (categoryBook) newBook.addCategory(categoryBook);
           }
         }
-        return newBook;
       }
-    } catch (error) {
-      return error;
+      return newBook;
     }
-  };
+  } catch (error) {
+    return error;
+  }
+};
 
-//----------------------------------------------------------------------------------------------
-//    PUTS  Modify Book
-//----------------------------------------------------------------------------------------------
+//----------- PUT -----------//
 modifyBook = async function (
   {
     title,
@@ -247,9 +240,7 @@ modifyBook = async function (
   }
 };
 
-//----------------------------------------------------------------------------------------------
-//     DELETE LOGICO
-//----------------------------------------------------------------------------------------------
+//----------- DELETE -----------//
 logicalDeleteBook = async function (id) {
   const disabledBook = await Book.findByPk(id, {
     include: [
@@ -295,14 +286,6 @@ bannedBook = async function (id) {
     return bannedBook;
   }
   return undefined;
-};
-
-//--------------------------------------------------------------------------------------------
-//    COUNT ALL BOOKS
-//--------------------------------------------------------------------------------------------
-getCountBooks = async function () {
-  const count = await Book.count();
-  return count ? count : undefined;
 };
 
 module.exports = {

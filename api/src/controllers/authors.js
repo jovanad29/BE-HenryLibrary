@@ -3,14 +3,12 @@ const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
 const { Author } = require("../db");
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
+
+//----------- GET -----------//
 getAll = async function () {
     const authors = await Author.findAll({ order: [["name", "ASC"]] });
     return authors.length > 0 ? authors : undefined;
 };
-
 getByName = async function (name) {
     const authors = await Author.findAll({
         order: [["name", "ASC"]],
@@ -22,7 +20,6 @@ getByName = async function (name) {
     });
     return authors.length > 0 ? authors : undefined;
 };
-
 getById = async function (id) {
     const author = await Author.findByPk(id);
     if (author) {
@@ -31,16 +28,14 @@ getById = async function (id) {
         return "No se encontro el autor";
     }
 };
-//----------------------------------------------------------------------------------------------
-//    POSTS
-//----------------------------------------------------------------------------------------------
+
+//----------- POST -----------//
 createAuthor = async function (author) {
     const newAuthor = await Author.create(author);
     return newAuthor;
 };
-//----------------------------------------------------------------------------------------------
-//    PUTS
-//----------------------------------------------------------------------------------------------
+
+//----------- PUT -----------//
 updateAuthor = async function (id, author) {
     const updatedAuthor = await Author.update(author, {
         where: {
@@ -53,9 +48,8 @@ updateAuthor = async function (id, author) {
         return "No se encontro el autor";
     }
 };
-//----------------------------------------------------------------------------------------------
-//    DELETES HACER EL DELETE LOGICO
-//----------------------------------------------------------------------------------------------
+
+//----------- DELETE -----------//
 deleteAuthor = async function (id) {
     const deletedAuthor = await Author.destroy({
         where: {
@@ -68,6 +62,7 @@ deleteAuthor = async function (id) {
         return "No se encontro el autor";
     }
 };
+
 module.exports = {
     getAll,
     getByName,
