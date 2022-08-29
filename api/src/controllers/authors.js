@@ -76,17 +76,17 @@ exports.updateAuthor = async function(req, res) {
 };
 
 //----------- DELETE -----------//
-exports.deleteAuthor = async function(id) {
+exports.deleteAuthor = async function(req, res) {
     try {
         const deletedAuthor = await Author.destroy({
             where: {
-                id: id,
+                id: req.params.id,
             },
         });
         if (deletedAuthor) {
-            return deletedAuthor;
+            return res.status(204).json({});
         } else {
-            return 'No se encontró el autor';
+            return res.status(404).json({message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
