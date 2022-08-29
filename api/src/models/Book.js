@@ -83,10 +83,10 @@ module.exports = (sequelize) => {
         type:  DataTypes.BOOLEAN,
         defaultValue:true,
       },
-      isBanned: {
-        type:  DataTypes.BOOLEAN,
-        defaultValue:false,
-      }
+      // isBanned: {
+      //   type:  DataTypes.BOOLEAN,
+      //   defaultValue:false,
+      // }
 
     });
 };

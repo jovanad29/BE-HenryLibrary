@@ -266,27 +266,27 @@ logicalDeleteBook = async function (id) {
 //--------------------------------------------------------------------------------------------
 //    DISABLE A BOOK
 //--------------------------------------------------------------------------------------------
-bannedBook = async function (id) {
-  const bannedBook = await Book.findByPk(id, {
-    include: [
-      {
-        model: Category,
-      },
-      {
-        model: Author,
-      },
-      {
-        model: Publisher,
-      },
-    ],
-  });
-  if (bannedBook) {
-    const banned = bannedBook.isBanned === false ? true : false;
-    await bannedBook.update({ isBanned: banned });
-    return bannedBook;
-  }
-  return undefined;
-};
+// bannedBook = async function (id) {
+//   const bannedBook = await Book.findByPk(id, {
+//     include: [
+//       {
+//         model: Category,
+//       },
+//       {
+//         model: Author,
+//       },
+//       {
+//         model: Publisher,
+//       },
+//     ],
+//   });
+//   if (bannedBook) {
+//     const banned = bannedBook.isBanned === false ? true : false;
+//     await bannedBook.update({ isBanned: banned });
+//     return bannedBook;
+//   }
+//   return undefined;
+// };
 
 module.exports = {
   getAll,
@@ -297,6 +297,6 @@ module.exports = {
   logicalDeleteBook,
   getBookByAuthor,
   getBookByCategory,
-  bannedBook,
+  // bannedBook,
   getCountBooks,
 };

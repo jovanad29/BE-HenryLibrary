@@ -177,29 +177,29 @@ router.put("/delete/:id", async (req, res) => {
 });
 
 //banned book
-router.put("/banned/:id", async (req, res) => {
-    const { id } = req.params;
-    try {
-        if (id) {
-            let book = await bannedBook(id);
-            book
-                ? res.status(200).json(book)
-                : res.status(404).json({
-                      message: "No se encontro el libro a dehabilitar",
-                  });
-        } else {
-            let dbBooks = await getAll();
-            dbBooks
-                ? res.json(dbBooks)
-                : res
-                      .status(501)
-                      .json({ message: "No se ingreso el id para eliminar" });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(502).json(err);
-    }
-});
+// router.put("/banned/:id", async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         if (id) {
+//             let book = await bannedBook(id);
+//             book
+//                 ? res.status(200).json(book)
+//                 : res.status(404).json({
+//                       message: "No se encontro el libro a dehabilitar",
+//                   });
+//         } else {
+//             let dbBooks = await getAll();
+//             dbBooks
+//                 ? res.json(dbBooks)
+//                 : res
+//                       .status(501)
+//                       .json({ message: "No se ingreso el id para eliminar" });
+//         }
+//     } catch (err) {
+//         console.log(err);
+//         res.status(502).json(err);
+//     }
+// });
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;
