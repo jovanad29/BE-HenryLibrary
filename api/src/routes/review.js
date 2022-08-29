@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
             : res.status(501).json({ message: 'No se encontraron reviews' });
     } catch (err) {
         console.log(err);
-        res.status(404).json(err);
+        res.status(502).json(err);
     }
 } );
 
