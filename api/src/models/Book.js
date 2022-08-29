@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
-const patternText = new RegExp("^[A-Z]+$", "i");
-  const patternURL = new RegExp(
-    /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
-  );
+// const patternText = new RegExp("^[A-Z]+$", "i");
+//   const patternURL = new RegExp(
+//     /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
+//   );
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {
