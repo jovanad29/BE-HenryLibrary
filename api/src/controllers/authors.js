@@ -1,78 +1,115 @@
-const axios = require("axios");
-const Sequelize = require("sequelize");
-const { Op } = require("sequelize");
-const { Author } = require("../db");
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
-getAll = async function () {
-    const authors = await Author.findAll({ order: [["name", "ASC"]] });
-    return authors.length > 0 ? authors : undefined;
+const { Op } = require('sequelize');
+const { Author, Book, Category, Publisher } = require('../db');
+
+
+//----------- GET -----------//
+exports.getAll = async function() {
+    try {
+        const authors = await Author.findAll({ order: [['name', 'ASC']] });
+        return authors
+    } catch (error) {
+        console.log(error)
+        return undefined
+    }
 };
-
-getByName = async function (name) {
-    const authors = await Author.findAll({
-        order: [["name", "ASC"]],
-        where: {
-            name: {
-                [Op.iLike]: `%${name}%`,
+exports.getByName = async function(name) {
+    try {
+        const authors = await Author.findAll({
+            order: [['name', 'ASC']],
+            where: {
+                name: {
+                    [Op.iLike]: `%${name}%`,
+                },
             },
-        },
-    });
-    return authors.length > 0 ? authors : undefined;
+        });
+        return authors
+    } catch (error) {
+        console.log(error)
+        return undefined
+    }
+};
+exports.getById = async function(req, res) {
+    try {
+        const author = await Author.findByPk(req.params.id);
+        if (author) {
+            return res.json(author);
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+        }        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+};
+exports.getBooksByAuthor = async function(req, res) {
+    try {
+        const author = await Author.findByPk(req.params.id, {
+            include: {
+                model: Book,
+                include: [Category, Publisher]
+            }
+        });
+        if (author) {
+            return res.json(author);
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+        }        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
 };
 
-getById = async function (id) {
-    const author = await Author.findByPk(id);
-    if (author) {
-        return author;
-    } else {
-        return "No se encontro el autor";
+//----------- POST -----------//
+exports.createAuthor = async function(req,res) {
+    const author = req.body
+    try {
+        const newAuthor = await Author.create(author);
+        return res.status(201).json(newAuthor);        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error);  
     }
 };
-//----------------------------------------------------------------------------------------------
-//    POSTS
-//----------------------------------------------------------------------------------------------
-createAuthor = async function (author) {
-    const newAuthor = await Author.create(author);
-    return newAuthor;
-};
-//----------------------------------------------------------------------------------------------
-//    PUTS
-//----------------------------------------------------------------------------------------------
-updateAuthor = async function (id, author) {
-    const updatedAuthor = await Author.update(author, {
-        where: {
-            id: id,
-        },
-    });
-    if (updatedAuthor) {
-        return updatedAuthor;
-    } else {
-        return "No se encontro el autor";
+
+//----------- PUT -----------//
+exports.updateAuthor = async function(req, res) {
+    const { id } = req.params
+    const { name } = req.body
+    console.log(id, name)
+    try {
+        const updatedAuthor = await Author.update({name: name}, {
+            where: {
+                id: id,
+            },
+        });
+        if (updatedAuthor) {
+            return res.status(204).json({});
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+        }        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error);  
     }
 };
-//----------------------------------------------------------------------------------------------
-//    DELETES HACER EL DELETE LOGICO
-//----------------------------------------------------------------------------------------------
-deleteAuthor = async function (id) {
-    const deletedAuthor = await Author.destroy({
-        where: {
-            id: id,
-        },
-    });
-    if (deletedAuthor) {
-        return deletedAuthor;
-    } else {
-        return "No se encontro el autor";
+
+//----------- DELETE -----------//
+exports.deleteAuthor = async function(req, res) {
+    try {
+        const deletedAuthor = await Author.destroy({
+            where: {
+                id: req.params.id,
+            },
+        });
+        if (deletedAuthor) {
+            return res.status(204).json({});
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+        }        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error);  
     }
-};
-module.exports = {
-    getAll,
-    getByName,
-    getById,
-    createAuthor,
-    updateAuthor,
-    deleteAuthor,
 };

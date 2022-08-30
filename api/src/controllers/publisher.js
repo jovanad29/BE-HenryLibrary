@@ -1,23 +1,27 @@
-const{Publisher} = require('../db');
+const { Publisher } = require('../db');
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
-getAll = async function (id) {
-    // buscar un publisher por su id
-    const publishers = await Publisher.findAll({
-        order:[["name"]],
-    }) ;
-    // si el publisher existe, se retorna el publisher
-    return publishers.length > 0 ? publishers : undefined; 
+
+//----------- GET -----------//
+exports.getAll = async function (req, res) {
+    try {
+        const publishers = await Publisher.findAll({
+            order:[["name"]],
+        })
+        return res.json(publishers)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
 }
-
-getById = async function (id) {
-    // buscar un publisher por su id
-    const publisher = await Publisher.findByPk(id) ;
-    // si el publisher existe, se retorna el publisher
-    return publisher ? publisher : undefined; 
+exports.getById = async function (req, res) {
+    const { id } = req.params;
+    try {
+        const publisher = await Publisher.findByPk(id) ;        
+        return publisher ? 
+            res.json(publisher) :
+            res.status(404).json({status: 404, message: 'No se encontró la editorial'}) 
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
 }
-
-module.exports = {getAll, getById};
-
