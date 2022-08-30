@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
                 : res.status(404).json({status: 404, message: 'No se encontró el libro'});
             } else {
                 let dbBooks = await getAll(pagina, items);
-                dbBooks
+                dbBooks.length
                 ? res.json(dbBooks)
                 : res.status(404).json({status: 404, message: 'No se encontraron libros'});
             }

@@ -46,8 +46,8 @@ exports.getBook = async function(title, pagina, itemsPagina) {
 		const offset = pagina * itemsPagina;
 		const limit = itemsPagina;
 		const book = await Book.findAll({
-			offset: offset,
-			limit: limit,
+			// offset: offset,
+			// limit: limit,
 			order: [['title', 'ASC']],
 			where: {
 				title: {
