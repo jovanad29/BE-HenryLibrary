@@ -56,29 +56,34 @@ exports.createCategory = async (req, res) => {
 }
 
 //----------- PUT -----------//
-exports.updateCategory = async function(id, category) {
+exports.updateCategory = async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
     try {
         let dbCategory = await Category.findByPk(id);
         if (dbCategory) {
-            dbCategory.name = category;
+            dbCategory.name = name;
             await dbCategory.save();
         }
-        return dbCategory;        
+        return res.status(204).json({})        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error)
     }
-};
+}
 
 //----------- DELETE -----------//
-exports.deleteCategory = async function(id) {
+exports.deleteCategory = async (req, res) => {
+    const { id } = req.params;
     try {
         let dbCategory = await Category.findByPk(id);
         if (dbCategory) {
-            dbCategory.isActive = false;
+            dbCategory.isActive = dbCategory.isActive ? false : true;
             await dbCategory.save();
         }
-        return dbCategory;        
+        return res.status(204).json({})        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error)
     }
-};
+}
