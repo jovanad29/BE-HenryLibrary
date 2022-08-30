@@ -1,8 +1,7 @@
 const { Publisher } = require('../db');
 
-//----------------------------------------------------------------------------------------------
-//    GETS
-//----------------------------------------------------------------------------------------------
+
+//----------- GET -----------//
 exports.getAll = async function (req, res) {
     try {
         const publishers = await Publisher.findAll({
@@ -14,11 +13,15 @@ exports.getAll = async function (req, res) {
         res.status(500).json(error)
     }
 }
-
-exports.getById = async function (id) {
-    // buscar un publisher por su id
-    const publisher = await Publisher.findByPk(id) ;
-    // si el publisher existe, se retorna el publisher
-    return publisher ? publisher : undefined; 
+exports.getById = async function (req, res) {
+    const { id } = req.params;
+    try {
+        const publisher = await Publisher.findByPk(id) ;        
+        return publisher ? 
+            res.json(publisher) :
+            res.status(404).json({status: 404, message: 'No se encontró la editorial'}) 
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
 }
-
