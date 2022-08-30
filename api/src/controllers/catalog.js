@@ -8,8 +8,8 @@ getAll = async function (pagina, itemsPagina) {
     const offset = pagina * itemsPagina;
     const limit = itemsPagina;
     const catalog = await Book.findAll({
-        offset: offset,
-        limit: limit,
+        // offset: offset,
+        // limit: limit,
         order: [["title", "ASC"]],
         include: [
             {
@@ -51,8 +51,8 @@ getBook = async function (title, pagina, itemsPagina) {
     const offset = pagina * itemsPagina;
     const limit = itemsPagina;
     const book = await Book.findAll({
-        offset: offset,
-        limit: limit,
+        // offset: offset,
+        // limit: limit,
         order: [["title", "ASC"]],
         where: {
             title: {
