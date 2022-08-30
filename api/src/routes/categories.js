@@ -11,29 +11,18 @@ const {
 } = require('../controllers/categories');
 
 
-router.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        let dbCategory = await getById(id);
-        dbCategory
-            ? res.json(dbCategory)
-            : res.status(404).json({ message: 'No se encontró la categoría' });
-    } catch (error) {
-        console.log(error);
-        res.status(404).json(error);
-    }
-});
 router.get('/', async (req, res) => {
     try {
         let dbCategories = await getAll();
         dbCategories
-            ? res.json(dbCategories)
-            : res.status(404).json({ message: 'No se encontraron categorías' });
+        ? res.json(dbCategories)
+        : res.status(404).json({ message: 'No se encontraron categorías' });
     } catch (error) {
         console.log(error);
         res.status(404).json(error);
     }
 });
+router.get('/:id', getById);
 router.get('/:id/books', getBooksByCategory)
 router.post('/', async (req, res) => {
     const { name } = req.body;

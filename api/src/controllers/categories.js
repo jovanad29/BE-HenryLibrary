@@ -15,10 +15,11 @@ exports.getAll = async function() {
 exports.getById = async function (req, res) {
     try {
         const category = await Category.findByPk(req.params.id);
-        return category;        
+        if (category) return res.json(category)
+        return res.status(404).json({status: 404, message: 'No se encontró la categoría'})      
     } catch (error) {
         console.log(error)
-        return undefined
+        return res.status(500).json(error)
     }
 };
 exports.getBooksByCategory = async (req, res) => {
