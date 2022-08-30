@@ -127,6 +127,28 @@ exports.getBookQty = async (req, res) => {
 }
 
 //----------- POST -----------//
+function validations(
+    title,
+    description,
+    price,
+    image,
+    pageCount,
+    currentStock
+) {
+    if (!title || title === undefined || title.length > 300) return false;
+    if (!description || description === undefined || description.length > 5200)
+        return false;
+    if (!price || price < 0 || price === undefined) return false;
+    const patternURL = new RegExp(
+        /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
+    );
+    if (!image || image === undefined || !patternURL.test(image)) return false;
+    if (!pageCount || pageCount < 0 || pageCount === undefined) return false;
+
+    if (!currentStock || currentStock < 0 || currentStock === undefined)
+        return false;
+    return true;
+}
 exports.createBook = async (req, res) => {
 	const {
 		title,
@@ -136,39 +158,49 @@ exports.createBook = async (req, res) => {
 		publisherId,
 		publishedDate,
 		pageCount,
-		rating,
 		language,
 		currentStock,
 		categories,
 		authors,
 	} = req.body
+	if (
+        !validations(
+            title,
+            description,
+            price,
+            image,
+            pageCount,
+            language,
+            currentStock
+        )
+    )
+        return undefined;
 	try {
 		const newBook = await Book.create({
 			title: title,
 			description: description ? description : null,
-			price: price ? price.toFixed(2) : 0,
+			price: price ? parseFloat(price).toFixed(2) : 0,
 			image: image,
-			publisherId: publisherId ? publisherId : null,
+			publisherId: publisherId ? parseInt(publisherId) : null,
 			publishedDate: publishedDate ? publishedDate : null,
-			pageCount: pageCount ? pageCount : 0,
-			rating: rating ? rating : 0,
+			pageCount: parseInt(pageCount),
 			language: language ? language : null,
-			currentStock: currentStock ? currentStock : 0,
+			currentStock: currentStock ? parseInt(currentStock) : 0,
 		});
 		// Relation with Publisher
-		let publisherBook = await Publisher.findByPk(publisherId);
+		let publisherBook = await Publisher.findByPk(parseInt(publisherId));
 		if (publisherBook) publisherBook.addBook(newBook);
 		// Relation with Author
 		if (authors.length) {
 			authors.map(async (a) => {
-				const authorBook = await Author.findByPk(a);
+				const authorBook = await Author.findByPk(parseInt(a));
 				if (authorBook) authorBook.addBook(newBook);
 			});
 			//Relation with Category
 			if (categories.length) {
 				for (const c of categories) {
 					if (c !== null || c !== undefined) {          
-						let categoryBook = await Category.findByPk(c);
+						let categoryBook = await Category.findByPk(parseInt(c));
 						if (categoryBook) newBook.addCategory(categoryBook);
 					}
 				}
