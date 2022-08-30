@@ -43,8 +43,8 @@ exports.getById = async function(req, res) {
 };
 exports.getBook = async function(title, pagina, itemsPagina) {
 	try {
-		const offset = pagina * itemsPagina;
-		const limit = itemsPagina;
+		// const offset = pagina * itemsPagina;
+		// const limit = itemsPagina;
 		const book = await Book.findAll({
 			// offset: offset,
 			// limit: limit,
