@@ -3,16 +3,17 @@ const { Category, Book, Author, Publisher } = require('../db');
 
 
 //----------- GET -----------//
-exports.getAll = async function() {
+exports.getAll = async (req, res) => {
     try {
         const categories = await Category.findAll({ order: [['name', 'ASC']] });
-        return categories
+        if (categories) return res.json(categories)
+        return res.status(404).json({status: 404, message: 'No se encontraron la categorías'})   
     } catch (error) {
         console.log(error)
-        return undefined
+        res.status(500).json(error);
     }
-};
-exports.getById = async function (req, res) {
+}
+exports.getById = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id);
         if (category) return res.json(category)
@@ -21,7 +22,7 @@ exports.getById = async function (req, res) {
         console.log(error)
         return res.status(500).json(error)
     }
-};
+}
 exports.getBooksByCategory = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id, {

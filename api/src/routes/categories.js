@@ -11,17 +11,7 @@ const {
 } = require('../controllers/categories');
 
 
-router.get('/', async (req, res) => {
-    try {
-        let dbCategories = await getAll();
-        dbCategories
-        ? res.json(dbCategories)
-        : res.status(404).json({ message: 'No se encontraron categorías' });
-    } catch (error) {
-        console.log(error);
-        res.status(404).json(error);
-    }
-});
+router.get('/', getAll);
 router.get('/:id', getById);
 router.get('/:id/books', getBooksByCategory)
 router.post('/', async (req, res) => {
