@@ -184,7 +184,7 @@ exports.createBook = async (req, res) => {
 			publisherId: publisherId ? parseInt(publisherId) : null,
 			publishedDate: publishedDate ? publishedDate : null,
 			pageCount: parseInt(pageCount),
-			language: language ? language : null,
+			language: language ? language : 'es',
 			currentStock: currentStock ? parseInt(currentStock) : 0,
 		});
 		// Relation with Publisher
