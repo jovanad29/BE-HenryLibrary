@@ -8,6 +8,7 @@ const {
     createAuthor,
     updateAuthor,
     deleteAuthor,
+    getBooksByAuthor,
 } = require('../controllers/authors');
 
 
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
     }
 });
 router.get('/:id', getById);
+router.get('/:id/books', getBooksByAuthor)
 router.post('/', createAuthor);
 router.put('/:id', updateAuthor);
 router.delete('/:id', deleteAuthor);

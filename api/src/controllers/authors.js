@@ -31,6 +31,18 @@ exports.getByName = async function(name) {
 };
 exports.getById = async function(req, res) {
     try {
+        const author = await Author.findByPk(req.params.id);
+        if (author) {
+            return res.json(author);
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+        }        
+    } catch (error) {
+        console.log(error)
+    }
+};
+exports.getBooksByAuthor = async function(req, res) {
+    try {
         const author = await Author.findByPk(req.params.id, {
             include: {
                 model: Book,
@@ -40,7 +52,7 @@ exports.getById = async function(req, res) {
         if (author) {
             return res.json(author);
         } else {
-            return res.status(404).json({message: 'No se encontró el autor'});
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
