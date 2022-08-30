@@ -24,7 +24,8 @@ exports.getAll = async function(pagina, itemsPagina) {
 		return undefined
 	}
 };
-exports.getById = async function(id) {
+exports.getById = async function(req, res) {
+	const { id } = req.params
 	try {
 		const book = await Book.findByPk(id, {
 			include: [
@@ -33,10 +34,11 @@ exports.getById = async function(id) {
 				{ model: Publisher },
 			],
 		});
-		return book
+		if (book) return res.status(200).json(book);
+		return res.status(404).json({status:404,message:'No se encontró el libro'});
 	} catch (error) {
 		console.log(error)
-		return undefined
+		return res.status(500).json(error);
 	}
 };
 exports.getBook = async function(title, pagina, itemsPagina) {
