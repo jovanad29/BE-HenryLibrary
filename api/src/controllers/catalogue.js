@@ -174,7 +174,7 @@ exports.createBook = async (req, res) => {
             currentStock
         )
     )
-        return undefined;
+        return res.status(400).json({status: 400, message: 'Error con las validaciones'});
 	try {
 		const newBook = await Book.create({
 			title: title,
