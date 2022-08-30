@@ -39,6 +39,7 @@ exports.getById = async function(req, res) {
         }        
     } catch (error) {
         console.log(error)
+        res.status(500).json(error);
     }
 };
 exports.getBooksByAuthor = async function(req, res) {
@@ -56,6 +57,7 @@ exports.getBooksByAuthor = async function(req, res) {
         }        
     } catch (error) {
         console.log(error)
+        res.status(500).json(error);
     }
 };
 
