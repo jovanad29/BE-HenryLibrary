@@ -8,8 +8,8 @@ exports.getAll = async function(pagina, itemsPagina) {
 		const offset = pagina * itemsPagina;
 		const limit = itemsPagina;
 		const catalog = await Book.findAll({
-			offset: offset,
-			limit: limit,
+			// offset: offset,
+			// limit: limit,
 			order: [['title', 'ASC']],
 			include: [
 				{ model: Category },
