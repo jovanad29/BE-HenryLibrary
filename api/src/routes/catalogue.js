@@ -6,7 +6,7 @@ const {
     getBook,
     getById,
     createBook,
-    modifyBook,
+    updateBook,
     // getBookByAuthor,
     // getBookByCategory,
     logicalDeleteBook,
@@ -86,29 +86,7 @@ router.get('/count/:true', getBookQty);
 //create book
 router.post('/', createBook);
 // Update book
-router.put('/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        if (id) {
-            //const validate = await validateBook(req.body);
-            // if (!validate) {
-            const modified = await modifyBook(req.body, id);
-            modified
-                ? res
-                    .status(200)
-                    .json(modified)
-                : res
-                    .status(400)
-                    .json({ message: `Error modificando el libro` });
-            // } //else {
-            //res.status(400).json(validate);
-            // }
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(err);
-    }
-});
+router.put('/:id', updateBook);
 //logical delete
 router.put('/delete/:id', async (req, res) => {
     const { id } = req.params;

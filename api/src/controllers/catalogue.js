@@ -182,7 +182,7 @@ exports.createBook = async (req, res) => {
 };
 
 //----------- PUT -----------//
-exports.modifyBook = async function(body, id) {
+exports.updateBook = async function(body, id) {
 	const {
 		title,
 		description,
@@ -200,7 +200,7 @@ exports.modifyBook = async function(body, id) {
 	try {
 		const bookUpdate = await Book.findByPk(id);
 		if (bookUpdate === null) {
-			return null;
+			return res.status(404).json({status: 404, message: 'No se encontró el libro'});
 		}
 		bookUpdate.title = title;
 		bookUpdate.description = description;
@@ -234,10 +234,10 @@ exports.modifyBook = async function(body, id) {
 			}
 			await bookUpdate.setCategories(categoryBook);
 		}
-		return bookUpdate;
+		return res.status(204).json({});
 	} catch (error) {
 		console.log(error)
-		return error;
+		return res.status(500).json(error);
 	}
 };
 
