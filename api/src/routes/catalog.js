@@ -23,7 +23,7 @@ router.get("/:id", async (req, res) => {
         if (book) {
             res.status(200).json(book);
         } else {
-            res.status(501).json({ message: "No se encontro el libro" });
+            res.status(200).json({ message: "No se encontro el libro" });
         }
     } catch (error) {
         res.status(502).json(error);
@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
             let book = await getBook(title, pagina, items);
             book
                 ? res.status(200).json(book)
-                : res.status(501).json({ message: "No se encontro el libro" });
+                : res.status(200).json({ message: "No se encontro el libro" });
         } else {
             let dbBooks = await getAll(pagina, items);
             dbBooks
@@ -95,7 +95,7 @@ router.get("/category/:id", async (req, res) => {
             let book = await getBookByCategory(id);
             book
                 ? res.status(200).json(book)
-                : res.status(501).json({
+                : res.status(200).json({
                       message: "No se encontraron libros para ese género",
                   });
         } else {
