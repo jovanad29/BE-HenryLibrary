@@ -53,7 +53,7 @@ exports.getBooksByAuthor = async function(req, res) {
         if (author) {
             return res.json(author);
         } else {
-            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
+            return res.json({status: 404, message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)

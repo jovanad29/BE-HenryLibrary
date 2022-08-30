@@ -35,7 +35,7 @@ exports.getById = async function(req, res) {
 			],
 		});
 		if (book) return res.status(200).json(book);
-		return res.status(404).json({status:404,message:'No se encontró el libro'});
+		return res.json({status:404,message:'No se encontró el libro'});
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json(error);
