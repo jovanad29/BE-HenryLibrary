@@ -73,7 +73,7 @@ getBook = async function (title, pagina, itemsPagina) {
         ],
     });
 
-    return book ? book : undefined;
+    return book.length > 0 ? book : undefined;
 };
 
 //filter by Author
@@ -117,7 +117,7 @@ getBookByCategory = async function (IdCategory) {
         ],
     });
 
-    return bookFound;
+    return bookFound.length > 0 ? bookFound : undefined;
 };
 //----------------------------------------------------------------------------------------------
 //    POSTS
