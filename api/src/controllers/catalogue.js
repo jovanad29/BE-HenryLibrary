@@ -90,33 +90,41 @@ exports.getBook = async function(title, pagina, itemsPagina) {
 // 	}
 // }
 //filter by Category
-exports.getBookByCategory = async function(idCategory) {
-	try {
-		const bookFound = await Book.findAll({
-			include: [
-				{
-					model: Category,
-					where: {
-						id: idCategory,
-					},
-				},
-				{ model: Author },
-				{ model: Publisher },
-			],
-		});
-		return bookFound;		
-	} catch (error) {
-		console.log(error)
-	}
+// exports.getBookByCategory = async function(idCategory) {
+// 	try {
+// 		const bookFound = await Book.findAll({
+// 			include: [
+// 				{
+// 					model: Category,
+// 					where: {
+// 						id: idCategory,
+// 					},
+// 				},
+// 				{ model: Author },
+// 				{ model: Publisher },
+// 			],
+// 		});
+// 		return bookFound;		
+// 	} catch (error) {
+// 		console.log(error)
+// 	}
+// }
+// exports.getCountBooks = async function() {
+// 	try {
+// 		return await Book.count()
+// 	} catch (error) {
+// 		console.log(error)
+// 		return undefined
+// 	}
+// };
+exports.getBookQty = async (req, res) => {
+    try {
+        return res.json(await Book.count())
+    } catch (error) {
+        console.log(error);
+        return res.status(502).json(err);
+    }
 }
-exports.getCountBooks = async function() {
-	try {
-		return await Book.count()
-	} catch (error) {
-		console.log(error)
-		return undefined
-	}
-};
 
 //----------- POST -----------//
 exports.createBook = async function(body) {
