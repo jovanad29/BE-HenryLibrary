@@ -182,7 +182,7 @@ exports.createBook = async (req, res) => {
 };
 
 //----------- PUT -----------//
-exports.updateBook = async function(body, id) {
+exports.updateBook = async function(req, res) {
 	const {
 		title,
 		description,
@@ -196,7 +196,8 @@ exports.updateBook = async function(body, id) {
 		currentStock,
 		categories,
 		authors,
-	} = body
+	} = req.body
+	const { id } = req.params
 	try {
 		const bookUpdate = await Book.findByPk(id);
 		if (bookUpdate === null) {
