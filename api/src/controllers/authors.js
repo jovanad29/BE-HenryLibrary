@@ -77,7 +77,7 @@ exports.createAuthor = async function(req,res) {
 exports.updateAuthor = async function(req, res) {
     const { id } = req.params
     const { name } = req.body
-    console.log(id, name)
+    // console.log(id, name)
     try {
         const updatedAuthor = await Author.update({name: name}, {
             where: {
