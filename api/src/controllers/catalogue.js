@@ -127,7 +127,7 @@ exports.getBookQty = async (req, res) => {
 }
 
 //----------- POST -----------//
-exports.createBook = async function(body) {
+exports.createBook = async (req, res) => {
 	const {
 		title,
 		description,
@@ -141,7 +141,7 @@ exports.createBook = async function(body) {
 		currentStock,
 		categories,
 		authors,
-	} = body
+	} = req.body
 	try {
 		const newBook = await Book.create({
 			title: title,
@@ -173,11 +173,11 @@ exports.createBook = async function(body) {
 					}
 				}
 			}
-			return newBook;
+			return res.status(201).json(newBook)
 		}
 	} catch (error) {
 		console.log(error)
-		return error;
+		return res.status(500).json(error);
 	}
 };
 

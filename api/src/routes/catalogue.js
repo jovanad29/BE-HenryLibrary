@@ -84,17 +84,7 @@ router.get('/count/:true', getBookQty);
 //     }
 // });
 //create book
-router.post('/', async (req, res) => {
-    try {
-        const newBook = await createBook(req.body);
-        newBook
-            ? res.status(201).json(newBook)
-            : res.status(400).json({ message: `Error creando  el libro` });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(err.message);
-    }
-});
+router.post('/', createBook);
 // Update book
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
