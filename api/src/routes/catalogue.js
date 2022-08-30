@@ -7,11 +7,12 @@ const {
     getById,
     createBook,
     modifyBook,
-    getBookByAuthor,
-    getBookByCategory,
+    // getBookByAuthor,
+    // getBookByCategory,
     logicalDeleteBook,
     // bannedBook,
-    getCountBooks,
+    // getCountBooks,,
+    getBookQty
 } = require('../controllers/catalogue');
 
 
@@ -59,39 +60,29 @@ router.get('/', async (req, res) => {
 //     }
 // });
 //count all books
-router.get('/contar/:id', async (req, res) => {
-    try {
-        let countBooks = await getCountBooks();
-        countBooks
-            ? res.json(countBooks)
-            : res.status(404).json({ message: 'No se pudieron contar los libros' });
-    } catch (err) {
-        console.log(err);
-        res.status(502).json(err);
-    }
-});
+router.get('/count/:true', getBookQty);
 //filter by category
-router.get('/category/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        if (id) {
-            let book = await getBookByCategory(id);
-            book
-                ? res.status(200).json(book)
-                : res.status(501).json({
-                      message: 'No se encontraron libros para ese género',
-                  });
-        } else {
-            let dbBooks = await getAll();
-            dbBooks
-                ? res.json(dbBooks)
-                : res.status(404).json({ message: 'No se encontraron libros' });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(502).json(err);
-    }
-});
+// router.get('/category/:id', async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         if (id) {
+//             let book = await getBookByCategory(id);
+//             book
+//                 ? res.status(200).json(book)
+//                 : res.status(501).json({
+//                       message: 'No se encontraron libros para ese género',
+//                   });
+//         } else {
+//             let dbBooks = await getAll();
+//             dbBooks
+//                 ? res.json(dbBooks)
+//                 : res.status(404).json({ message: 'No se encontraron libros' });
+//         }
+//     } catch (err) {
+//         console.log(err);
+//         res.status(502).json(err);
+//     }
+// });
 //create book
 router.post('/', async (req, res) => {
     try {
