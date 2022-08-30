@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
     try {
         if (title) {
             let book = await getBook(title, pagina, items);
-            book
+            book.length
                 ? res.status(200).json(book)
                 : res.status(404).json({status: 404, message: 'No se encontró el libro'});
             } else {
