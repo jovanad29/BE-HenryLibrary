@@ -16,7 +16,6 @@ const {
 } = require('../controllers/catalogue');
 
 
-router.get('/:id', getById);
 router.get('/', async (req, res) => {
     const { title } = req.query;
     const { pagina = 0, items = 10 } = req.query;
@@ -25,18 +24,19 @@ router.get('/', async (req, res) => {
             let book = await getBook(title, pagina, items);
             book
                 ? res.status(200).json(book)
-                : res.status(501).json({ message: 'No se encontró el libro' });
-        } else {
-            let dbBooks = await getAll(pagina, items);
-            dbBooks
+                : res.status(404).json({status: 404, message: 'No se encontró el libro'});
+            } else {
+                let dbBooks = await getAll(pagina, items);
+                dbBooks
                 ? res.json(dbBooks)
-                : res.status(501).json({ message: 'No se encontraron libros' });
+                : res.status(404).json({status: 404, message: 'No se encontraron libros'});
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).json(error);
         }
-    } catch (err) {
-        console.log(err);
-        res.status(502).json(err);
-    }
-});
+    });
+router.get('/:id', getById);
 //filter by author
 // router.get('/author/:id', async (req, res) => {
 //     const { id } = req.params;
