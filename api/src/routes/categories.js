@@ -4,6 +4,7 @@ const router = Router();
 const {
     getAll,
     getById,
+    getBooksByCategory,
     createCategory,
     updateCategory,
     deleteCategory,
@@ -33,6 +34,7 @@ router.get('/', async (req, res) => {
         res.status(404).json(error);
     }
 });
+router.get('/:id/books', getBooksByCategory)
 router.post('/', async (req, res) => {
     const { name } = req.body;
     try {

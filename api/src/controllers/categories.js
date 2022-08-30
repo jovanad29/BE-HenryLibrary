@@ -1,5 +1,5 @@
 
-const { Category } = require('../db');
+const { Category, Book, Author, Publisher } = require('../db');
 
 
 //----------- GET -----------//
@@ -12,15 +12,34 @@ exports.getAll = async function() {
         return undefined
     }
 };
-exports.getById = async function (id) {
+exports.getById = async function (req, res) {
     try {
-        const category = await Category.findByPk(id);
+        const category = await Category.findByPk(req.params.id);
         return category;        
     } catch (error) {
         console.log(error)
         return undefined
     }
 };
+exports.getBooksByCategory = async (req, res) => {
+    try {
+        const category = await Category.findByPk(req.params.id, {
+            include : {
+                model: Book,
+                include: [Author, Publisher]
+            }
+        });
+        console.log(category)
+        if (category) {
+            return res.json(category);
+        } else {
+            return res.status(404).json({status: 404, message: 'No se encontró la categoría'});
+        }        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
 
 //----------- POST -----------//
 exports.createCategory = async function(category) {
