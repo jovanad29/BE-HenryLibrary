@@ -1,6 +1,6 @@
 
 const { Op } = require('sequelize');
-const { Author } = require('../db');
+const { Author, Book, Category, Publisher } = require('../db');
 
 
 //----------- GET -----------//
@@ -31,8 +31,12 @@ exports.getByName = async function(name) {
 };
 exports.getById = async function(req, res) {
     try {
-        const author = await Author.findByPk(req.params.id);
-        console.log(author)
+        const author = await Author.findByPk(req.params.id, {
+            include: {
+                model: Book,
+                include: [Category, Publisher]
+            }
+        });
         if (author) {
             return res.json(author);
         } else {
