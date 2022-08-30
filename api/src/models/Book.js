@@ -8,18 +8,20 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   // defino el modelo
 	sequelize.define(
-		'book',
-		{
+		'book', {
 			title: {
 				type: DataTypes.TEXT,
 				allowNull: false,
-				// validate:{
-				//   is: ["^[A-Z]+$",'i'],
-				// },
+				validate: {
+					len: [1,300],
+				},
 			},
 			description: {
 				type: DataTypes.TEXT,
 				allowNull: false,
+				validate: {
+					len: [1,5200],
+				},
 			},
 			price: {
 				type: DataTypes.FLOAT,
@@ -69,21 +71,16 @@ module.exports = (sequelize) => {
 				type: DataTypes.INTEGER,
 				allowNull:false,
 				defaultValue:0,
-				validate:{
-					isInt: true,
-					min: 0
-				},
 			},
 			isActive: {
-				type: DataTypes.BOOLEAN,
+				type:  DataTypes.BOOLEAN,
 				defaultValue:true,
 			},
 			// isBanned: {
 			//   type:  DataTypes.BOOLEAN,
 			//   defaultValue:false,
 			// }
-		}
-	);
+		});
 };
 
 
