@@ -19,12 +19,12 @@ router.get('/', async (req, res) => {
             let author = await getByName(name);
             author
                 ? res.status(200).json(author)
-                : res.status(404).json({ status: 404, message: 'No se encontró el autor' });
+                : res.json({ status: 404, message: 'No se encontró el autor' });
         } else {
             let dbAuthors = await getAll();
             dbAuthors
                 ? res.json(dbAuthors)
-                : res.status(404).json({ status: 404, message: 'No se encontraron autores' });
+                : res.json({ status: 404, message: 'No se encontraron autores' });
         }
     } catch (err) {
         console.log(err);
