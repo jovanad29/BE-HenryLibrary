@@ -145,7 +145,7 @@ exports.createBook = async (req, res) => {
 	try {
 		const newBook = await Book.create({
 			title: title,
-			description: description ? description : 'NO DESCRIPTION AVAILABLE',
+			description: description ? description : null,
 			price: price ? price.toFixed(2) : 0,
 			image: image,
 			publisherId: publisherId ? publisherId : null,
