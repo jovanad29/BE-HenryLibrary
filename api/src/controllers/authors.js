@@ -55,6 +55,7 @@ exports.createAuthor = async function(req,res) {
         return res.status(201).json(newAuthor);        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error);  
     }
 };
 
@@ -72,10 +73,11 @@ exports.updateAuthor = async function(req, res) {
         if (updatedAuthor) {
             return res.status(204).json({});
         } else {
-            return res.status(404).json({message: 'No se encontró el autor'});
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error);  
     }
 };
 
@@ -90,9 +92,10 @@ exports.deleteAuthor = async function(req, res) {
         if (deletedAuthor) {
             return res.status(204).json({});
         } else {
-            return res.status(404).json({message: 'No se encontró el autor'});
+            return res.status(404).json({status: 404, message: 'No se encontró el autor'});
         }        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error);  
     }
 };
