@@ -5,8 +5,8 @@ const { Op } = require('sequelize');
 //----------- GET -----------//
 exports.getAll = async function(pagina, itemsPagina) {
 	try {
-		const offset = pagina * itemsPagina;
-		const limit = itemsPagina;
+		// const offset = pagina * itemsPagina;
+		// const limit = itemsPagina;
 		const catalog = await Book.findAll({
 			// offset: offset,
 			// limit: limit,
