@@ -242,25 +242,54 @@ exports.updateBook = async function(body, id) {
 };
 
 //----------- DELETE -----------//
-exports.logicalDeleteBook = async function(id) { // switch deleting?
+// exports.logicalDeleteBook = async function(id) { // switch deleting?
+// 	try {
+// 		const disabledBook = await Book.findByPk(id, {
+// 		  include: [
+// 			{ model: Category },
+// 			{ model: Author },
+// 			{ model: Publisher },
+// 		  ],
+// 		});
+// 		if (disabledBook) {
+// 		  const deleted = disabledBook.isActive ? false : true;
+// 		  await disabledBook.update({ isActive: deleted });
+// 		}		
+// 		return disabledBook;
+// 	} catch (error) {
+// 		console.log(error)
+// 		return undefined;
+// 	}
+// };
+
+exports.logicalDeleteBook = async (req, res) => {
+	const { id } = req.params
+	const { purge } = req.query // por defecto es 0
+	if (purge) { // borrado duro
+		try {
+			await Book.destroy({
+				where: { id: id },
+			});
+			return res.status(204).json({})			
+		} catch (error) {
+			console.log(error)
+			return res.status(500).json(500)
+		}
+	}
 	try {
-		const disabledBook = await Book.findByPk(id, {
-		  include: [
-			{ model: Category },
-			{ model: Author },
-			{ model: Publisher },
-		  ],
-		});
+		const disabledBook = await Book.findByPk(id);
 		if (disabledBook) {
-		  const deleted = disabledBook.isActive ? false : true;
-		  await disabledBook.update({ isActive: deleted });
+			const isActive = disabledBook.isActive ? false : true;
+			await disabledBook.update({ isActive: isActive });
+			if (isActive) return res.status(200).json({status: 200, message:'Activado con éxito'})
+			return res.status(204).json({})
 		}		
-		return disabledBook;
+		return res.status(404).json({status: 404, message: 'No se encontró el libro'})
 	} catch (error) {
 		console.log(error)
-		return undefined;
+		return res.status(500).json(error)
 	}
-};
+}
 
 //--------------------------------------------------------------------------------------------
 //    DISABLE A BOOK
