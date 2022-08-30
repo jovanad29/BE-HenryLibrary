@@ -14,18 +14,7 @@ const {
 router.get('/', getAll);
 router.get('/:id', getById);
 router.get('/:id/books', getBooksByCategory)
-router.post('/', async (req, res) => {
-    const { name } = req.body;
-    try {
-        let dbCategory = await createCategory(name);
-        dbCategory
-            ? res.json(dbCategory)
-            : res.status(404).json({ message: 'No se creó la categoría' });
-    } catch (error) {
-        console.log(error);
-        res.status(404).json(error);
-    }
-});
+router.post('/', createCategory);
 router.put('/:id', async (req, res) => { 
     const { id } = req.params;
     const { name } = req.body;

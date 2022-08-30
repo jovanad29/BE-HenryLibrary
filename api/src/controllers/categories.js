@@ -39,19 +39,21 @@ exports.getBooksByCategory = async (req, res) => {
         }        
     } catch (error) {
         console.log(error)
-        res.status(500).json(error)
+        return res.status(500).json(error)
     }
 }
 
 //----------- POST -----------//
-exports.createCategory = async function(category) {
+exports.createCategory = async (req, res) => {
+    const { category } = req.body
     try {
         const newCategory = await Category.create({ name: category });
-        return newCategory;        
+        return res.status(201).json(newCategory)        
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error)
     }
-};
+}
 
 //----------- PUT -----------//
 exports.updateCategory = async function(id, category) {
