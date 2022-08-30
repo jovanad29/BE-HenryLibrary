@@ -6,11 +6,6 @@ module.exports = (sequelize) => {
   sequelize.define(
     'apibook',
     {
-      // id: {
-      //   type: DataTypes.INTEGER,
-      //   primaryKey: true,
-      //   autoIncrement: true,
-      // },
       title: {
         type: DataTypes.STRING(10000),
         allowNull: false,
