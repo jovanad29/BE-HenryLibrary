@@ -31,7 +31,7 @@ exports.getBooksByCategory = async (req, res) => {
                 include: [Author, Publisher]
             }
         });
-        console.log(category)
+        // console.log(category)
         if (category) {
             return res.json(category);
         } else {
