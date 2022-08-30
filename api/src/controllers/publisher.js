@@ -1,23 +1,24 @@
-const{Publisher} = require('../db');
+const { Publisher } = require('../db');
 
 //----------------------------------------------------------------------------------------------
 //    GETS
 //----------------------------------------------------------------------------------------------
-getAll = async function (id) {
-    // buscar un publisher por su id
-    const publishers = await Publisher.findAll({
-        order:[["name"]],
-    }) ;
-    // si el publisher existe, se retorna el publisher
-    return publishers.length > 0 ? publishers : undefined; 
+exports.getAll = async function (req, res) {
+    try {
+        const publishers = await Publisher.findAll({
+            order:[["name"]],
+        })
+        return res.json(publishers)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
 }
 
-getById = async function (id) {
+exports.getById = async function (id) {
     // buscar un publisher por su id
     const publisher = await Publisher.findByPk(id) ;
     // si el publisher existe, se retorna el publisher
     return publisher ? publisher : undefined; 
 }
-
-module.exports = {getAll, getById};
 
