@@ -68,27 +68,27 @@ exports.getBook = async function(title, pagina, itemsPagina) {
 	}
 };
 //filter by Author
-exports.getBookByAuthor = async function(idAuthor) {
-	try {
-		const bookFound = await Book.findAll({
-			include: [
-				{
-					model: Author,
-					where: {
-						id: idAuthor,
-					},
-				},
-				{ model: Category },
-				{ model: Publisher },
-				// {model: Review }
-			],
-		});
-		return bookFound
-	} catch (error) {
-		console.log(error)
-		return undefined
-	}
-}
+// exports.getBookByAuthor = async function(idAuthor) {
+// 	try {
+// 		const bookFound = await Book.findAll({
+// 			include: [
+// 				{
+// 					model: Author,
+// 					where: {
+// 						id: idAuthor,
+// 					},
+// 				},
+// 				{ model: Category },
+// 				{ model: Publisher },
+// 				// {model: Review }
+// 			],
+// 		});
+// 		return bookFound
+// 	} catch (error) {
+// 		console.log(error)
+// 		return undefined
+// 	}
+// }
 //filter by Category
 exports.getBookByCategory = async function(idCategory) {
 	try {

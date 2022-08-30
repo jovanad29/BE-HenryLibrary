@@ -37,27 +37,27 @@ router.get('/', async (req, res) => {
     }
 });
 //filter by author
-router.get('/author/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        if (id) {
-            let book = await getBookByAuthor(id);
-            book
-                ? res.status(200).json(book)
-                : res.status(501).json({
-                    message: 'No se encontraron libros para ese author',
-                  });
-        } else {
-            let dbBooks = await getAll();
-            dbBooks
-                ? res.json(dbBooks)
-                : res.status(404).json({ message: 'No se encontraron libros' });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(502).json(err);
-    }
-});
+// router.get('/author/:id', async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         if (id) {
+//             let book = await getBookByAuthor(id);
+//             book
+//                 ? res.status(200).json(book)
+//                 : res.status(501).json({
+//                     message: 'No se encontraron libros para ese author',
+//                   });
+//         } else {
+//             let dbBooks = await getAll();
+//             dbBooks
+//                 ? res.json(dbBooks)
+//                 : res.status(404).json({ message: 'No se encontraron libros' });
+//         }
+//     } catch (err) {
+//         console.log(err);
+//         res.status(502).json(err);
+//     }
+// });
 //count all books
 router.get('/contar/:id', async (req, res) => {
     try {
