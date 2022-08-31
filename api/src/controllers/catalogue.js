@@ -186,18 +186,20 @@ exports.createBook = async (req, res) => {
 			pageCount: parseInt(pageCount),
 			language: language ? language : 'es',
 			currentStock: currentStock ? parseInt(currentStock) : 0,
-		});
+			rating:0, 
+			}
+		);
 		// Relation with Publisher
 		let publisherBook = await Publisher.findByPk(parseInt(publisherId));
 		if (publisherBook) publisherBook.addBook(newBook);
 		// Relation with Author
-		if (authors.length) {
+		if (authors?.length) {
 			authors.map(async (a) => {
 				const authorBook = await Author.findByPk(parseInt(a));
-				if (authorBook) authorBook.addBook(newBook);
+				if (authorBook) newBook.addAuthor(authorBook);
 			});
 			//Relation with Category
-			if (categories.length) {
+			if (categories?.length) {
 				for (const c of categories) {
 					if (c !== null || c !== undefined) {          
 						let categoryBook = await Category.findByPk(parseInt(c));
@@ -205,7 +207,13 @@ exports.createBook = async (req, res) => {
 					}
 				}
 			}
-			return res.status(201).json(newBook)
+			let newBook2= await Book.findByPk(newBook.id, {
+				include: [
+					{ model: Category },
+					{ model: Author },
+					{ model: Publisher },
+				],})
+			return res.status(201).json(newBook2)
 		}
 	} catch (error) {
 		console.log(error)
@@ -223,35 +231,36 @@ exports.updateBook = async function(req, res) {
 		publisherId,
 		publishedDate,
 		pageCount,
-		rating,
+	//	rating,
 		language,
 		currentStock,
 		categories,
 		authors,
 	} = req.body
 	const { id } = req.params
+
 	try {
 		const bookUpdate = await Book.findByPk(id);
 		if (bookUpdate === null) {
 			return res.status(404).json({status: 404, message: 'No se encontró el libro'});
 		}
 		bookUpdate.title = title;
-		bookUpdate.description = description;
-		bookUpdate.price = price;
+		bookUpdate.description = description ? description : null;
+		bookUpdate.price = price ? parseFloat(price).toFixed(2) : 0;
 		bookUpdate.image = image;
-		bookUpdate.publisherId = publisherId;
+		bookUpdate.publisherId = publisherId ? parseInt(publisherId) : null;
 		bookUpdate.publishedDate = publishedDate;
 		bookUpdate.pageCount = pageCount;
 		bookUpdate.currentStock = currentStock;
-		bookUpdate.rating = rating;
-		bookUpdate.language = language;
+		//bookUpdate.rating = rating;
+		bookUpdate.language = language ? language : 'es';
 		await bookUpdate.save(); 
 		//Relation with Publisher
 		let publisherBook = await Publisher.findByPk(publisherId);
 		await publisherBook.setBooks(bookUpdate);
 		// Relation with Author
 		let authorBook = [];
-		if (authors.length) {
+		if (authors?.length) {
 			for (const a of authors) {
 				authorBook.push(await Author.findByPk(a));
 			}
@@ -259,7 +268,7 @@ exports.updateBook = async function(req, res) {
 		}
 		//Relation with Category
 		let categoryBook = [];
-		if (categories.length) {
+		if (categories?.length) {
 			for (const c of categories) {
 				if (c !== null || c !== undefined) {
 					categoryBook.push(await Category.findByPk(c));
@@ -267,6 +276,12 @@ exports.updateBook = async function(req, res) {
 			}
 			await bookUpdate.setCategories(categoryBook);
 		}
+		let newBook2= await Book.findByPk(bookUpdate.id, {
+			include: [
+				{ model: Category },
+				{ model: Author },
+				{ model: Publisher },
+			],})
 		return res.status(204).json({});
 	} catch (error) {
 		console.log(error)
