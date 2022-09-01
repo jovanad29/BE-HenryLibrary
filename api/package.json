@@ -4,7 +4,7 @@
   "description": "BackEnd de Proyecto Grupal HenryLibrary",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -L --omit=dev",
+    "start": "nodemon -L",
     "test": "jest --verbose --detectOpenHandles",
     "sync": "node --trace-warnings ./syncDB/sync.js"
   },
