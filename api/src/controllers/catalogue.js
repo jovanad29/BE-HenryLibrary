@@ -1,28 +1,23 @@
 const { Book, Category, Author, Publisher, Review } = require('../db');
 const { Op } = require('sequelize');
 
-
 //----------- GET -----------//
-exports.getAll = async function(pagina, itemsPagina) {
-	try {
-		// const offset = pagina * itemsPagina;
-		// const limit = itemsPagina;
-		const catalog = await Book.findAll({
-			// offset: offset,
-			// limit: limit,
-			order: [['title', 'ASC']],
-			include: [
-				{ model: Category },
-				{ model: Author },
-				{ model: Publisher },
-				// { model: Review }
-			],
-		});
-		return catalog
-	} catch (error) {
-		console.log(error)
-		return undefined
-	}
+exports.getAll = async function () {
+  try {
+    const catalog = await Book.findAll({
+      order: [["title", "ASC"]],
+      include: [
+        { model: Category },
+        { model: Author },
+        { model: Publisher },
+        { model: Review },
+      ],
+    });
+    return catalog;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
 };
 exports.getById = async function(req, res) {
 	const { id } = req.params
@@ -32,6 +27,7 @@ exports.getById = async function(req, res) {
 				{ model: Category },
 				{ model: Author },
 				{ model: Publisher },
+				{ model: Review }
 			],
 		});
 		if (book) return res.status(200).json(book);
@@ -41,82 +37,29 @@ exports.getById = async function(req, res) {
 		return res.status(500).json(error);
 	}
 };
-exports.getBook = async function(title, pagina, itemsPagina) {
-	try {
-		// const offset = pagina * itemsPagina;
-		// const limit = itemsPagina;
-		const book = await Book.findAll({
-			// offset: offset,
-			// limit: limit,
-			order: [['title', 'ASC']],
-			where: {
-				title: {
-					[Op.iLike]: `%${title}%`,
-				},
-			},
-			include: [
-				{ model: Category },
-				{ model: Author },
-				{ model: Publisher },
-				// { model: Review }
-			],
-		});
-		return book
-	} catch (error) {
-		console.log(error)
-		return undefined
-	}
+exports.getBook = async function (title) {
+  try {
+    const book = await Book.findAll({
+      order: [["title", "ASC"]],
+      where: {
+        title: {
+          [Op.iLike]: `%${title}%`,
+        },
+      },
+      include: [
+        { model: Category },
+        { model: Author },
+        { model: Publisher },
+        { model: Review },
+      ],
+    });
+    return book;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
 };
-//filter by Author
-// exports.getBookByAuthor = async function(idAuthor) {
-// 	try {
-// 		const bookFound = await Book.findAll({
-// 			include: [
-// 				{
-// 					model: Author,
-// 					where: {
-// 						id: idAuthor,
-// 					},
-// 				},
-// 				{ model: Category },
-// 				{ model: Publisher },
-// 				// {model: Review }
-// 			],
-// 		});
-// 		return bookFound
-// 	} catch (error) {
-// 		console.log(error)
-// 		return undefined
-// 	}
-// }
-//filter by Category
-// exports.getBookByCategory = async function(idCategory) {
-// 	try {
-// 		const bookFound = await Book.findAll({
-// 			include: [
-// 				{
-// 					model: Category,
-// 					where: {
-// 						id: idCategory,
-// 					},
-// 				},
-// 				{ model: Author },
-// 				{ model: Publisher },
-// 			],
-// 		});
-// 		return bookFound;		
-// 	} catch (error) {
-// 		console.log(error)
-// 	}
-// }
-// exports.getCountBooks = async function() {
-// 	try {
-// 		return await Book.count()
-// 	} catch (error) {
-// 		console.log(error)
-// 		return undefined
-// 	}
-// };
+
 exports.getBookQty = async (req, res) => {
     try {
         return res.json(await Book.count())
@@ -128,26 +71,27 @@ exports.getBookQty = async (req, res) => {
 
 //----------- POST -----------//
 function validations(
-    title,
-    description,
-    price,
-    image,
-    pageCount,
-    currentStock
+  title,
+  description,
+  price,
+  image,
+  pageCount,
+  currentStock
 ) {
-    if (!title || title === undefined || title.length > 300) return false;
-    if (!description || description === undefined || description.length > 5200)
-        return false;
-    if (!price || price < 0 || price === undefined) return false;
-    const patternURL = new RegExp(
-        /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
-    );
-    if (!image || image === undefined || !patternURL.test(image)) return false;
-    if (!pageCount || pageCount < 0 || pageCount === undefined) return false;
+  if (!title || title === undefined || title.length > 300) return false;
+  if (!description || description === undefined || description.length > 5200)
+    return false;
+  if (!price || price < 0 || price === undefined) return false;
+  const patternURL = new RegExp(
+    /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)?/gi
+  );
+  if (!image || image === undefined || !patternURL.test(image)) return false;
+  if (!pageCount || pageCount < 0 || pageCount === undefined) return false;
 
-    if (!currentStock || currentStock < 0 || currentStock === undefined)
-        return false;
-    return true;
+  if (!currentStock || currentStock < 0 || currentStock === undefined)
+    return false;
+
+  return true;
 }
 exports.createBook = async (req, res) => {
 	const {
@@ -184,7 +128,7 @@ exports.createBook = async (req, res) => {
 			publisherId: publisherId ? parseInt(publisherId) : null,
 			publishedDate: publishedDate ? publishedDate : null,
 			pageCount: parseInt(pageCount),
-			language: language ? language : 'es',
+			language: language ? language : null,
 			currentStock: currentStock ? parseInt(currentStock) : 0,
 			rating:0, 
 			}
@@ -231,7 +175,6 @@ exports.updateBook = async function(req, res) {
 		publisherId,
 		publishedDate,
 		pageCount,
-	//	rating,
 		language,
 		currentStock,
 		categories,
@@ -276,39 +219,19 @@ exports.updateBook = async function(req, res) {
 			}
 			await bookUpdate.setCategories(categoryBook);
 		}
-		let newBook2= await Book.findByPk(bookUpdate.id, {
-			include: [
-				{ model: Category },
-				{ model: Author },
-				{ model: Publisher },
-			],})
+		// let newBook2= await Book.findByPk(bookUpdate.id, {
+		// 	include: [
+		// 		{ model: Category },
+		// 		{ model: Author },
+		// 		{ model: Publisher },
+		// 	],})
+		//console.log(newBook2)
 		return res.status(204).json({});
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json(error);
 	}
 };
-
-//----------- DELETE -----------//
-// exports.logicalDeleteBook = async function(id) { // switch deleting?
-// 	try {
-// 		const disabledBook = await Book.findByPk(id, {
-// 		  include: [
-// 			{ model: Category },
-// 			{ model: Author },
-// 			{ model: Publisher },
-// 		  ],
-// 		});
-// 		if (disabledBook) {
-// 		  const deleted = disabledBook.isActive ? false : true;
-// 		  await disabledBook.update({ isActive: deleted });
-// 		}		
-// 		return disabledBook;
-// 	} catch (error) {
-// 		console.log(error)
-// 		return undefined;
-// 	}
-// };
 
 exports.logicalDeleteBook = async (req, res) => {
 	const { id } = req.params
@@ -339,27 +262,3 @@ exports.logicalDeleteBook = async (req, res) => {
 	}
 }
 
-//--------------------------------------------------------------------------------------------
-//    DISABLE A BOOK
-//--------------------------------------------------------------------------------------------
-// bannedBook = async function (id) {
-//   const bannedBook = await Book.findByPk(id, {
-//     include: [
-//       {
-//         model: Category,
-//       },
-//       {
-//         model: Author,
-//       },
-//       {
-//         model: Publisher,
-//       },
-//     ],
-//   });
-//   if (bannedBook) {
-//     const banned = bannedBook.isBanned === false ? true : false;
-//     await bannedBook.update({ isBanned: banned });
-//     return bannedBook;
-//   }
-//   return undefined;
-// };
