@@ -225,7 +225,7 @@ exports.updateBook = async function(req, res) {
 		// 		{ model: Author },
 		// 		{ model: Publisher },
 		// 	],})
-		//console.log(newBook2)
+		
 		return res.status(204).json({});
 	} catch (error) {
 		console.log(error)
