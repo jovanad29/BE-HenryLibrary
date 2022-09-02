@@ -1,5 +1,5 @@
 const { User, Payment, Review } = require('../db');
-
+const { Op } = require('sequelize');
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
@@ -22,14 +22,15 @@ exports.getById = async (req, res) => {
         return res.status(500).json(error)
     }
 }
-exports.getUsersByName = async (req, res) => {
+exports.getUserByName = async (req, res) => {
   try {
     const { nameUser } = req.query;
+    
     const users = await User.findAll({
       order: [["nameUser", "ASC"]],
       where: {
-        title: {
-          [Op.iLike]: `%${nameUser}%`,
+        nameUser: {
+          [Op.iLike]: `%${nameUser}%`.toLowerCase(),
         },
       },
       include: [{ model: Review }, { model: Payment }],
@@ -67,7 +68,12 @@ exports.createUser = async (req, res) => {
     // if (!validations(nameUser, email))
     // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
 
-    const newUser = await User.create({ uid, nameUser, email, profilePic });
+    const newUser = await User.create({
+      uid,
+      nameUser: nameUser.toLowerCase(),
+      email,
+      profilePic,
+    });
     return res.status(201).json(newUser);
   } catch (error) {
     console.log(error);
@@ -75,50 +81,48 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// //----------- PUT -----------//  nameUser, mail,uid? 
-// exports.updateUser = async (req, res) => {
-//     const { id } = req.params;
-//     const { name } = req.body;
-//     try {
-//         let dbCategory = await Category.findByPk(id);
-//         if (dbCategory) {
-//             dbCategory.name = name;
-//             await dbCategory.save();
-//         }
-//         return res.status(204).json({})        
-//     } catch (error) {
-//         console.log(error)
-//         return res.status(500).json(error)
-//     }
-// }
-
-// //----------- DELETE -----------//  isActive=false
-// exports.deleteUser = async (req, res) => {
-//     const { id } = req.params;
-//     try {
-//         let user = await Category.findByPk(id);
-//         if user {
-//             dbCategory.isActive = dbCategory.isActive ? false : true;
-//             await dbCategory.save();
-//         }
-//         return res.status(204).json({})        
-//     } catch (error) {
-//         console.log(error)
-//         return res.status(500).json(error)
-//     }
-// }
-// //----------- DELETE -----------//  isBanner=true
-// exports.deleteUser = async (req, res) => {
-//     const { id } = req.params;
-//     try {
-//         let user = await Category.findByPk(id);
-//         if user {
-//             dbCategory.isActive = dbCategory.isActive ? false : true;
-//             await dbCategory.save();
-//         }
-//         return res.status(204).json({})        
-//     } catch (error) {
-//         console.log(error)
-//         return res.status(500).json(error)
-//     }
-// }
+// //----------- PUT -----------//   
+ exports.updateAdminUser = async (req, res) => {
+  const { uid } = req.params;
+  try {
+      let user = await User.findByPk(uid);
+      if (user) {
+          user.isAdmin = user.isAdmin ? false : true;
+          await user.save();
+      }
+      return res.status(204).json({})        
+  } catch (error) {
+      console.log(error)
+      return res.status(500).json(error)
+  }
+}
+//----------- DELETE -----------//  isActive=false
+exports.logicaldeleteUser = async (req, res) => {
+    const { uid } = req.params;
+    try {
+        let user = await User.findByPk(uid);
+        if (user) {
+            user.isActive = user.isActive ? false : true;
+            await user.save();
+        }
+        return res.status(204).json({})        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+// //----------- BANNED -----------//  isBanned=true
+exports.bannedUser = async (req, res) => {
+ const { uid } = req.params;
+try {
+  let user = await User.findByPk(uid);
+  if (user) {
+      user.isBanned = user.isBanned ? false : true;
+      await user.save();
+  }
+  return res.status(204).json({})        
+} catch (error) {
+  console.log(error)
+  return res.status(500).json(error)
+}
+}
