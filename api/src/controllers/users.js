@@ -1,12 +1,10 @@
-
-//const { ValidationError } = require('sequelize/types');
 const { User, Payment, Review } = require('../db');
 
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
     try {
-        const users = await User.findAll({ order: [['name', 'ASC']] });
+        const users = await User.findAll({ order: [['nameUser', 'ASC']] });
         if (users) return res.json(users)
         return res.status(404).json({status: 404, message: 'No se encontraron usuarios  '})   
     } catch (error) {
@@ -16,86 +14,69 @@ exports.getAll = async (req, res) => {
 }
 exports.getById = async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.id);
-        if (category) return res.json(user)
-        return res.status(404).json({status: 404, message: 'No se encontró el usuario con ese id '})      
+        const user = await User.findByPk(req.params.uid);
+        if (user) return res.json(user)
+        return res.status(404).json({status: 404, message: 'No se encontró el usuario con ese uid '})      
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)
     }
 }
 exports.getUsersByName = async (req, res) => {
-    try {
-        const { firstname } = req.query;
-        const users = await User.findAll({
-			order: [['lastname', 'ASC']],
-			where: {
-				title: {
-					[Op.iLike]: `%${firstname}%`,
-				},
-			},
-			include: [
-				{ model: Review },
-				{ model: Payment },
-				
-			],
-		});
-        // console.log(category)
-        if (users) {
-            return res.json(users);
-        } else {
-            return res.status(404).json({status: 404, message: 'No se encontraron usuarios con ese nombre '});
-        }        
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
+  try {
+    const { nameUser } = req.query;
+    const users = await User.findAll({
+      order: [["nameUser", "ASC"]],
+      where: {
+        title: {
+          [Op.iLike]: `%${nameUser}%`,
+        },
+      },
+      include: [{ model: Review }, { model: Payment }],
+    });
+
+    if (users) {
+      return res.json(users);
+    } else {
+      return res
+        .status(404)
+        .json({
+          status: 404,
+          message: "No se encontraron usuarios con ese nombre ",
+        });
     }
-}
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
 
 //----------- POST -----------//
-function validations(firstname, lastname, email, password) {
-
-  if (firstname && (firstname.length < 2 || firstname.length > 100))
-    return false;
-
-  if (lastname && (lastname.length < 2 || lastname.length > 100)) return false;
+function validations(nameUser, email) {
+  if (nameUser && (nameUser.length < 2 || nameUser.length > 100)) return false;
 
   const patternEmail = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
   if (!email || email === undefined || !patternEmail.test(email)) return false;
-
-  if (
-    !password ||
-    email === undefined ||
-    password.length < 4 ||
-    password.length > 100
-  )
-    return false;
 
   return true;
 }
 
 exports.createUser = async (req, res) => {
-    const { firtsname, lastname, email, password, profilePic, address } = req.body
-    try {
-        if (!validations(firtsname, lastname, email, password))
-        return res.status(400).json({status: 400, message: 'Error con las validaciones'}); 
-        
-        const newUser = await User.create({
-                                            firtsname, 
-                                            lastname,
-                                            email, 
-                                            password,
-                                            profilePic, 
-                                            address });
-        return res.status(201).json(newUser)        
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(error)
-    }
-}
+  const { uid, nameUser, email, profilePic } = req.body;
+  try {
+    // if (!validations(nameUser, email))
+    // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
 
-// //----------- PUT -----------//
-// exports.updateCategory = async (req, res) => {
+    const newUser = await User.create({ uid, nameUser, email, profilePic });
+    return res.status(201).json(newUser);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
+// //----------- PUT -----------//  nameUser, mail,uid? 
+// exports.updateUser = async (req, res) => {
 //     const { id } = req.params;
 //     const { name } = req.body;
 //     try {
@@ -111,12 +92,27 @@ exports.createUser = async (req, res) => {
 //     }
 // }
 
-// //----------- DELETE -----------//
-// exports.deleteCategory = async (req, res) => {
+// //----------- DELETE -----------//  isActive=false
+// exports.deleteUser = async (req, res) => {
 //     const { id } = req.params;
 //     try {
-//         let dbCategory = await Category.findByPk(id);
-//         if (dbCategory) {
+//         let user = await Category.findByPk(id);
+//         if user {
+//             dbCategory.isActive = dbCategory.isActive ? false : true;
+//             await dbCategory.save();
+//         }
+//         return res.status(204).json({})        
+//     } catch (error) {
+//         console.log(error)
+//         return res.status(500).json(error)
+//     }
+// }
+// //----------- DELETE -----------//  isBanner=true
+// exports.deleteUser = async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         let user = await Category.findByPk(id);
+//         if user {
 //             dbCategory.isActive = dbCategory.isActive ? false : true;
 //             await dbCategory.save();
 //         }

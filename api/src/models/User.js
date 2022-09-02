@@ -6,20 +6,25 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'user',
 		{
-			firstname: {
+			uid: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				primaryKey:true,
+			},
+			nameUser: {
 				type: DataTypes.STRING,
 				allowNull: true,
 				validate: {
 					len: [1,100],
 			},
 			},
-			lastname: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				validate: {
-					len: [1,100],
-				},
-			},
+			// lastname: {
+			// 	type: DataTypes.STRING,
+			// 	allowNull: false,
+			// 	validate: {
+			// 		len: [1,100],
+			// 	},
+			// },
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
@@ -28,13 +33,13 @@ module.exports = (sequelize) => {
 				},
 				
 			},
-			password: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				validate: {
-					len: [4,100],
-				},
-			},
+			// password: {
+			// 	type: DataTypes.STRING,
+			// 	allowNull: true,
+			// 	validate: {
+			// 		len: [4,100],
+			// 	},
+			// },
 			active: {
 				type: DataTypes.BOOLEAN,
 				allowNull: false,
@@ -46,7 +51,6 @@ module.exports = (sequelize) => {
 			},
 			isAdmin: {
 				type: DataTypes.BOOLEAN,
-				allowNull: true,
 				defaultValue:false,
 			},			
 			address: {
