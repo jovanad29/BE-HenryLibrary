@@ -79,7 +79,14 @@ exports.createUser = async (req, res) => {
             where: { uid: uid },
             defaults: { nameUser, email, profilePic },
         });
-        return res.status(201).json(newUser);
+        const userCreated = await User.findByPk(uid);
+        if (userCreated){
+            console.log("entra", nameUser);
+            userCreated.nameUser = nameUser;
+            await userCreated.save();
+        }
+
+        return res.status(201).json(userCreated);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
