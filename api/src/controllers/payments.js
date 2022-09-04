@@ -1,4 +1,4 @@
-const { Payment} = require('../db');
+const { Payment, payment_book} = require('../db');
 const { Op } = require('sequelize');
 
 // get payment por userId con stausId=1.
@@ -131,4 +131,111 @@ exports.putAllById = async function (req, res) {
         console.log(error);
         return res.status(500).json(error);
     }
-}
+};
+
+//postLocalSorageByUserId
+exports.postLocalSorageByUserId = async function (req, res) {
+    const { userUid } = req.params;
+    //recibir un arreglo por body
+    const localStorage = [...req.body]||[];
+    
+    console.log("localStorage",localStorage);
+    try {
+        // preguntar si existe un registro con statusId= 1
+        const payment = await Payment.findOne({
+        where: {
+            userUid: userUid,
+            statusId: 1,
+        },
+        // include: [
+        //     { model: payment_book },
+
+        //   ],
+        });
+        console.log("payment",payment);
+        
+        
+        if (payment) {
+            const items = await payment_book.findAll({
+                where: {
+                    paymentId: payment.id,
+                },
+            });
+            const itemsPaymentBook = items.map((item) => item.dataValues);
+            console.log("itemsPaymentBook",itemsPaymentBook);
+            // recorrer el arreglo localStorage y con el id buscar en el arreglo itemsPaymentBook
+            // si existe actualizar la cantidad
+            // si no existe crear el registro
+            for (let i = 0; i < localStorage.length; i++) {
+                const element = localStorage[i];
+                const item = itemsPaymentBook.find((item) => item.bookId === element.id);
+                if (item) {
+                    //actualizar
+                    const updatedPaymentBook = await payment_book.update(
+                        {
+                            quantity: element.quantity + item.quantity,
+                            price: element.price,
+                        },
+                        {
+                            where: {
+                                bookId: item.bookId,
+                            },
+                        }
+                    );
+                } else {
+                    //crear
+                    const newPaymentBook = await payment_book.create({
+                        paymentId: payment.id,
+                        bookId: element.id,
+                        quantity: element.quantity,
+                    });
+                }
+            }
+        } else {
+            // crear el registro en payment
+            const newPayment = await Payment.create({
+                userUid: userUid,
+                statusId: 1,
+                totalAmount: 0,
+                methodId: 0,
+                transactionId: null,
+                deliveryAddress: null
+
+
+            });
+            // recorrer el arreglo localStorage y crear los registros en payment_book
+            for (let i = 0; i < localStorage.length; i++) {
+                const element = localStorage[i];
+                const newPaymentBook = await payment_book.create({
+                    paymentId: newPayment.id,
+                    bookId: element.id,
+                    quantity: element.quantity,
+                });
+            }
+        }
+        //obtener el totalAmount, leer de la tabla payment_book para paymentId===payment.id, multiplicar price * quantity y guardarlo en la tabla payment.totalAmount
+        const itemsPaymentBook2 = await payment_book.findAll({
+            where: {
+                paymentId: payment.id,
+            },
+        });
+        const totalAmount = itemsPaymentBook2.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const updatedPayment = await Payment.update(
+            {
+                totalAmount: totalAmount,
+            },
+            {
+                where: {
+                    id: payment.id,
+                },
+            }
+        );
+
+        return res.status(200).json({ status: 200, message: "Se actualizo el carrito" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+ 
