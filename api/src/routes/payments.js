@@ -10,8 +10,8 @@ const {
 router.get('/:userUid', getByUserIdStatus1);
 router.get('/all/:userUid', getAllByUserId);
 router.post('/:userUid', postByUserId);
+router.put('/id/:id', putAllById);
 router.put('/:userUid', putAllByUserId);
-router.put('/:id', putAllById);
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;

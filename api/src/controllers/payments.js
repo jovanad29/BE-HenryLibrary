@@ -121,9 +121,9 @@ exports.putAllById = async function (req, res) {
         }
         );
         const updatedPayment = await Payment.findOne({
-        where: {
-            id: id,
-        },
+            where: {
+                id: id,
+            },
         });
         if (payment) return res.status(200).json(updatedPayment);
         return res.json({ status: 404, message: "No se pudo actualizar el registro" });
