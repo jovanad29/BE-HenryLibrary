@@ -17,8 +17,8 @@ const {
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
 
 router.post('/', async (req, res) => {
-  const { base_url, ID } = req.body;
-  const verifyEnabledUser =true // await isSuspended(ID);
+  const { base_url, id } = req.body;
+  const verifyEnabledUser =true // await isSuspended(ID); Hacerr!!
   if (verifyEnabledUser) {
     try {
       mercadopago.preferences
@@ -48,7 +48,7 @@ router.post('/create', async (req, res) => {
   try {
     await createPayment(req.body);
     await orderEmail(userID, items, total, ID);
-    //let emails = await eBookEmail(userID, items);
+   let emails = await eBookEmail(userID, items);
     items.length > 1 ? await deleteCart(userID) : null;
     emails
       ? res.json({ message: 'eBook email sent' })
@@ -70,11 +70,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:ID', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const { ID } = req.params;
   const { token } = req.query;
   try {
-    const payment = await getPaymentByID(ID, token);
+    const payment = await getPaymentByID( ID , token);
 
     payment
       ? res.json({ data: payment, message: 'Success' })

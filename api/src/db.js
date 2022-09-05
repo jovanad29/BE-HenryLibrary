@@ -38,6 +38,7 @@ const {
   User,
   Publisher ,
   Payment,
+  PaymentsOrder,
   Payment_method,
   Review
 } = sequelize.models;
@@ -87,6 +88,9 @@ User.belongsToMany(Review,{through:'review_user'})
 Review.belongsToMany(User,{through:'review_user'})
 Review.belongsToMany(Book,{through:'review_book'})
 Book.belongsToMany(Review,{through:'review_book'})
+
+PaymentsOrder.belongsToMany(Book,{through: 'paymentOrder_book'});// para pensar!! 
+Book.belongsToMany(PaymentsOrder,{through: 'paymentOrder_book'});//para pensar !!
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
