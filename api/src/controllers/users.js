@@ -81,21 +81,23 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// //----------- PUT -----------//   
- exports.updateAdminUser = async (req, res) => {
-  const { uid } = req.params;
-  try {
-      let user = await User.findByPk(uid);
-      if (user) {
-          user.isAdmin = user.isAdmin ? false : true;
-          await user.save();
-      }
-      return res.status(204).json({})        
-  } catch (error) {
-      console.log(error)
-      return res.status(500).json(error)
-  }
-}
+// //----------- PUT -----------//
+exports.updateAdminUser = async (req, res) => {
+    const { uid } = req.params;
+    console.log(uid);
+    try {
+        let user = await User.findByPk(uid);
+        if (user) {
+            user.isAdmin = user.isAdmin ? false : true;
+            await user.save();
+        }
+        return res.status(204).json({});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
 //----------- DELETE -----------//  isActive=false
 exports.logicaldeleteUser = async (req, res) => {
     const { uid } = req.params;
