@@ -190,6 +190,7 @@ exports.postPaymentPaymentBook = async function (req, res) {
                         paymentId: payment.id,
                         bookId: element.id,
                         quantity: element.quantity,
+                        price: element.price,
                     });
                 }
             }
