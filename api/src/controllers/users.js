@@ -77,7 +77,7 @@ exports.createUser = async (req, res) => {
             userCreated.nameUser = nameUser;
             await userCreated.save();
             // aquí se ejecuta el método para enviar el correo
-            const html = getTemplate(userCreated.dataValues.nameUser)
+            const html = getTemplate(userCreated.dataValues.nameUser || userCreated.userName)
             await sendEmail(userCreated.dataValues.email, '¡Bienvenido/a a Librería Henry!', html); 
         }
         return res.status(201).json(userCreated);
