@@ -1,13 +1,25 @@
 //definir la ruta de la api hacia el controlador de user
-const { Router } = require('express');
+const { Router } = require("express");
 const router = Router();
-// const {getAll,getById,createAuthor,updateAuthor,deleteAuthor} = require('../controllers/authors');
+const {
+  getAll,
+  getById,
+  getUserByName,
+  createUser,
+  updateAdminUser,
+  logicaldeleteUser,
+  bannedUser,
+} = require("../controllers/users");
 
-// router.get('/:id', getById);
-// router.get('/', getAll);
-// router.post('/', createAuthor);
-// router.put('/:id', updateAuthor);
-// router.delete('/:id', deleteAuthor);
+router.get("/", getAll);
+router.get("/byname", getUserByName);
+router.get("/:uid", getById);
 
-//exportar el router para poder usarlo en el index.js
+router.get("/", getUserByName);
+router.post("/", createUser);
+router.put("/:uid", updateAdminUser);
+
+router.delete("/:uid", logicaldeleteUser);
+router.delete("/banned/:uid", bannedUser);
+
 module.exports = router;
