@@ -96,6 +96,7 @@ exports.createUser = async (req, res) => {
 // //----------- PUT -----------//
 exports.updateAdminUser = async (req, res) => {
     const { uid } = req.params;
+    console.log(uid);
     try {
         let user = await User.findByPk(uid);
         if (user) {
