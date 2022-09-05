@@ -39,7 +39,7 @@ const sendEmail = async (email, subject, html) => {
 const getTemplate = (name) => {
     return `
         <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
-        <h2>Hola, ${ name }</h2>
+        <h2>Hola, ${ name || 'Usuario' }</h2>
         <p>Gracias por preferirnos.</p>
         <p>Ahora que estás regitrado/a, te contamos lo que puedes hacer:</p>
         <ul>
