@@ -6,33 +6,52 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'user',
 		{
-			fistname: {
+			uid: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				primaryKey:true,
 			},
-			lastname: {
+			nameUser: {
 				type: DataTypes.STRING,
-				allowNull: false,
+				allowNull: true,
+				validate: {
+					len: [1,100],
 			},
+			},
+			// lastname: {
+			// 	type: DataTypes.STRING,
+			// 	allowNull: false,
+			// 	validate: {
+			// 		len: [1,100],
+			// 	},
+			// },
 			email: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				validate:{
+					is:/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
+				},
+				
 			},
-			password: {
-				type: DataTypes.STRING,
-				allowNull: true,
-			},
-			active: {
+			// password: {
+			// 	type: DataTypes.STRING,
+			// 	allowNull: true,
+			// 	validate: {
+			// 		len: [4,100],
+			// 	},
+			// },
+			isActive: {
 				type: DataTypes.BOOLEAN,
-				allowNull: true,
+				allowNull: false,
+				defaultValue:true,
 			},
 			profilePic: {
 				type: DataTypes.STRING,
-				allowNull: true,
+				allowNull: true,// front debera permitir que si no hay avatar o imagen de un icono no identificado
 			},
 			isAdmin: {
 				type: DataTypes.BOOLEAN,
-				allowNull: true,
+				defaultValue:false,
 			},			
 			address: {
 				type: DataTypes.STRING,

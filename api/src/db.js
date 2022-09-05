@@ -6,10 +6,12 @@ const path = require('path');
 
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT } = process.env;
+// const { DATABASE_URL } = process.env
 const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`, {
+// const sequelize = new Sequelize(`${DATABASE_URL}`, {
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-  // port: DB_PORT,
+  port: DB_PORT,
   define: {
     freezeTableName: true,  // Mantiene los nombres definidos en los modelos (no los cambia a plural)
     // timestamps: false    // Comentar si se quieren crear los campos createdAt y updatedAt de forma predeterminada en todas las tablas
