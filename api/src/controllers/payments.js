@@ -1,8 +1,8 @@
 const { Payment, payment_book} = require('../db');
 const { Op } = require('sequelize');
 
-// get payment por userId con stausId=1.
-exports.getByUserIdStatus1 = async function (req, res) {
+// get payment y payment_book por userId con stausId=1.
+exports.getPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findOne({
@@ -11,7 +11,13 @@ exports.getByUserIdStatus1 = async function (req, res) {
             statusId: 1,
         },
         });
-        if (payment) return res.status(200).json(payment);
+        const items = await payment_book.findAll({
+            where: {
+                    paymentId: payment.id,
+            },
+        });
+        const itemsPaymentBook = items.map((item) => item.dataValues);
+        if (payment) return res.status(200).json({ payment: payment, payment_book: itemsPaymentBook, menssage: "Se obtuvo el carrito activo" });
         return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
         console.log(error);
@@ -251,4 +257,3 @@ exports.postPaymentPaymentBook = async function (req, res) {
     }
 };
 
- 
