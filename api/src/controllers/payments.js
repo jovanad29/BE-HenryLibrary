@@ -138,8 +138,6 @@ exports.postPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     //recibir un arreglo por body
     const localStorage = [...req.body]||[];
-    
-
     try {
         // preguntar si existe un registro con statusId= 1
         const payment = await Payment.findOne({
@@ -147,14 +145,12 @@ exports.postPaymentPaymentBook = async function (req, res) {
             userUid: userUid,
             statusId: 1,
         },
+        // el include siguiente no funciona, no me trae la tabla relacionada por eso hago el paso siguien
         // include: [
         //     { model: payment_book },
 
         //   ],
-        });
-
-        
-        
+        });   
         if (payment) {
             const items = await payment_book.findAll({
                 where: {
@@ -210,13 +206,22 @@ exports.postPaymentPaymentBook = async function (req, res) {
                     paymentId: newPayment.id,
                     bookId: element.id,
                     quantity: element.quantity,
+                    price: element.price,
                 });
             }
         }
+        //obtener el registro de payment para el userUid y statusId=1
+        const paymentUpdated = await Payment.findOne({
+            where: {
+                userUid: userUid,
+                statusId: 1,
+            },
+        });
+
         //obtener el totalAmount, leer de la tabla payment_book para paymentId===payment.id, multiplicar price * quantity y guardarlo en la tabla payment.totalAmount
         const itemsPaymentBook2 = await payment_book.findAll({
             where: {
-                paymentId: payment.id,
+                paymentId: paymentUpdated.id,
             },
         });
         const totalAmount = itemsPaymentBook2.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -226,13 +231,13 @@ exports.postPaymentPaymentBook = async function (req, res) {
             },
             {
                 where: {
-                    id: payment.id,
+                    id: paymentUpdated.id,
                 },
             }
         );
         const updatedPayment2 = await Payment.findOne({
             where: {
-                id: payment.id,
+                id: paymentUpdated.id,
             },
         });
 
