@@ -134,7 +134,7 @@ exports.putAllById = async function (req, res) {
 };
 
 //postLocalSorageByUserId. hacer el merge entre el localstorage y la base de datos.
-exports.postLocalSorageByUserId = async function (req, res) {
+exports.postPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     //recibir un arreglo por body
     const localStorage = [...req.body]||[];
