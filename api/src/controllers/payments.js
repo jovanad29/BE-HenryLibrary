@@ -133,13 +133,13 @@ exports.putAllById = async function (req, res) {
     }
 };
 
-//postLocalSorageByUserId
+//postLocalSorageByUserId. hacer el merge entre el localstorage y la base de datos.
 exports.postLocalSorageByUserId = async function (req, res) {
     const { userUid } = req.params;
     //recibir un arreglo por body
     const localStorage = [...req.body]||[];
     
-    console.log("localStorage",localStorage);
+
     try {
         // preguntar si existe un registro con statusId= 1
         const payment = await Payment.findOne({
@@ -152,7 +152,7 @@ exports.postLocalSorageByUserId = async function (req, res) {
 
         //   ],
         });
-        console.log("payment",payment);
+
         
         
         if (payment) {
@@ -162,7 +162,7 @@ exports.postLocalSorageByUserId = async function (req, res) {
                 },
             });
             const itemsPaymentBook = items.map((item) => item.dataValues);
-            console.log("itemsPaymentBook",itemsPaymentBook);
+
             // recorrer el arreglo localStorage y con el id buscar en el arreglo itemsPaymentBook
             // si existe actualizar la cantidad
             // si no existe crear el registro
@@ -230,8 +230,16 @@ exports.postLocalSorageByUserId = async function (req, res) {
                 },
             }
         );
+        const updatedPayment2 = await Payment.findOne({
+            where: {
+                id: payment.id,
+            },
+        });
 
-        return res.status(200).json({ status: 200, message: "Se actualizo el carrito" });
+
+        const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
+
+        return res.status(200).json({ payment: updatedPayment2, payment_book: newItemsPaymentBook2, menssage: "Se actualizo el carrito" });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
