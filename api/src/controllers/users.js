@@ -63,22 +63,26 @@ function validations(nameUser, email) {
 }
 
 exports.createUser = async (req, res) => {
-  const { uid, nameUser, email, profilePic } = req.body;
-  try {
-    // if (!validations(nameUser, email))
-    // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
+    const { uid, nameUser, email, profilePic } = req.body;
+    try {
+        // if (!validations(nameUser, email))
+        // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
 
-    const newUser = await User.create({
-      uid,
-      nameUser: nameUser.toLowerCase(),
-      email,
-      profilePic,
-    });
-    return res.status(201).json(newUser);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json(error);
-  }
+        await User.findOrCreate({
+            where: { uid: uid },
+            defaults: { nameUser, email, profilePic },
+        });
+        const userCreated = await User.findByPk(uid);
+        if (userCreated){
+            userCreated.nameUser = nameUser;
+            await userCreated.save();
+        }
+
+        return res.status(201).json(userCreated);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
 };
 
 // //----------- PUT -----------//
