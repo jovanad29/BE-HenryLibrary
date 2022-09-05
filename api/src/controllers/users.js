@@ -1,5 +1,6 @@
 const { User, Payment, Review } = require('../db');
 const { Op } = require('sequelize');
+const { getTemplate, sendEmail } = require('../config/nodemailer.config');
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
@@ -67,7 +68,6 @@ exports.createUser = async (req, res) => {
     try {
         // if (!validations(nameUser, email))
         // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
-
         await User.findOrCreate({
             where: { uid: uid },
             defaults: { nameUser, email, profilePic },
@@ -76,8 +76,10 @@ exports.createUser = async (req, res) => {
         if (userCreated){
             userCreated.nameUser = nameUser;
             await userCreated.save();
+            // aquí se ejecuta el método para enviar el correo
+            const html = getTemplate(userCreated.dataValues.nameUser || userCreated.userName)
+            await sendEmail(userCreated.dataValues.email, '¡Bienvenido/a a Librería Henry!', html); 
         }
-
         return res.status(201).json(userCreated);
     } catch (error) {
         console.log(error);
