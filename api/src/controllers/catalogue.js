@@ -78,7 +78,7 @@ exports.getBooksCategoryAuthor = async (req, res) => {
     const catalogue = await Book.findAll({
       order: [["title", "ASC"]],
 
-      include: [{ model: Category }, { model: Author }],
+      include: [Category, Publisher, Author, Review],
       where: {
         [Op.and]: [
           { "$categories.id$": Number(categoryId) },
