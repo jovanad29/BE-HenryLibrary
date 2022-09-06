@@ -47,7 +47,7 @@ exports.getBooksByAuthor = async function(req, res) {
         const author = await Author.findByPk(req.params.id, {
             include: {
                 model: Book,
-                include: [Category, Publisher]
+                include: [Category, Publisher, Author]
             }
         });
         if (author) {
