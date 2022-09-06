@@ -257,4 +257,85 @@ exports.postPaymentPaymentBook = async function (req, res) {
         return res.status(500).json(error);
     }
 };
+async function  recalculatePaymentTotalAmount(paymentId) {
+    const itemsPaymentBook2 = await payment_book.findAll({
+        where: {
+            paymentId: paymentId,
+        },
+    });
+    const totalAmount = itemsPaymentBook2.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const updatedPayment = await Payment.update(
+        {
+            totalAmount: totalAmount,
+        },
+        {
+            where: {
+                id: paymentId,
+            },
+        }
+    );
+    const updatedPayment2 = await Payment.findOne({
+        where: {
+            id: paymentId,
+        },
+    });
+    const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
 
+    return {payment: updatedPayment2, paymentBook: newItemsPaymentBook2};
+
+}
+
+
+// putPaymentPaymentBook. Actualizar la cantidad de un libro en el carrito.
+// recibe el paymentId por parametro y bookId, y price y quantity  por body
+exports.putPaymentPaymentBook = async function (req, res) {
+    const { paymentId } = req.params;
+    const { id, price, quantity } = req.body;
+    try {
+  //find or create payment_book
+        const paymentBook = await payment_book.findOne({
+            where: {
+                paymentId: paymentId,
+                bookId: id,
+            },
+        });
+        if (paymentBook) {
+            if (quantity === 0) {
+                //eliminar el registro
+                const deletedPaymentBook = await payment_book.destroy({
+                    where: {
+                        paymentId: paymentId,
+                        bookId: id,
+                    },
+                });
+                //recalcular el totalAmount
+                const result = await recalculatePaymentTotalAmount(paymentId);
+                return res.status(200).json(result);
+            } else {
+            const updatedPaymentBook = await payment_book.update(
+                { quantity: quantity, price: price, },
+                { where: { 
+                        paymentId: paymentId,
+                        bookId: id,
+                    },
+                }
+            );
+            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            return res.status(200).json({payment , paymentBook});
+        }
+        } else {
+            const newPaymentBook = await payment_book.create({
+                paymentId: paymentId,
+                bookId: id,
+                quantity: quantity,
+                price: price,
+            });
+            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            return res.status(200).json({payment , paymentBook});
+        }
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
