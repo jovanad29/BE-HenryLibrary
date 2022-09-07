@@ -1,4 +1,4 @@
-const { Payment, payment_book} = require('../db');
+const { Payment, payment_book, Book} = require('../db');
 const { Op } = require('sequelize');
 
 // get payment y payment_book por userId con stausId=1.
@@ -25,16 +25,23 @@ exports.getPaymentPaymentBook = async function (req, res) {
     }
 };
 
-// get all paymet por userId
+// get all payment/orden/carrito por userId
 exports.getAllByUserId = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findAll({
+        order: [['id', 'ASC']],
+        include: [
+                { model: Book, attributes: [ 'title'] },
+            //    include    : [{ model: bar, attributes: attributes}]
+              ],    
         where: {
             userUid: userUid,
         },
         });
-        if (payment) return res.status(200).json(payment);
+// extraer los datos que hay en payment  
+        const items = payment.map((item) => item.dataValues);
+        if (payment) return res.status(200).json(items);
         return res.json({ status: 404, message: "No se encontraron registros" });
     } catch (error) {
         console.log(error);
