@@ -36,7 +36,14 @@ const sendEmail = async (email, subject, html) => {
     }
 }
 
-const getTemplate = (name) => {
+const getTemplate = (template,body) => {
+    const templates = {
+        'bienvenida': getBienvenida(body)
+    }
+    return templates[template]
+}
+
+const getBienvenida = (name) => {
     return `
         <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
         <h2>Hola, ${ name || 'Usuario' }</h2>
