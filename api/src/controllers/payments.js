@@ -32,7 +32,7 @@ exports.getAllByUserId = async function (req, res) {
         const payment = await Payment.findAll({
         order: [['id', 'ASC']],
         include: [
-                { model: Book, attributes: [ 'title'] },
+                { model: Book, attributes: [ 'id','title'] },
             //    include    : [{ model: bar, attributes: attributes}]
               ],    
         where: {
@@ -48,6 +48,28 @@ exports.getAllByUserId = async function (req, res) {
         return res.status(500).json(error);
     }
 };
+
+//getAllPaymentPaymentBook
+exports.getAllPaymentPaymentBook = async function (req, res) {
+    try {
+        const payment = await Payment.findAll({
+        order: [['id', 'ASC']],
+        include: [
+                { model: Book, attributes: [ 'id','title'] },
+        ],
+        });
+// extraer los datos que hay en payment
+        const items = payment.map((item) => item.dataValues);
+        if (payment) return res.status(200).json(items);
+        return res.json({ status: 404, message: "No se encontraron registros" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+
+
 //getCountPaymentBook
 // get count payment_book por userId con stausId=1.
 exports.getCountPaymentBook = async function (req, res) {
@@ -102,7 +124,7 @@ exports.postByUserId = async function (req, res) {
         transactionId: null,
         deliveryAddress: null
         });
-        if (newPayment) return res.status(200).json(newPayment);
+        if (newPayment) return res.status(201).json(newPayment);
         return res.json({ status: 404, message: "No se pudo generar el registro" });
     } catch (error) {
         console.log(error);
@@ -136,7 +158,7 @@ exports.putAllByUserId = async function (req, res) {
             userUid: userUid,
         },
         });
-        if (payment) return res.status(200).json(updatedPayment);
+        if (payment) return res.status(204).json(updatedPayment);
         return res.json({ status: 404, message: "No se pudo actualizar el registro" });
     } catch (error) {
         console.log(error);
@@ -168,7 +190,7 @@ exports.putAllById = async function (req, res) {
                 id: id,
             },
         });
-        if (payment) return res.status(200).json(updatedPayment);
+        if (payment) return res.status(204).json(updatedPayment);
         return res.json({ status: 404, message: "No se pudo actualizar el registro" });
     } catch (error) {
         console.log(error);
@@ -288,7 +310,7 @@ exports.postPaymentPaymentBook = async function (req, res) {
 
         const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
 
-        return res.status(200).json({ payment: updatedPayment2, payment_book: newItemsPaymentBook2, menssage: "Se actualizo el carrito" });
+        return res.status(204).json({ payment: updatedPayment2, payment_book: newItemsPaymentBook2, menssage: "Se actualizo el carrito" });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -368,7 +390,7 @@ exports.putPaymentPaymentBook = async function (req, res) {
                 price: price,
             });
             const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-            return res.status(200).json({payment , paymentBook});
+            return res.status(204).json({payment , paymentBook});
         }
     }
     catch (error) {

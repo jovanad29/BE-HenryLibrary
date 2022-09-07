@@ -3,7 +3,7 @@ const { Router } = require('express');
 const router = Router();
 // requerir los metodos del controlador de payment
 const {
-    getPaymentPaymentBook, getAllByUserId, getCountPaymentBook, postByUserId, putAllByUserId, putAllById, postPaymentPaymentBook, putPaymentPaymentBook
+    getPaymentPaymentBook, getAllByUserId, getCountPaymentBook, postByUserId, putAllByUserId, putAllById, postPaymentPaymentBook, putPaymentPaymentBook, getAllPaymentPaymentBook
 } = require('../controllers/payments');
 
 // definir los metodos de la ruta de la api hacia el controlador de payment
@@ -16,6 +16,7 @@ router.put('/:userUid', putAllByUserId);
 
 router.post('/mergecart/:userUid', postPaymentPaymentBook);
 router.put('/update/:paymentId', putPaymentPaymentBook);
+router.get('/',getAllPaymentPaymentBook);
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;
