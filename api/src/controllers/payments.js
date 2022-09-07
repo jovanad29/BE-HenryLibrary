@@ -41,6 +41,36 @@ exports.getAllByUserId = async function (req, res) {
         return res.status(500).json(error);
     }
 };
+//getCountPaymentBook
+// get count payment_book por userId con stausId=1.
+exports.getCountPaymentBook = async function (req, res) {
+    const { userUid } = req.params;
+    try {
+        const payment = await Payment.findOne({
+        where: {
+            userUid: userUid,
+            statusId: 1,
+        },
+        });
+        const items = await payment_book.findAll({
+            where: {
+                    paymentId: payment.id,
+            },
+        });
+        const itemsPaymentBook = items.map((item) => item.dataValues);
+        // sumar la cantidad total de quantity
+        let totalQuantity = 0;
+        for (let i = 0; i < itemsPaymentBook.length; i++) {
+            totalQuantity += itemsPaymentBook[i].quantity;
+        }
+        if (payment) return res.status(200).json({ totalQuantity: totalQuantity});
+
+        return res.json({ status: 404, message: "No se encontró el registro" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
 
 
 // post /payment por userId Creacion inicial de la cabecera con statusId= 1
