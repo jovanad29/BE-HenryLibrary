@@ -7,17 +7,18 @@ const {
 } = require('../controllers/payments');
 
 // definir los metodos de la ruta de la api hacia el controlador de payment
-router.get('/:userUid', getPaymentPaymentBook);
-router.get('/all/:userUid', getAllByUserId);
-router.get('/count/:userUid', getCountPaymentBook);
-router.post('/:userUid', postByUserId);
-router.put('/id/:id', putAllById);
-router.put('/:userUid', putAllByUserId);
+router.get('/:userUid', getPaymentPaymentBook);//carrito activo de un usuario
+router.get('/count/:userUid', getCountPaymentBook);//cantidad de items totales en el carrito activo de un usuario
+router.get('/all/:userUid', getAllByUserId);//todos los carritos de un usuario
+router.get('/',getAllPaymentPaymentBook);//todos los carritos
 
-router.post('/mergecart/:userUid', postPaymentPaymentBook);
-router.put('/update/:paymentId', putPaymentPaymentBook);
-router.get('/',getAllPaymentPaymentBook);
-router.put('/:paymentId/status/:statusId', putUpdateStatus);
+router.post('/:userUid', postByUserId);//crear un carrito por primera vez, controla que no haya un carrito activo para el mismo usuario
+router.put('/id/:id', putAllById);//edita los atributos enviados por body de un carrito por id, solo la cabecera.
+router.put('/:userUid', putAllByUserId);//Actualizacion de la cabecera con todos sus datos OJO ACTUALIZA TODOS LOS REGISTROS de un userUid
+
+router.post('/mergecart/:userUid', postPaymentPaymentBook);//Merge del carrito GUEST y el registrado en la BD al momento de loguearse
+router.put('/update/:paymentId', putPaymentPaymentBook);//Actualiza la cantidad de un item en el carrito y calcula el totaAmount del carrito
+router.put('/:paymentId/status/:statusId', putUpdateStatus);//Edita el estado de un carrito por paymentid
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;
