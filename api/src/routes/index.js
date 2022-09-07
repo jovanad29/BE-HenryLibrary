@@ -10,7 +10,7 @@ router.use('/categories', require('./categories'));
 router.use('/user', require('./user'));
 router.use('/reviews', require('./reviews'));
 router.use('/payments', require('./payments'));
-router.use('/paymentOrder', require('./paymentOrder'));
+router.use('/paymentsOrder', require('./paymentsOrder'));
 router.use('/publisher', require('./publisher'));
 router.use('/payment-method', require('./paymentMethod'));
 
