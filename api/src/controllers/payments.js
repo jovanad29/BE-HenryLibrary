@@ -1,6 +1,7 @@
 const { Payment, payment_book, Book} = require('../db');
 const { Op } = require('sequelize');
 
+
 // get payment y payment_book por userId con stausId=1.
 exports.getPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
@@ -32,14 +33,13 @@ exports.getAllByUserId = async function (req, res) {
         const payment = await Payment.findAll({
         order: [['id', 'ASC']],
         include: [
-                { model: Book, attributes: [ 'title'] },
-            //    include    : [{ model: bar, attributes: attributes}]
-              ],    
+                { model: Book, attributes: [ 'id','title'] },
+        ],    
         where: {
             userUid: userUid,
         },
         });
-// extraer los datos que hay en payment  
+        // extraer los datos que hay en payment  
         const items = payment.map((item) => item.dataValues);
         if (payment) return res.status(200).json(items);
         return res.json({ status: 404, message: "No se encontraron registros" });
@@ -48,6 +48,26 @@ exports.getAllByUserId = async function (req, res) {
         return res.status(500).json(error);
     }
 };
+
+//getAllPaymentPaymentBook
+exports.getAllPaymentPaymentBook = async function (req, res) {
+    try {
+        const payment = await Payment.findAll({
+        order: [['id', 'ASC']],
+        include: [
+                { model: Book, attributes: [ 'id','title'] },
+        ],
+        });
+        // extraer los datos que hay en payment
+        const items = payment.map((item) => item.dataValues);
+        if (payment) return res.status(200).json(items);
+        return res.json({ status: 404, message: "No se encontraron registros" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
 //getCountPaymentBook
 // get count payment_book por userId con stausId=1.
 exports.getCountPaymentBook = async function (req, res) {
@@ -79,7 +99,6 @@ exports.getCountPaymentBook = async function (req, res) {
     }
 };
 
-
 // post /payment por userId Creacion inicial de la cabecera con statusId= 1
 // controlar que no se puedan crear mas de una cabecera con statusId= 1
 exports.postByUserId = async function (req, res) {
@@ -102,7 +121,7 @@ exports.postByUserId = async function (req, res) {
         transactionId: null,
         deliveryAddress: null
         });
-        if (newPayment) return res.status(200).json(newPayment);
+        if (newPayment) return res.status(201).json(newPayment);
         return res.json({ status: 404, message: "No se pudo generar el registro" });
     } catch (error) {
         console.log(error);
@@ -188,11 +207,6 @@ exports.postPaymentPaymentBook = async function (req, res) {
             userUid: userUid,
             statusId: 1,
         },
-        // el include siguiente no funciona, no me trae la tabla relacionada por eso hago el paso siguien
-        // include: [
-        //     { model: payment_book },
-
-        //   ],
         });   
         if (payment) {
             const items = await payment_book.findAll({
@@ -240,8 +254,6 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 methodId: 0,
                 transactionId: null,
                 deliveryAddress: null
-
-
             });
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
@@ -284,16 +296,14 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 id: paymentUpdated.id,
             },
         });
-
-
         const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
-
         return res.status(200).json({ payment: updatedPayment2, payment_book: newItemsPaymentBook2, menssage: "Se actualizo el carrito" });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 };
+
 async function  recalculatePaymentTotalAmount(paymentId) {
     const itemsPaymentBook2 = await payment_book.findAll({
         where: {
@@ -317,11 +327,8 @@ async function  recalculatePaymentTotalAmount(paymentId) {
         },
     });
     const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
-
     return {payment: updatedPayment2, paymentBook: newItemsPaymentBook2};
-
 }
-
 
 // putPaymentPaymentBook. Actualizar la cantidad de un libro en el carrito.
 // recibe el paymentId por parametro y bookId, y price y quantity  por body
@@ -368,10 +375,38 @@ exports.putPaymentPaymentBook = async function (req, res) {
                 price: price,
             });
             const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-            return res.status(200).json({payment , paymentBook});
+            return res.status(201).json({payment , paymentBook});
         }
     }
     catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+//putUpdateStatus
+exports.putUpdateStatus = async function (req, res) {
+    const { paymentId, statusId } = req.params;
+
+    try {
+        const updatedPayment = await Payment.update(
+            {
+                statusId: statusId,
+            },
+            {
+                where: {
+                    id: paymentId,
+                },
+            }
+        );
+        if (updatedPayment[0]===1) {
+            return res.status(204).json({ menssage: "Se actualizo el status" });
+            
+        } else {
+            
+            return res.status(404).json({ menssage: "No se encontro el carrito" });
+        }
+    } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
