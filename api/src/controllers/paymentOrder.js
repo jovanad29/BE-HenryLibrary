@@ -61,7 +61,7 @@ let paymentsModel = {
         if (payment) return payment;
       }
     } else {
-      const payment = await PaymentsOrder.findByPk(ID, { include: Users });
+      const payment = await PaymentsOrder.findByPk(ID, { include: User });
       return payment;
     }
     return undefined;
