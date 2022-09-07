@@ -1,4 +1,4 @@
-const { Payment, payment_book} = require('../db');
+const { Payment, payment_book, Book} = require('../db');
 const { Op } = require('sequelize');
 
 // get payment y payment_book por userId con stausId=1.
@@ -25,17 +25,54 @@ exports.getPaymentPaymentBook = async function (req, res) {
     }
 };
 
-// get all paymet por userId
+// get all payment/orden/carrito por userId
 exports.getAllByUserId = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findAll({
+        order: [['id', 'ASC']],
+        include: [
+                { model: Book, attributes: [ 'title'] },
+            //    include    : [{ model: bar, attributes: attributes}]
+              ],    
         where: {
             userUid: userUid,
         },
         });
-        if (payment) return res.status(200).json(payment);
+// extraer los datos que hay en payment  
+        const items = payment.map((item) => item.dataValues);
+        if (payment) return res.status(200).json(items);
         return res.json({ status: 404, message: "No se encontraron registros" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+//getCountPaymentBook
+// get count payment_book por userId con stausId=1.
+exports.getCountPaymentBook = async function (req, res) {
+    const { userUid } = req.params;
+    try {
+        const payment = await Payment.findOne({
+        where: {
+            userUid: userUid,
+            statusId: 1,
+        },
+        });
+        const items = await payment_book.findAll({
+            where: {
+                    paymentId: payment.id,
+            },
+        });
+        const itemsPaymentBook = items.map((item) => item.dataValues);
+        // sumar la cantidad total de quantity
+        let totalQuantity = 0;
+        for (let i = 0; i < itemsPaymentBook.length; i++) {
+            totalQuantity += itemsPaymentBook[i].quantity;
+        }
+        if (payment) return res.status(200).json({ totalQuantity: totalQuantity});
+
+        return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
