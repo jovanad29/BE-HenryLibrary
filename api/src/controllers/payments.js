@@ -333,16 +333,26 @@ async function  recalculatePaymentTotalAmount(paymentId) {
 // putPaymentPaymentBook. Actualizar la cantidad de un libro en el carrito.
 // recibe el paymentId por parametro y bookId, y price y quantity  por body
 exports.putPaymentPaymentBook = async function (req, res) {
-    const { paymentId } = req.params;
+    const { userUid } = req.params;
     const { id, price, quantity } = req.body;
     try {
-  //find or create payment_book
+  //findond payment by userUid and statusId=1
+        const payment = await Payment.findOne({
+            where: {
+                userUid: userUid,
+                statusId: 1,
+            },
+        });
+
+
         const paymentBook = await payment_book.findOne({
             where: {
-                paymentId: paymentId,
+                paymentId: payment.id,
                 bookId: id,
             },
         });
+        
+        const paymentId=payment.id;
         if (paymentBook) {
             if (quantity === 0) {
                 //eliminar el registro
@@ -366,8 +376,9 @@ exports.putPaymentPaymentBook = async function (req, res) {
             );
             const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
             return res.status(200).json({payment , paymentBook});
-        }
-        } else {
+        }}
+        if (!paymentBook) {
+            console.log('payment.id', paymentId);
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
                 bookId: id,
@@ -378,6 +389,7 @@ exports.putPaymentPaymentBook = async function (req, res) {
             return res.status(201).json({payment , paymentBook});
         }
     }
+
     catch (error) {
         console.log(error);
         return res.status(500).json(error);
