@@ -198,9 +198,10 @@ async function fillBook() {
 					publisherId: publisherBook ? publisherBook.dataValues.id : null,
 					publishedDate: book.dataValues.publishedDate ? book.dataValues.publishedDate : "NO DATE",
 					pageCount: book.dataValues.pageCount ? book.dataValues.pageCount : 0,
-					rating: 0,
+					rating: (Math.random(100)*10).toFixed(2),
+          soldCopies:(Math.random(10000)*100),
 					language: book.dataValues.language ? book.dataValues.language : "NO INFO",
-					currentStock: 50
+					currentStock: (Math.random(100)*100),
 				}
 			});
 			// Relacionar editorial
