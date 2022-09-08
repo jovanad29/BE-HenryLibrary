@@ -181,7 +181,10 @@ exports.getUserFavorites = async (req, res) => {
 				model: Book
 			}
 		})
-		return res.json(userFavorites.books) 
+        if (userFavorites) {
+            return res.json(userFavorites.books) 
+        }
+        return res.status(404).json({status: 404, message: 'No se encontró el usuario con ese uid '});
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json(error);
