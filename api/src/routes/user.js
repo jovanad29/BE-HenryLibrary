@@ -18,7 +18,7 @@ router.get('/:uid', getById);
 
 router.get('/', getUserByName);
 router.post('/', createUser);
-router.post('/:id/favorites/:id',addFavorites)
+router.post('/:uid/favorites/:bid',addFavorites)
 router.put('/:uid', updateAdminUser);
 
 router.delete('/:uid', logicaldeleteUser);
