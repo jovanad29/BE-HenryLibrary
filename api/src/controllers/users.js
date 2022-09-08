@@ -176,17 +176,15 @@ exports.deleteFavorite = async (req, res) => {
 exports.getUserFavorites = async (req, res) => {
 	const { uid } = req.params
 	try {
-		const userFavorites = await User.findByPk(uid, {
+		const userFavorites = await User.findAll({
 			include: {
 				model: Book
-			}
+			},
+            where: {
+                uid
+            }
 		})
-		if (userFavorites) {
-			console.log(userFavorites)
-            return res.json(userFavorites);
-        } else {
-            return res.json({status: 404, message: 'No se encontró el usuario'});
-        }  
+		return res.json(userFavorites) 
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json(error);
