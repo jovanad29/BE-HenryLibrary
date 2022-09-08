@@ -181,7 +181,7 @@ exports.getUserFavorites = async (req, res) => {
 				model: Book
 			}
 		})
-		if (userFavorites !== null) {
+		if (userFavorites) {
 			console.log(userFavorites)
             return res.json(userFavorites);
         } else {
