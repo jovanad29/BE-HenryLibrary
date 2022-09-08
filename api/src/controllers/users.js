@@ -31,7 +31,7 @@ exports.getUserByName = async (req, res) => {
       order: [["nameUser", "ASC"]],
       where: {
         nameUser: {
-          [Op.iLike]: `%${nameUser}%`.toLowerCase(),
+          [Op.iLike]: `%${nameUser}%`, //.toLowerCase(), el iLike ignora si son mayúsculas o minúsculas
         },
       },
       include: [{ model: Review }, { model: Payment }],
@@ -156,7 +156,7 @@ exports.addFavorite = async (req, res) => {
 		return res.status(201).json(result) // revisar
 	} catch (error) {
 		console.log(error)
-		return res.status(500).json({status: 500, message: 'Error al guardar favorito'})
+		return res.status(500).json({status: 500, message: 'Error al agregar favorito'})
 	}
 }
 
@@ -165,19 +165,30 @@ exports.deleteFavorite = async (req, res) => {
 	try {
 		const user = await User.findByPk(uid)
 		const book = await Book.findByPk(bid)
-		console.log(await user.removeBook(book))
-		// const result = await User.findOne({
-		// 	where: {
-		// 		uid
-		// 	},
-		// 	include: {
-		// 		model: Book
-		// 	}
-		// })
-		// console.log(result)
+		await user.removeBook(book)
 		return res.status(204).json({}) // revisar
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json({status: 500, message: 'Error al eliminar favorito'})
+	}
+}
+
+exports.getUserFavorites = async (req, res) => {
+	const { uid } = req.params
+	try {
+		const userFavorites = await User.findByPk(uid, {
+			include: {
+				model: Book
+			}
+		})
+		if (userFavorites !== null) {
+			console.log(userFavorites)
+            return res.json(userFavorites);
+        } else {
+            return res.json({status: 404, message: 'No se encontró el usuario'});
+        }  
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json(error);
 	}
 }
