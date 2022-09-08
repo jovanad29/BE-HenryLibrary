@@ -9,7 +9,8 @@ const {
   updateAdminUser,
   logicaldeleteUser,
   bannedUser,
-  addFavorites
+  addFavorite,
+  deleteFavorite
 } = require('../controllers/users');
 
 router.get('/', getAll);
@@ -18,7 +19,8 @@ router.get('/:uid', getById);
 
 router.get('/', getUserByName);
 router.post('/', createUser);
-router.post('/:uid/favorites/:bid',addFavorites)
+router.post('/:uid/favorites/:bid',addFavorite)
+router.delete('/:uid/favorites/:bid',deleteFavorite)
 router.put('/:uid', updateAdminUser);
 
 router.delete('/:uid', logicaldeleteUser);
