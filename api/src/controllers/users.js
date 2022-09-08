@@ -1,4 +1,4 @@
-const { User, Payment, Review } = require('../db');
+const { User, Payment, Review, Book } = require('../db');
 const { Op } = require('sequelize');
 const { getTemplate, sendEmail } = require('../config/nodemailer.config');
 
@@ -119,18 +119,65 @@ exports.logicaldeleteUser = async (req, res) => {
         return res.status(500).json(error)
     }
 }
-// //----------- BANNED -----------//  isBanned=true
+//----------- BANNED -----------//  isBanned=true
 exports.bannedUser = async (req, res) => {
- const { uid } = req.params;
-try {
-  let user = await User.findByPk(uid);
-  if (user) {
-      user.isBanned = user.isBanned ? false : true;
-      await user.save();
-  }
-  return res.status(204).json({})        
-} catch (error) {
-  console.log(error)
-  return res.status(500).json(error)
+	const { uid } = req.params;
+	try {
+		let user = await User.findByPk(uid);
+		if (user) {
+			user.isBanned = user.isBanned ? false : true;
+			await user.save();
+		}
+		return res.status(204).json({})        
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json(error)
+	}
 }
+
+exports.addFavorite = async (req, res) => {
+	const { uid, bid } = req.params
+	try {
+		const user = await User.findByPk(uid)
+		const book = await Book.findByPk(bid)
+		await user.addBook(book)
+		const result = await User.findOne({
+			where: {
+				uid
+			},
+			include: {
+				model: Book,
+				where: {
+					id: bid
+				}
+			}
+		})
+		console.log(result)
+		return res.status(201).json(result) // revisar
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json({status: 500, message: 'Error al guardar favorito'})
+	}
+}
+
+exports.deleteFavorite = async (req, res) => {
+	const { uid, bid } = req.params
+	try {
+		const user = await User.findByPk(uid)
+		const book = await Book.findByPk(bid)
+		console.log(await user.removeBook(book))
+		// const result = await User.findOne({
+		// 	where: {
+		// 		uid
+		// 	},
+		// 	include: {
+		// 		model: Book
+		// 	}
+		// })
+		// console.log(result)
+		return res.status(204).json({}) // revisar
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json({status: 500, message: 'Error al eliminar favorito'})
+	}
 }
