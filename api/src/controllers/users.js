@@ -184,7 +184,7 @@ exports.getUserFavorites = async (req, res) => {
         if (userFavorites) {
             return res.json(userFavorites.books) 
         }
-        return res.status(404).json({status: 404, message: 'No se encontró el usuario con ese uid '});
+        return res.status(404).json([]);
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json(error);
