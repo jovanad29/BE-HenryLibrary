@@ -79,18 +79,19 @@ exports.getCountPaymentBook = async function (req, res) {
             statusId: 1,
         },
         });
-        const items = await payment_book.findAll({
-            where: {
-                    paymentId: payment.id,
-            },
-        });
-        const itemsPaymentBook = items.map((item) => item.dataValues);
-        // sumar la cantidad total de quantity
-        let totalQuantity = 0;
-        for (let i = 0; i < itemsPaymentBook.length; i++) {
-            totalQuantity += itemsPaymentBook[i].quantity;
-        }
-        if (payment) return res.status(200).json({ totalQuantity: totalQuantity});
+        if (payment)
+            {const items = await payment_book.findAll({
+                where: {
+                        paymentId: payment.id,
+                },
+            });
+            const itemsPaymentBook = items.map((item) => item.dataValues);
+            // sumar la cantidad total de quantity
+            let totalQuantity = 0;
+            for (let i = 0; i < itemsPaymentBook.length; i++) {
+                totalQuantity += itemsPaymentBook[i].quantity;
+            }
+            return res.status(200).json({ totalQuantity: totalQuantity});}
 
         return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
@@ -419,9 +420,7 @@ exports.putAddItemToPaymentBook = async function (req, res) {
                 bookId: id,
             },
         });
-        
-
-        
+              
         const paymentId=payment.id;
         if (paymentBook2) {
             const actualCant = paymentBook2.quantity;
