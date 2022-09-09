@@ -396,6 +396,65 @@ exports.putPaymentPaymentBook = async function (req, res) {
     }
 };
 
+
+// putAddItemToPaymentBook. Adiciona un libro en el carrito.
+// recibe el paymentId por parametro y bookId, y price   por body
+exports.putAddItemToPaymentBook = async function (req, res) {
+    const { userUid } = req.params;
+    const { id, price } = req.body;
+    try {
+  //findond payment by userUid and statusId=1
+        const payment = await Payment.findOne({
+            where: {
+                userUid: userUid,
+                statusId: 1,
+            },
+        });
+
+
+        const paymentBook2 = await payment_book.findOne({
+            attributes: ['quantity'],
+            where: {
+                paymentId: payment.id,
+                bookId: id,
+            },
+        });
+        
+
+        
+        const paymentId=payment.id;
+        if (paymentBook2) {
+            const actualCant = paymentBook2.quantity;
+            const updatedPaymentBook = await payment_book.update(
+                //sumar 1 a quantity
+                { quantity: actualCant + 1, price: price, },
+                { where: { 
+                        paymentId: paymentId,
+                        bookId: id,
+                    },
+                }
+            );
+            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            return res.status(200).json({payment , paymentBook});
+        }
+        else {
+            const newPaymentBook = await payment_book.create({
+                paymentId: paymentId,
+                bookId: id,
+                quantity: 1,
+                price: price,
+            });
+            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            return res.status(201).json({payment , paymentBook});
+        }
+    }
+
+    catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
 //putUpdateStatus
 exports.putUpdateStatus = async function (req, res) {
     const { paymentId, statusId } = req.params;
