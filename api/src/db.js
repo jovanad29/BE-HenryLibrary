@@ -90,6 +90,8 @@ User.belongsToMany(Review,{through:'review_user'})
 Review.belongsToMany(User,{through:'review_user'})
 Review.belongsToMany(Book,{through:'review_book'})
 Book.belongsToMany(Review,{through:'review_book'})
+User.belongsToMany(Book, {through:'user_favorites'})
+Book.belongsToMany(User, {through:'user_favorites'})
 
 PaymentsOrder.belongsToMany(Book,{through: 'paymentOrder_book'});// para pensar!! 
 Book.belongsToMany(PaymentsOrder,{through: 'paymentOrder_book'});//para pensar !!
