@@ -1,5 +1,5 @@
 
-const { Review, User } = require('../db');
+const { Review, User, Book } = require('../db');
 
 
 //----------- GET -----------//
@@ -7,11 +7,15 @@ exports.getAll = async (req, res) => {
     try {
         const reviews = await Review.findAll({
             order:[['id']],
-            include: {
+            include: [{
                 model: User, 
                 attributes: ['uid',"nameUser","email"],
                 through: { attributes: [] }
-            }
+            },            {
+                model: Book, 
+                attributes: ['id'],
+                through: { attributes: [] }
+            }]
         });
         // const orderReviews = reviews.map(review => review.toJSON());
         if (reviews) return res.json(reviews)
@@ -22,19 +26,64 @@ exports.getAll = async (req, res) => {
     }
 }
 
+
+exports.getAllReviewsByBook = async (req, res) => {
+    const { id } = req.params;
+
+    const libro =  await Book.findByPk(id)
+
+    try {
+        const reviews = await Review.findAll({
+            order:[['id']],
+            include: 
+            [
+                {
+                model: User, 
+                attributes: ['uid',"nameUser","email"],
+                through: { attributes: [] }
+            },
+            {
+                model: Book, 
+                attributes: ['id'],
+                through: { attributes: [] }
+            }
+           ],
+
+           through: {bookId:libro},  // Aca filtro mediante "bookId" de la tabla intermedia para traerme
+                                    // solo los reviews de determinado libro
+
+        });
+        if (reviews) {
+
+        return res.json(reviews)
+        }
+        return res.status(404).json({status: 404, message: 'No se encontraron reviews'});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error);
+    }
+}
+
 //----------- POST -----------//
 
-exports.createReview = async function (req, res) {
+
+
+
+exports.createReviewByBook = async function (req, res) {
 
     const { uid, rating, descrption } = req.body
     //uid -> id del user
 
-    const newReview = await Review.create({
-        rating,
-        descrption
-    })
+    const {id} = req.params
+    // id -> id del libro en específico
 
     try{
+ 
+        const newReview = await Review.create({
+            rating,
+            descrption,
+        })
+
 
         if(uid){ //UN COMENTARIO ES DE UN USUARIO
             const userFind = await User.findOne({
@@ -44,6 +93,18 @@ exports.createReview = async function (req, res) {
                 }) 
 
             userFind.addReview(newReview) //Aca uno el usuario al review
+            
+        }
+
+        if(id){
+            const libroFind = await Book.findOne({
+                where:{
+                    id
+                   }
+                // ,include: {attributes: ['title']},
+            })
+
+                libroFind.addReview(newReview) //Aca uno el libro al review
         }
 
         return res.status(201).json(newReview);
@@ -53,6 +114,8 @@ exports.createReview = async function (req, res) {
         return res.status(500).json(error);
     }
 } 
+
+
 
 //----------- PUT -----------//
 
