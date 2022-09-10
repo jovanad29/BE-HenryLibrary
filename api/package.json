@@ -1,7 +1,7 @@
 {
   "name": "api",
-  "version": "1.0.0",
-  "description": "BackEnd de Proyecto Grupal HenryLibrary",
+  "version": "2.9.0",
+  "description": "BackEnd de Proyecto Grupal Librería Henry",
   "main": "index.js",
   "scripts": {
     "start": "nodemon -L",
@@ -12,9 +12,10 @@
     "Henry",
     "Library",
     "Proyecto",
-    "Proyecto Grupal"
+    "Proyecto Grupal",
+    "Henry Library"
   ],
-  "author": "Alicia Benitez, Hernan Camusso, Pablo S., Felipe Yepes, Flor Oldani, Gustavo Encinas, Jovana Davalillo",
+  "author": "Alicia Benitez, Hernan Camusso, Pablo S., Felipe Yepes, Flor Oldani, Gustavo Encinas, Jovana Davalillo, Gabriel Marzioli",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2",
@@ -24,7 +25,6 @@
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",
     "express": "^4.18.1",
-    "image-size": "^1.0.2",
     "jets": "^0.14.1",
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.5.1",
@@ -33,6 +33,7 @@
     "nodemailer": "^6.7.8",
     "nodemailer-express-handlebars": "^5.0.0",
     "pg": "^8.8.0",
+    "request-image-size": "^2.2.0",
     "sequelize": "^6.21.4"
   },
   "devDependencies": {
