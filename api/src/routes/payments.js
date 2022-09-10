@@ -19,7 +19,7 @@ router.put('/:userUid', putAllByUserId);//Actualizacion de la cabecera con todos
 
 router.post('/mergecart/:userUid', postPaymentPaymentBook);//Merge del carrito GUEST y el registrado en la BD al momento de loguearse
 router.put('/update/:userUid', putPaymentPaymentBook);//Actualiza la cantidad de un item en el carrito y calcula el totaAmount del carrito
-router.put('/addItem/:userUid', putAddItemToPaymentBook);//Agrega un item al carrito
+router.put('/addItem/:userUid', putAddItemToPaymentBook);//Agrega un item al carrito y calcula el totaAmount del carrito
 router.put('/:paymentId/status/:statusId', putUpdateStatus);//Edita el estado de un carrito por paymentid
 
 //exportar el router para poder usarlo en el index.js
