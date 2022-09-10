@@ -39,6 +39,7 @@ let paymentsModel = {
     //     });
     //   }
     }
+    console.log(createPayment)
     return createPayment;
   },
 
