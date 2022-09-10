@@ -11,6 +11,7 @@ const {
   getBookQty,
   getBooksCategoryAuthor, //<--
   getAllReviewsByBook
+  cloudinary
 } = require("../controllers/catalogue");
 
 router.get("/", async (req, res) => {
@@ -40,6 +41,8 @@ router.get("/:id", getById);
 router.get("/count/:true", getBookQty);
 
 router.post("/", createBook);
+
+router.post("/upload/", cloudinary);
 
 router.put("/:id", updateBook);
 
