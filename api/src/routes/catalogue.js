@@ -10,6 +10,8 @@ const {
   logicalDeleteBook,
   getBookQty,
   getBooksCategoryAuthor, //<--
+  getAllReviewsByBook
+  cloudinary
 } = require("../controllers/catalogue");
 
 router.get("/", async (req, res) => {
@@ -40,9 +42,13 @@ router.get("/count/:true", getBookQty);
 
 router.post("/", createBook);
 
+router.post("/upload/", cloudinary);
+
 router.put("/:id", updateBook);
 
 router.delete("/:id", logicalDeleteBook);
+
+router.get('/:id/reviews', getAllReviewsByBook);
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;
