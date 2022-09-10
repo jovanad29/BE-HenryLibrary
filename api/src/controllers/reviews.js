@@ -43,7 +43,8 @@ exports.getAllReviewsByBook = async (req, res) => {
                 {
                     model: Book, 
                     attributes: ['id'],
-                    through: { attributes: [] }
+                    through: { attributes: [] },
+                    where: {id:id}  //Dentro de la relacion de Book filtro por id
                 }
            ],
            through: {bookId:libro},  // Aca filtro mediante "bookId" de la tabla intermedia para traerme
