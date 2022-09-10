@@ -1,5 +1,6 @@
 const { Book, Category, Author, Publisher, Review } = require("../db");
 const { Op } = require("sequelize");
+const { cloudinary } = require("../utils/cloudinary");
 
 //----------- GET -----------//
 exports.getAll = async function () {
@@ -182,6 +183,19 @@ exports.createBook = async (req, res) => {
       });
       return res.status(201).json(newBook2);
     }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
+exports.cloudinary = async function (req, res) {
+  try {
+    const fileStr = req.body.data;
+    const uploadResponse = await cloudinary.uploader.upload(fileStr, {
+      upload_preset: "ml_default",
+    });
+    res.status(200).json({ url: uploadResponse.url });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);
