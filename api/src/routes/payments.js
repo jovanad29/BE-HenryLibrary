@@ -4,12 +4,14 @@ const router = Router();
 // requerir los metodos del controlador de payment
 const {
     getPaymentPaymentBook, getAllByUserId, getCountPaymentBook, postByUserId, putAllByUserId, putAllById, postPaymentPaymentBook, 
-    putPaymentPaymentBook, putAddItemToPaymentBook,getAllPaymentPaymentBook, putUpdateStatus
+    putPaymentPaymentBook, putAddItemToPaymentBook,getAllPaymentPaymentBook, putUpdateStatus, getCantItemsByCart
 } = require('../controllers/payments');
 
 // definir los metodos de la ruta de la api hacia el controlador de payment
 router.get('/:userUid', getPaymentPaymentBook);//carrito activo de un usuario
 router.get('/count/:userUid', getCountPaymentBook);//cantidad de items totales en el carrito activo de un usuario
+router.get('/allCount/:userUid', getCantItemsByCart);//cantidad de items por carrito de un usuario')
+
 router.get('/all/:userUid', getAllByUserId);//todos los carritos de un usuario
 router.get('/',getAllPaymentPaymentBook);//todos los carritos
 
