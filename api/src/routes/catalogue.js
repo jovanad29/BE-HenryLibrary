@@ -10,6 +10,7 @@ const {
   logicalDeleteBook,
   getBookQty,
   getBooksCategoryAuthor, //<--
+  getAllReviewsByBook
 } = require("../controllers/catalogue");
 
 router.get("/", async (req, res) => {
@@ -43,6 +44,8 @@ router.post("/", createBook);
 router.put("/:id", updateBook);
 
 router.delete("/:id", logicalDeleteBook);
+
+router.get('/:id/reviews', getAllReviewsByBook);
 
 //exportar el router para poder usarlo en el index.js
 module.exports = router;

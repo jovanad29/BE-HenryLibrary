@@ -72,8 +72,8 @@ exports.getBookQty = async (req, res) => {
 exports.getBooksCategoryAuthor = async (req, res) => {
   const { categoryId, authorId } = req.query;
 
-  console.log(categoryId);
-  console.log(authorId);
+  // console.log(categoryId);
+  // console.log(authorId);
   try {
     const catalogue = await Book.findAll({
       order: [["title", "ASC"]],
@@ -292,3 +292,35 @@ exports.logicalDeleteBook = async (req, res) => {
     return res.status(500).json(error);
   }
 };
+
+exports.getAllReviewsByBook = async (req, res) => {
+  const { id } = req.params;    
+  try {
+      const libro =  await Book.findByPk(id)
+      const reviews = await Review.findAll({
+          order:[['id']],
+          include: 
+          [
+              {
+                  model: User, 
+                  attributes: ['uid',"nameUser","email"],
+                  through: { attributes: [] }
+              },
+              {
+                  model: Book, 
+                  attributes: ['id'],
+                  through: { attributes: [] }
+              }
+         ],
+         through: {bookId:libro},  // Aca filtro mediante "bookId" de la tabla intermedia para traerme
+                                  // solo los reviews de determinado libro
+      });
+      if (reviews) {
+          return res.json(reviews)
+      }
+      return res.status(404).json({status: 404, message: 'No se encontraron reviews'});
+  } catch (error) {
+      console.log(error)
+      return res.status(500).json(error);
+  }
+}
