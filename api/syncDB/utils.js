@@ -1,13 +1,11 @@
 require('dotenv').config();
 const axios = require("axios");
 const { Apibook, Book, Author, Category, Publisher } = require("../src/db");
-const url = require("url");
-const https = require("https");
-const sizeOf = require("image-size");
+const requestImageSize = require('request-image-size');
 
 
-const maxResults = 10; // per page
-const term = [         // for searching volumes
+const maxResults = 20; // per page
+const terms = [         // for searching volumes
   "harry potter y",
   "harry potter and",
   "el principito",
@@ -34,74 +32,57 @@ async function getImage(industryID) {
 			isbn = industryID[1].identifier
 		}
 	}
-	if (isbn) {
-		return `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._SX180_SCLZZZZZZZ_.jpg`;
-	} else {
-		return "https://images-na.ssl-images-amazon.com/images/P/0345247868.01._SX180_SCLZZZZZZZ_.jpg";
-	}
+    let imgUrl = isbn ? `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._PE99_SCLZZZZZZZ_.jpg` : undefined;
+    if (imgUrl) {
+      try {
+        const { width } = await requestImageSize(imgUrl)
+        if (width <= 1) imgUrl = undefined
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    return imgUrl
 }
+
 
 // Pide los libros de la API y llena la tabla intermedia Apibooks
 async function fillApi() {
   const URL = 'https://www.googleapis.com/books/v1/volumes?'
+  let valid = []
   try {
-    for (let i = 0; i < term.length; i++) {
-      for (let j = 0; j < 1; j++) {
-        let api = (
-          await axios.get(`${URL}q=${term[i]}&printType=books&maxResults=${maxResults}&startIndex=${j*40}`)
-        ).data;
-
-        api.items &&
-          api.items.map(async (b) => {
-            const industryID = b.volumeInfo.industryIdentifiers
-              ? b.volumeInfo.industryIdentifiers
-              : [];
-            const img = await getImage(
-              industryID.length > 0 ? industryID : null
-            );
-            if (b.volumeInfo.title && b.volumeInfo.description) {
-              if (
-                b.volumeInfo.title.length < 10000 &&
-                b.volumeInfo.description.length < 10000
-              ) {
-                await Apibook.findOrCreate({ // si el libro no existe, lo registra
-                  where: {
-                    title: b.volumeInfo.title,
-                    description: b.volumeInfo.description
-                      ? b.volumeInfo.description
-                      : "NO DESCRIPTION AVAILABLE",
-                    price: b.saleInfo.listPrice
-                      ? b.saleInfo.listPrice.amount
-                      : (Math.random() * 100).toFixed(2),
-
-                    image: img,
-                    authors: b.volumeInfo.authors ? b.volumeInfo.authors : [],
-                    categories: b.volumeInfo.categories
-                      ? b.volumeInfo.categories
-                      : [],
-                    publisher: b.volumeInfo.publisher
-                      ? b.volumeInfo.publisher
-                      : "NO PUBLISHER AVAILABLE",
-                    publishedDate: b.volumeInfo.publishedDate
-                      ? b.volumeInfo.publishedDate
-                      : "NO DATE AVAILABLE",
-                    pageCount: b.volumeInfo.pageCount
-                      ? b.volumeInfo.pageCount
-                      : 0,
-                    rating: 0,
-                    language: b.volumeInfo.language
-                      ? b.volumeInfo.language
-                      : "NO LANGUAGE AVAILABLE",
-                  },
-                });
-              }
+    for (let term of terms) {
+      // for (let j = 0; j < 1; j++) {
+        let { data } = await axios.get(`${URL}q=${term}&printType=books&maxResults=${maxResults}`)
+        data.items.forEach(async (b) => {
+          let book = b.volumeInfo
+          if (book.industryIdentifiers && book.description && book.publisher) {
+            const img = await getImage(book.industryIdentifiers)
+            if (img) {
+              valid.push( {
+                title: book.title,
+                description: book.description,
+                price: b.saleInfo.listPrice
+                        ? b.saleInfo.listPrice.amount
+                        : (Math.random() * 100).toFixed(2),
+                image: img,
+                authors: book.authors || [],
+                categories: book.categories || [],
+                publisher: book.publisher,
+                publishedDate: book.publishedDate || null,
+                pageCount: book.pageCount || 0,
+                rating: 0,
+                language: book.language
+              })
             }
-          });
-      }
-    }
+          }
+        }); // fin map
+      // }
+    } // fin for
+    await Apibook.bulkCreate(valid)
   } catch (error) {
     console.log(error)
   }
+  // finally { return Promise.all(valid) }
 }
 
 // Carga las categorías registradas en Apibook a la tabla category
