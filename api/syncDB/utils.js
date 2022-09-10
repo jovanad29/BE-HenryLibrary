@@ -1,13 +1,11 @@
 require('dotenv').config();
 const axios = require("axios");
 const { Apibook, Book, Author, Category, Publisher } = require("../src/db");
-// const url = require("url");
-// const https = require("https");
-// const sizeOf = require("image-size");
+const requestImageSize = require('request-image-size');
 
 
-const maxResults = 10; // per page
-const term = [         // for searching volumes
+const maxResults = 20; // per page
+const terms = [         // for searching volumes
   "harry potter y",
   "harry potter and",
   "el principito",
@@ -25,7 +23,7 @@ const term = [         // for searching volumes
   "shakespeare",
 ];
 
-function getImage(industryID) {
+async function getImage(industryID) {
 	let isbn = ""
 	if (industryID && industryID.length > 1) {
 		if (industryID[0].type.includes("10")) {
@@ -34,21 +32,31 @@ function getImage(industryID) {
 			isbn = industryID[1].identifier
 		}
 	}
-  return isbn ? `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._PE99_SCLZZZZZZZ_.jpg` : false;
+    let imgUrl = isbn ? `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._PE99_SCLZZZZZZZ_.jpg` : undefined;
+    if (imgUrl) {
+      try {
+        const { width } = await requestImageSize(imgUrl)
+        if (width <= 1) imgUrl = undefined
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    return imgUrl
 }
+
 
 // Pide los libros de la API y llena la tabla intermedia Apibooks
 async function fillApi() {
   const URL = 'https://www.googleapis.com/books/v1/volumes?'
   let valid = []
   try {
-    for (let t of term) {
+    for (let term of terms) {
       // for (let j = 0; j < 1; j++) {
-        let { data } = await axios.get(`${URL}q=${t}&printType=books&maxResults=${maxResults}`)
+        let { data } = await axios.get(`${URL}q=${term}&printType=books&maxResults=${maxResults}`)
         data.items.forEach(async (b) => {
           let book = b.volumeInfo
           if (book.industryIdentifiers && book.description && book.publisher) {
-            const img = getImage(book.industryIdentifiers)
+            const img = await getImage(book.industryIdentifiers)
             if (img) {
               valid.push( {
                 title: book.title,
@@ -56,7 +64,7 @@ async function fillApi() {
                 price: b.saleInfo.listPrice
                         ? b.saleInfo.listPrice.amount
                         : (Math.random() * 100).toFixed(2),
-                image: getImage(book.industryIdentifiers),
+                image: img,
                 authors: book.authors || [],
                 categories: book.categories || [],
                 publisher: book.publisher,
