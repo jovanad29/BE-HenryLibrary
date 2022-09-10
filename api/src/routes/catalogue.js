@@ -10,7 +10,7 @@ const {
   logicalDeleteBook,
   getBookQty,
   getBooksCategoryAuthor, //<--
-  getAllReviewsByBook
+  getAllReviewsByBook,
   cloudinary
 } = require("../controllers/catalogue");
 
