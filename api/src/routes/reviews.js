@@ -8,15 +8,9 @@ const { getAll, getAllReviewsByBook, createReviewByBook, editReview, deleteRevie
 // definir los metodos de la ruta de la api hacia el controlador de review
 router.get('/', getAll);
 
-
 router.put("/", editReview)
 
 router.delete("/:id", deleteReview)
-
-
-
-
-router.get('/byBook/:id', getAllReviewsByBook);
 
 router.post("/byBook/:id", createReviewByBook)
 
