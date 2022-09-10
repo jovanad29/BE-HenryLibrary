@@ -100,6 +100,52 @@ exports.getCountPaymentBook = async function (req, res) {
     }
 };
 
+//getCantItemsByCart
+exports.getCantItemsByCart = async function (req, res) {
+    const { userUid } = req.params;
+    try {
+        const payment = await Payment.findAll({
+            //include model book y los atributos cantidad de quantity de la tabla payment_book
+
+            include: [
+                { model: Book, attributes: [ 'id','title','image'] },
+            ],
+
+        where: {
+            userUid: userUid,
+        },
+        });
+        // sumar la cantidad total de quantity que hay en payment_book
+        let totalQuantity = 0;
+   
+        let books = payment.map((item) => item.dataValues);
+        console.log(books);
+// extraer en un arreglo la propiedad books
+        let booksArray = books.map((item) => item.books);
+        console.log(booksArray);
+        // extraer en un arreglo la propiedad payment_book de cada book
+        let paymentBookArray = booksArray.map((item) => item[0].payment_book);
+        console.log(paymentBookArray);
+        // extraer los dataValues de cada payment_book
+        let paymentBookDataValues = paymentBookArray.map((item) => item.dataValues);
+        // sumar la cantidad total de quantity
+        for (let i = 0; i < paymentBookDataValues.length; i++) {
+            totalQuantity += paymentBookDataValues[i].quantity;
+        }
+
+
+
+        if (payment) return res.status(200).json({ totalQuantity: totalQuantity});
+        return res.json({ status: 404, message: "No se encontró el registro" });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+
+
 // post /payment por userId Creacion inicial de la cabecera con statusId= 1
 // controlar que no se puedan crear mas de una cabecera con statusId= 1
 exports.postByUserId = async function (req, res) {
@@ -413,41 +459,64 @@ exports.putAddItemToPaymentBook = async function (req, res) {
         });
 
 
-        const paymentBook2 = await payment_book.findOne({
-            attributes: ['quantity'],
-            where: {
-                paymentId: payment.id,
-                bookId: id,
-            },
-        });
-              
-        const paymentId=payment.id;
-        if (paymentBook2) {
-            const actualCant = paymentBook2.quantity;
-            const updatedPaymentBook = await payment_book.update(
-                //sumar 1 a quantity
-                { quantity: actualCant + 1, price: price, },
-                { where: { 
-                        paymentId: paymentId,
-                        bookId: id,
-                    },
-                }
-            );
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-            return res.status(200).json({payment , paymentBook});
-        }
-        else {
+        if (payment)
+            {
+
+            const paymentBook2 = await payment_book.findOne({
+                attributes: ['quantity'],
+                where: {
+                    paymentId: payment.id,
+                    bookId: id,
+                },
+            });
+                  
+            {const paymentId=payment.id;
+            if (paymentBook2) {
+                const actualCant = paymentBook2.quantity;
+                const updatedPaymentBook = await payment_book.update(
+                    //sumar 1 a quantity
+                    { quantity: actualCant + 1, price: price, },
+                    { where: { 
+                            paymentId: paymentId,
+                            bookId: id,
+                        },
+                    }
+                );
+                const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+                return res.status(200).json({payment , paymentBook});
+            }
+            else {
+                const newPaymentBook = await payment_book.create({
+                    paymentId: paymentId,
+                    bookId: id,
+                    quantity: 1,
+                    price: price,
+                });
+                const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+                return res.status(201).json({payment , paymentBook});
+            }
+            }
+            } else {
+            // crear el registro en payment
+            const newPayment = await Payment.create({
+                userUid: userUid,
+                statusId: 1,
+                totalAmount: 0,
+                methodId: 0,
+                transactionId: null,
+                deliveryAddress: null
+            }); 
+            const paymentId=newPayment.id;
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
                 bookId: id,
                 quantity: 1,
                 price: price,
             });
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)
             return res.status(201).json({payment , paymentBook});
-        }
-    }
-
+            }
+}
     catch (error) {
         console.log(error);
         return res.status(500).json(error);

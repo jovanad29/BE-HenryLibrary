@@ -25,9 +25,9 @@ router.post('/', async (req, res) => {
         .create({
           items: req.body.items,
           back_urls: {
-            success: `${base_url}/checkout/validate`,
-            failure: `${base_url}/checkout/validate`,
-            pending: `${base_url}/checkout/validate`,
+            success: `http://localhost:3000/checkout/validate`,
+            failure: `http://localhost:3000/checkout/validate`,
+            pending: `http://localhost:3000/checkout/validate`,
           },
         })
         .then((preference) => {
@@ -44,15 +44,17 @@ router.post('/', async (req, res) => {
   }
 });
 router.post('/create', async (req, res) => {
-  const { userID, items, total, ID } = req.body;
+  const { userID, items, total, ID, status ,status_detail} = req.body;
+
+  console.log(req.body)
   try {
     await createPayment(req.body);
-    await orderEmail(userID, items, total, ID);
-   let emails = await eBookEmail(userID, items);
-    items.length > 1 ? await deleteCart(userID) : null;
-    emails
-      ? res.json({ message: 'eBook email sent' })
-      : res.status(404).json({ message: 'Cannot send eBook' });
+   // await orderEmail(userID, items, total, ID);  //VER tema del mail!!!
+   //let emails = await eBookEmail(userID, items);
+   // items.length > 1 ? await deleteCart(userID) : null; //  Aqui tengo que actualizar el estado de CARTS
+   // emails
+   //   ? res.json({ message: 'eBook email sent' })
+   //   : res.status(404).json({ message: 'Cannot send eBook' });
   } catch (err) {
     console.log(err);
     res.status(404).json({ message: 'Cannot create payment' });
