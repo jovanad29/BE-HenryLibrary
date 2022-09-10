@@ -34,7 +34,7 @@ function getImage(industryID) {
 			isbn = industryID[1].identifier
 		}
 	}
-    return isbn ? `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._PE99_SCLZZZZZZZ_.jpg` : false;
+  return isbn ? `https://images-na.ssl-images-amazon.com/images/P/${isbn}.01._PE99_SCLZZZZZZZ_.jpg` : false;
 }
 
 // Pide los libros de la API y llena la tabla intermedia Apibooks
