@@ -68,6 +68,8 @@ exports.createUser = async (req, res) => {
     try {
         // if (!validations(nameUser, email))
         // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
+        const userExist = await User.findByPk(uid);
+
         await User.findOrCreate({
             where: { uid: uid },
             defaults: { nameUser, email, profilePic },
@@ -76,9 +78,12 @@ exports.createUser = async (req, res) => {
         if (userCreated){
             userCreated.nameUser = nameUser;
             await userCreated.save();
-            // aquí se ejecuta el método para enviar el correo
-            const html = getTemplate('bienvenida',userCreated.dataValues.nameUser)
-            await sendEmail(userCreated.dataValues.email, '¡Bienvenido/a a Librería Henry!', html); 
+            if (!userExist){
+                console.log("entra");
+                // aquí se ejecuta el método para enviar el correo
+                const html = getTemplate('bienvenida',userCreated.dataValues.nameUser)
+                await sendEmail(userCreated.dataValues.email, '¡Bienvenido/a a Librería Henry!', html); 
+            }
         }
         return res.status(201).json(userCreated);
     } catch (error) {
