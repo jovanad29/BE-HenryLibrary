@@ -1,4 +1,4 @@
-const { Book, Category, Author, Publisher, Review } = require("../db");
+const { Book, Category, Author, Publisher, Review, User } = require("../db");
 const { Op } = require("sequelize");
 const { cloudinary } = require("../utils/cloudinary");
 
