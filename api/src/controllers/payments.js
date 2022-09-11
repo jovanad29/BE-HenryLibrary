@@ -106,9 +106,9 @@ exports.getCantItemsByCart = async function (req, res) {
     try {
         const payment = await Payment.findAll({
             //include model book y los atributos cantidad de quantity de la tabla payment_book
-
+            attributes: ['id','userUid','statusId','totalAmount'],
             include: [
-                { model: Book, attributes: [ 'id','title','image'] },
+                { model: Book, attributes: [ 'id','title'] },
             ],
 
         where: {
@@ -117,23 +117,13 @@ exports.getCantItemsByCart = async function (req, res) {
         });
         // sumar la cantidad total de quantity que hay en payment_book
         let totalQuantity = 0;
-   
-        let books = payment.map((item) => item.dataValues);
-        console.log(books);
-// extraer en un arreglo la propiedad books
-        let booksArray = books.map((item) => item.books);
-        console.log(booksArray);
-        // extraer en un arreglo la propiedad payment_book de cada book
-        let paymentBookArray = booksArray.map((item) => item[0].payment_book);
-        console.log(paymentBookArray);
-        // extraer los dataValues de cada payment_book
-        let paymentBookDataValues = paymentBookArray.map((item) => item.dataValues);
-        // sumar la cantidad total de quantity
-        for (let i = 0; i < paymentBookDataValues.length; i++) {
-            totalQuantity += paymentBookDataValues[i].quantity;
+        paymentJson = JSON.parse(JSON.stringify(payment,null,2));
+        // sumar la cantidad total que hay en todas las propiedades quantity de payment_book
+        for (let i = 0; i < paymentJson.length; i++) {
+            for (let j = 0; j < paymentJson[i].books.length; j++) {
+                totalQuantity += paymentJson[i].books[j].payment_book.quantity;
+            }
         }
-
-
 
         if (payment) return res.status(200).json({ totalQuantity: totalQuantity});
         return res.json({ status: 404, message: "No se encontró el registro" });
