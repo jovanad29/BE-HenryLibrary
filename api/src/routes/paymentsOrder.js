@@ -19,6 +19,7 @@ const {
 router.post('/', async (req, res) => {
   const { base_url, id } = req.body; // id es el id del usuario en firebase
   console.log("estoy en /payments", req.body)
+  console.log("base_url", base_url)
   const verifyEnabledUser =true // await isSuspended(ID); Hacerr!!
     try {
       mercadopago.preferences
