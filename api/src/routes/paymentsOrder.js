@@ -7,7 +7,7 @@ const mercadopago = require('mercadopago');
 mercadopago.configure({
   access_token: MP_TOKEN,
 });
-//const { deleteCart } = require('../controllers/CartControllers'); HACER!!!!
+//const { deleteCart } = require('../controllers/CartControllers'); HACER!!!!  CAMBIO ESTADO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const {
   createPayment,
@@ -19,7 +19,7 @@ const {
 router.post('/', async (req, res) => {
   const { base_url, id } = req.body;
   const verifyEnabledUser =true // await isSuspended(ID); Hacerr!!
-  if (verifyEnabledUser) {
+ 
     try {
       mercadopago.preferences
         .create({
@@ -36,12 +36,10 @@ router.post('/', async (req, res) => {
         .catch((error) => console.log(error));
     } catch (error) {
       console.log(error);
-    }
-  } else if (verifyEnabledUser === 1) {
+    
+ 
     return res.status(400).json({ message: 'User does not exist...' });
-  } else {
-    return res.status(400).json({ message: 'User is suspended...' });
-  }
+    }
 });
 router.post('/create', async (req, res) => {
   const { userID, items, total, ID, status ,status_detail} = req.body;
@@ -49,12 +47,16 @@ router.post('/create', async (req, res) => {
   console.log(req.body)
   try {
     await createPayment(req.body);
-   // await orderEmail(userID, items, total, ID);  //VER tema del mail!!!
-   //let emails = await eBookEmail(userID, items);
-   // items.length > 1 ? await deleteCart(userID) : null; //  Aqui tengo que actualizar el estado de CARTS
+   
+   // items.length > 1 ? await deleteCart(userID) : null; //  Aqui tengo que actualizar el estado de CARTS!!!!!
    // emails
    //   ? res.json({ message: 'eBook email sent' })
+
+
    //   : res.status(404).json({ message: 'Cannot send eBook' });
+   // await orderEmail(userID, items, total, ID);  //VER tema del mail!!!
+   //let emails = await eBookEmail(userID, items);
+
   } catch (err) {
     console.log(err);
     res.status(404).json({ message: 'Cannot create payment' });
