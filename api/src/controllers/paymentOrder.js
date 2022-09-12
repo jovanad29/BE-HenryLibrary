@@ -6,41 +6,48 @@ const { Op } = require('sequelize');
 require('dotenv').config();
 
 let paymentsModel = {
-  createPayment: async function (payment) {
-    const createPayment = await PaymentsOrder.create({
-      mpID: payment.ID,
-      items: payment.items,
-      total: payment.total,
-      userID: payment.userID,
-      status: payment.status,
-    });
-    const categoriesArray = await createPayment.toJSON().items;
-    for (let i = 0; i < categoriesArray.length; i++) {
-      const ID = await createPayment.toJSON().items[i].ID;
-      const book = await Book.findByPk(ID);
-      const bookJSON = book.toJSON();
-
-      await book.update({
-        soldCopies: bookJSON.soldCopies + 1,
+  createPayments: async function (payment) {
+    try {
+      console.log("Estoy en el controlador 'createPayments' imprimiendo el param recibido: ", payment)
+      const createPayment = await PaymentsOrder.create({
+        mpID: payment.ID,
+        items: payment.items,
+        total: payment.total,
+        userID: payment.userID,
+        status: payment.status,
       });
-
-    // cargar las copias vendidas por CATEGORIA podriamos hacerlo !!!  
-    // const cat = await Category.findOne({
-    //     where: {
-    //       category: { [Op.iLike]: bookJSON.categories[0] },
-    //     },
-    //   });
-
-    //   let soldCopy = 0;
-    //   if (cat) {
-    //     soldCopy = cat.toJSON().soldCopies;
-    //     await cat.update({
-    //       soldCopies: soldCopy + 1,
-    //     });
-    //   }
+      const categoriesArray = await createPayment.toJSON().items;
+      console.log("estoy imprimiendo createPayment en el controlador createPayments: ", createPayment)
+      console.log("estoy imprimiendo categoriesArray en el controlador createPayments: ", categoriesArray)
+      for (let i = 0; i < categoriesArray.length; i++) {
+        const ID = await createPayment.toJSON().items[i].ID;
+        const book = await Book.findByPk(ID);
+        const bookJSON = book.toJSON();
+  
+        await book.update({
+          soldCopies: bookJSON.soldCopies + 1, // y si compré el mismo libro más de una vez?
+        });
+  
+      // cargar las copias vendidas por CATEGORIA podriamos hacerlo !!!  
+      // const cat = await Category.findOne({
+      //     where: {
+      //       category: { [Op.iLike]: bookJSON.categories[0] },
+      //     },
+      //   });
+  
+      //   let soldCopy = 0;
+      //   if (cat) {
+      //     soldCopy = cat.toJSON().soldCopies;
+      //     await cat.update({
+      //       soldCopies: soldCopy + 1,
+      //     });
+      //   }
+      } // fin del for
+      console.log(createPayment)
+      return createPayment;
+    } catch (error) {
+      console.log(error)
     }
-    console.log(createPayment)
-    return createPayment;
   },
 
   getPayments: async function () {
