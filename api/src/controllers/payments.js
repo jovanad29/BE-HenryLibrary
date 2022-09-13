@@ -165,7 +165,7 @@ exports.postByUserId = async function (req, res) {
         });
         if (newPayment){
             await newPayment.setPayment_status(1)
-            await newPayment.setPayment_method(0)
+            // await newPayment.setPayment_method(0)
             return res.status(201).json(newPayment);
         }
         return res.json({ status: 404, message: "No se pudo generar el registro" });
@@ -308,7 +308,7 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 deliveryAddress: null
             });
             await newPayment.setPayment_status(1)
-            await newPayment.setPayment_method(0)
+            // await newPayment.setPayment_method(1) // cambiar
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
@@ -518,7 +518,7 @@ exports.putAddItemToPaymentBook = async function (req, res) {
                 deliveryAddress: null
             });
             await newPayment.setPayment_status(1)
-            await newPayment.setPayment_method(0)
+            // await newPayment.setPayment_method(0)
             const paymentId=newPayment.id;
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
