@@ -42,6 +42,7 @@ const {
   Payment,
   PaymentsOrder,
   Payment_method,
+  Payment_mp,
   Review
 } = sequelize.models;
 
