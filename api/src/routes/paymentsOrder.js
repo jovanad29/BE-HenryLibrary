@@ -41,10 +41,10 @@ router.post('/', async (req, res) => {
     }
 });
 router.post('/create', async (req, res) => { // crea el pago en la BD más no lo devuelve
-  const { userID, items, total, ID, status ,status_detail} = req.body;
+  // const { userID, items, total, ID, status ,status_detail} = req.body;
   console.log("estoy en /payments/create", req.body)
   try {
-    await createPayments(req.body);   
+    console.log(await createPayments(req.body));   
    // items.length > 1 ? await deleteCart(userID) : null; //  Aqui tengo que actualizar el estado de CARTS!!!!!
    // emails
    //   ? res.json({ message: 'eBook email sent' })
@@ -57,6 +57,7 @@ router.post('/create', async (req, res) => { // crea el pago en la BD más no lo
   }
 });
 router.get('/', async (req, res) => {
+  console.log("estoy en paymentOrders")
   try {
     const payments = await getPayments();
     payments

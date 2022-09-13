@@ -44,9 +44,10 @@ let paymentsModel = {
       //   }
       } // fin del for
       console.log(createPayment)
-      return createPayment;
+      return res.json(createPayment);
     } catch (error) {
       console.log(error)
+      return res.status(500).json(error)
     }
   },
 
