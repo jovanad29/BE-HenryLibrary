@@ -43,6 +43,7 @@ const {
   PaymentsOrder,
   Payment_method,
   Payment_mp,
+  Payment_status,
   Review
 } = sequelize.models;
 
@@ -85,6 +86,14 @@ payment_book = sequelize.define('payment_book', {
 });
 Payment.belongsToMany(Book,{through: 'payment_book'});
 Book.belongsToMany(Payment,{through: 'payment_book'});
+Payment_status.hasMany(Payment, {
+  foreignKey: 'status_id',
+  onUpdate: 'CASCADE',
+});
+Payment.belongsTo(Payment_status, {
+  foreignKey: 'status_id',
+  onUpdate: 'CASCADE',
+});
 // MERCADOPAGO
 payment_mp_book = sequelize.define('payment_mp_book', {
   quantity: Sequelize.INTEGER,
