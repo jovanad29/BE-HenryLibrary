@@ -164,7 +164,7 @@ exports.postByUserId = async function (req, res) {
             deliveryAddress: null
         });
         if (newPayment){
-            await newPayment.addStatus(1)
+            await newPayment.setPayment_status(1)
             return res.status(201).json(newPayment);
         }
         return res.json({ status: 404, message: "No se pudo generar el registro" });
@@ -304,7 +304,7 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 transactionId: null,
                 deliveryAddress: null
             });
-            await newPayment.addStatus(1)
+            await newPayment.setPayment_status(1)
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
