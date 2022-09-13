@@ -100,6 +100,14 @@ Payment_mp.belongsTo(User, {
   foreignKey: 'user_id',
   onUpdate: 'CASCADE',
 });
+Payment_method.hasMany(Payment_mp, {
+  foreignKey: 'payment_method_id',
+  onUpdate: 'CASCADE',
+});
+Payment_mp.belongsTo(Payment_method, {
+  foreignKey: 'payment_method_id',
+  onUpdate: 'CASCADE',
+});
 // MERCADOPAGO
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
