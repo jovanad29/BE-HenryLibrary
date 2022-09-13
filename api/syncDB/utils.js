@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require("axios");
-const { Apibook, Book, Author, Category, Publisher, Payment_status } = require("../src/db");
+const { Apibook, Book, Author, Category, Publisher, Payment_status, Payment_method } = require("../src/db");
 const requestImageSize = require('request-image-size');
 
 
@@ -213,6 +213,18 @@ async function setStatuses(){
   try {
     for (let s of statuses) {
       await Payment_status.create({ description: s })
+    }    
+  } catch (error) {
+    console.log(error)
+  }
+  return 'Done'
+}
+
+async function setPaymentMethods(){
+  const methods = ["TEST", "ACCOUNT_MONEY", "CREDIT_CARD"] // NA para cuando
+  try {
+    for (let m of methods) {
+      await Payment_method.create({ descrption: m })
     }    
   } catch (error) {
     console.log(error)
