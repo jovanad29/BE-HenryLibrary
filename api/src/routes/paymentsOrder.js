@@ -7,7 +7,6 @@ const mercadopago = require('mercadopago');
 mercadopago.configure({
   access_token: MP_TOKEN,
 });
-//const { deleteCart } = require('../controllers/CartControllers'); HACER!!!!  CAMBIO ESTADO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const {
   createPayments,
