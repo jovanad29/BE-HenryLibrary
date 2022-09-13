@@ -24,10 +24,10 @@ module.exports = (sequelize) => {
 				type: DataTypes.FLOAT,
 				allowNull: false,
 			},
-			statusId: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-			},
+			// statusId: {
+			// 	type: DataTypes.INTEGER,
+			// 	allowNull: false,
+			// },
 			deliveryAddress: {
 				type: DataTypes.STRING,
 				allowNull: true,
