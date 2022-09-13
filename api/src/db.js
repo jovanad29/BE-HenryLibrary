@@ -101,6 +101,7 @@ payment_mp_book = sequelize.define('payment_mp_book', {
 });
 Payment_mp.belongsToMany(Book,{through: 'payment_mp_book', foreignKey: 'payment_mp_id'});
 Book.belongsToMany(Payment_mp,{through: 'payment_mp_book', foreignKey: 'book_id'});
+
 User.hasMany(Payment_mp, {
   foreignKey: 'user_id',
   onUpdate: 'CASCADE',
@@ -109,20 +110,26 @@ Payment_mp.belongsTo(User, {
   foreignKey: 'user_id',
   onUpdate: 'CASCADE',
 });
+
 Payment_method.hasMany(Payment_mp, {
   foreignKey: 'payment_method_id',
+  targetKey: 'id',
   onUpdate: 'CASCADE',
 });
 Payment_mp.belongsTo(Payment_method, {
   foreignKey: 'payment_method_id',
+  targetKey: 'id',
   onUpdate: 'CASCADE',
 });
+
 Payment_status.hasMany(Payment_mp, {
   foreignKey: 'status_id',
+  targetKey: 'id',
   onUpdate: 'CASCADE',
 });
 Payment_mp.belongsTo(Payment_status, {
   foreignKey: 'status_id',
+  targetKey: 'id',
   onUpdate: 'CASCADE',
 });
 // MERCADOPAGO
