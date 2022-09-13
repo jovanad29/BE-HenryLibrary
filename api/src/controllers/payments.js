@@ -1,4 +1,4 @@
-const { Payment, payment_book, Book} = require('../db');
+const { Payment, payment_book, Book, Payment_status} = require('../db');
 const { Op } = require('sequelize');
 
 
@@ -7,18 +7,19 @@ exports.getPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findOne({
-            attributes: ['id','userUid','statusId','totalAmount'],
+            attributes: ['id','userUid','totalAmount'],
             include: [
-                { model: Book, attributes: [ 'id','title', 'image'] },
+                { model: Book, attributes: ['id', 'title', 'image'] },
+                { model: Payment_status, attributes: ['id', 'description'], where: { id: 1} }
             ],
             where: {
                 userUid: userUid,
-                statusId: 1,
-        },
+            },
         });
 
-        if (payment) return res.status(200).json(payment);
-
+        if (payment){
+            return res.status(200).json(payment);   
+        }
         return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
         console.log(error);
@@ -33,7 +34,8 @@ exports.getAllByUserId = async function (req, res) {
         const payment = await Payment.findAll({
         order: [['id', 'ASC']],
         include: [
-                { model: Book, attributes: [ 'id','title','image'] },
+            { model: Book, attributes: [ 'id','title','image'] },
+            { model: Payment_status, attributes: ['id', 'description'], where: { id: 1} }
         ],    
         where: {
             userUid: userUid,
@@ -53,10 +55,11 @@ exports.getAllByUserId = async function (req, res) {
 exports.getAllPaymentPaymentBook = async function (req, res) {
     try {
         const payment = await Payment.findAll({
-        order: [['id', 'ASC']],
-        include: [
-                { model: Book, attributes: [ 'id','title','image'] },
-        ],
+            order: [['id', 'ASC']],
+            include: [
+                { model: Book, attributes: ['id','title','image'] },
+                { model: Payment_status, attributes: ['id', 'description'] },
+            ],
         });
         // extraer los datos que hay en payment
         const items = payment.map((item) => item.dataValues);
@@ -74,15 +77,17 @@ exports.getCountPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findOne({
-        where: {
-            userUid: userUid,
-            statusId: 1,
-        },
+            where: {
+                userUid: userUid
+            },
+            include: [
+                { model: Payment_status, attributes: ['id', 'description'], where: { id: 1} }
+            ]
         });
         if (payment)
             {const items = await payment_book.findAll({
                 where: {
-                        paymentId: payment.id,
+                    paymentId: payment.id,
                 },
             });
             const itemsPaymentBook = items.map((item) => item.dataValues);
@@ -135,7 +140,6 @@ exports.getCountPaymentBook = async function (req, res) {
 // };
 
 
-
 // post /payment por userId Creacion inicial de la cabecera con statusId= 1
 // controlar que no se puedan crear mas de una cabecera con statusId= 1
 exports.postByUserId = async function (req, res) {
@@ -144,21 +148,25 @@ exports.postByUserId = async function (req, res) {
         //controlar que no exitan registros con statusId= 1
         const payment = await Payment.findOne({
         where: {
-            userUid: userUid,
-            statusId: 1,
+            userUid: userUid
         },
+        include: [
+            { model: Payment_status, attributes: [ 'id', 'description'], where: { id: 1} }
+        ]
         });
         if (payment) return res.json({ status: 404, message: "Ya existe un registro con statusId= 1" });
         //si no existe registro con statusId= 1, crearlo
         const newPayment = await Payment.create({
-        userUid: userUid,
-        statusId: 1,
-        totalAmount: 0,
-        methodId: 0,
-        transactionId: null,
-        deliveryAddress: null
+            userUid: userUid,
+            totalAmount: 0,
+            methodId: 0,
+            transactionId: null,
+            deliveryAddress: null
         });
-        if (newPayment) return res.status(201).json(newPayment);
+        if (newPayment){
+            await newPayment.addStatus(1)
+            return res.status(201).json(newPayment);
+        }
         return res.json({ status: 404, message: "No se pudo generar el registro" });
     } catch (error) {
         console.log(error);
@@ -169,13 +177,11 @@ exports.postByUserId = async function (req, res) {
 // put /payment por userId Actualizacion de la cabecera con todos sus datos //
 //OJO ACTUALIZA TODOS LOS REGISTROS, usar solo para limpieza, tal vez tengamos que eliminar este metodo.
 exports.putAllByUserId = async function (req, res) {
-    const { statusId, totalAmount, methodId, transactionId ,deliveryAddress} = req.body;
+    const { statusId, totalAmount, methodId, transactionId, deliveryAddress} = req.body;
     const { userUid } = req.params;
     try {
         const payment = await Payment.update(
         {
-            
-            statusId: statusId,
             totalAmount: totalAmount,
             methodId: methodId,
             transactionId: transactionId,
@@ -183,16 +189,19 @@ exports.putAllByUserId = async function (req, res) {
         },
         {
             where: {
-            userUid: userUid,
+                userUid: userUid,
             },
         }
         );
+        await payment.setStatus(statusId)
         const updatedPayment = await Payment.findAll({
-        where: {
-            userUid: userUid,
-        },
+            where: {
+                userUid: userUid,
+            },
         });
-        if (payment) return res.status(200).json(updatedPayment);
+        if (payment){
+            return res.status(200).json(updatedPayment);
+        }
         return res.json({ status: 404, message: "No se pudo actualizar el registro" });
     } catch (error) {
         console.log(error);
@@ -207,7 +216,6 @@ exports.putAllById = async function (req, res) {
     try {
         const payment = await Payment.update(
         {
-            statusId: statusId,
             totalAmount: totalAmount,
             methodId: methodId,
             transactionId: transactionId,
@@ -215,16 +223,19 @@ exports.putAllById = async function (req, res) {
         },
         {
             where: {
-            id: id,
+                id: id,
             },
         }
         );
+        await payment.setStatus(statusId)
         const updatedPayment = await Payment.findOne({
             where: {
                 id: id,
             },
         });
-        if (payment) return res.status(200).json(updatedPayment);
+        if (payment){
+            return res.status(200).json(updatedPayment);
+        }
         return res.json({ status: 404, message: "No se pudo actualizar el registro" });
     } catch (error) {
         console.log(error);
@@ -241,9 +252,11 @@ exports.postPaymentPaymentBook = async function (req, res) {
         // preguntar si existe un registro con statusId= 1
         const payment = await Payment.findOne({
         where: {
-            userUid: userUid,
-            statusId: 1,
+            userUid: userUid
         },
+        include: [
+            { model: Payment_status, attributes: [ 'id', 'description'], where: { id: 1 } }
+        ]
         });   
         if (payment) {
             const items = await payment_book.findAll({
@@ -286,12 +299,12 @@ exports.postPaymentPaymentBook = async function (req, res) {
             // crear el registro en payment
             const newPayment = await Payment.create({
                 userUid: userUid,
-                statusId: 1,
                 totalAmount: 0,
                 methodId: 0,
                 transactionId: null,
                 deliveryAddress: null
             });
+            await newPayment.addStatus(1)
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
@@ -306,9 +319,11 @@ exports.postPaymentPaymentBook = async function (req, res) {
         //obtener el registro de payment para el userUid y statusId=1
         const paymentUpdated = await Payment.findOne({
             where: {
-                userUid: userUid,
-                statusId: 1,
+                userUid: userUid
             },
+            include: [
+                { model: Payment_status, attributes: ['id', 'description'], where: { id: 1 } }
+            ]
         });
 
         //obtener el totalAmount, leer de la tabla payment_book para paymentId===payment.id, multiplicar price * quantity y guardarlo en la tabla payment.totalAmount
@@ -376,11 +391,12 @@ exports.putPaymentPaymentBook = async function (req, res) {
   //findond payment by userUid and statusId=1
         const payment = await Payment.findOne({
             where: {
-                userUid: userUid,
-                statusId: 1,
+                userUid: userUid
             },
+            include: [
+                { model: Payment_status, attributes: ['id', 'description'], where: { id: 1 } }
+            ]
         });
-
 
         const paymentBook = await payment_book.findOne({
             where: {
@@ -411,7 +427,7 @@ exports.putPaymentPaymentBook = async function (req, res) {
                     },
                 }
             );
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
+            const { payment , paymentBook } = await recalculatePaymentTotalAmount(paymentId)  
             return res.status(200).json({payment , paymentBook});
         }}
         if (!paymentBook) {
@@ -443,9 +459,11 @@ exports.putAddItemToPaymentBook = async function (req, res) {
   //findond payment by userUid and statusId=1
         const payment = await Payment.findOne({
             where: {
-                userUid: userUid,
-                statusId: 1,
+                userUid: userUid
             },
+            include: [
+                { model: Payment_status, attributes: ['id', 'description'], where: { id: 1 } }
+            ]
         });
 
 
@@ -490,12 +508,12 @@ exports.putAddItemToPaymentBook = async function (req, res) {
             // crear el registro en payment
             const newPayment = await Payment.create({
                 userUid: userUid,
-                statusId: 1,
                 totalAmount: 0,
                 methodId: 0,
                 transactionId: null,
                 deliveryAddress: null
-            }); 
+            });
+            await newPayment.setPayment_status(1)
             const paymentId=newPayment.id;
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
@@ -518,23 +536,27 @@ exports.putUpdateStatus = async function (req, res) {
     const { paymentId, statusId } = req.params;
 
     try {
-        const updatedPayment = await Payment.update(
-            {
-                statusId: statusId,
-            },
-            {
-                where: {
-                    id: paymentId,
-                },
-            }
-        );
-        if (updatedPayment[0]===1) {
-            return res.status(204).json({ menssage: "Se actualizo el status" });
+        // const updatedPayment = await Payment.update(
+        //     {
+        //         where: {
+        //             id: paymentId,
+        //         },
+        //     }
+        // );
+        // if (updatedPayment[0]===1) {
+        //     return res.status(204).json({ menssage: "Se actualizo el status" });
             
-        } else {
+        // } else {
             
-            return res.status(404).json({ menssage: "No se encontro el carrito" });
+        //     return res.status(404).json({ menssage: "No se encontro el carrito" });
+        // }
+        const toUpdate = await Payment.findByPk(paymentId)
+        console.log(getAllFuncs(toUpdate))
+        if (toUpdate){
+            await toUpdate.setPayment_status(statusId)
+            return res.status(204).json({ menssage: "Se actualizó el status" });
         }
+        return res.status(404).json({ menssage: "No se encontró el carrito" });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
