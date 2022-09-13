@@ -159,12 +159,13 @@ exports.postByUserId = async function (req, res) {
         const newPayment = await Payment.create({
             userUid: userUid,
             totalAmount: 0,
-            methodId: 0,
+            // methodId: 0,
             transactionId: null,
             deliveryAddress: null
         });
         if (newPayment){
-            await newPayment.addStatus(1)
+            await newPayment.setPayment_status(1)
+            // await newPayment.setPayment_method(0)
             return res.status(201).json(newPayment);
         }
         return res.json({ status: 404, message: "No se pudo generar el registro" });
@@ -183,7 +184,7 @@ exports.putAllByUserId = async function (req, res) {
         const payment = await Payment.update(
         {
             totalAmount: totalAmount,
-            methodId: methodId,
+            // methodId: methodId,
             transactionId: transactionId,
             deliveryAddress: deliveryAddress
         },
@@ -193,7 +194,8 @@ exports.putAllByUserId = async function (req, res) {
             },
         }
         );
-        await payment.setStatus(statusId)
+        await payment.setPayment_status(statusId)
+        await payment.setPayment_method(methodId)
         const updatedPayment = await Payment.findAll({
             where: {
                 userUid: userUid,
@@ -217,7 +219,7 @@ exports.putAllById = async function (req, res) {
         const payment = await Payment.update(
         {
             totalAmount: totalAmount,
-            methodId: methodId,
+            // methodId: methodId,
             transactionId: transactionId,
             deliveryAddress: deliveryAddress
         },
@@ -227,7 +229,8 @@ exports.putAllById = async function (req, res) {
             },
         }
         );
-        await payment.setStatus(statusId)
+        await payment.setPayment_status(statusId)
+        await payment.setPayment_method(methodId)
         const updatedPayment = await Payment.findOne({
             where: {
                 id: id,
@@ -300,11 +303,12 @@ exports.postPaymentPaymentBook = async function (req, res) {
             const newPayment = await Payment.create({
                 userUid: userUid,
                 totalAmount: 0,
-                methodId: 0,
+                // methodId: 0,
                 transactionId: null,
                 deliveryAddress: null
             });
-            await newPayment.addStatus(1)
+            await newPayment.setPayment_status(1)
+            // await newPayment.setPayment_method(1) // cambiar
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
@@ -509,11 +513,12 @@ exports.putAddItemToPaymentBook = async function (req, res) {
             const newPayment = await Payment.create({
                 userUid: userUid,
                 totalAmount: 0,
-                methodId: 0,
+                // methodId: 0,
                 transactionId: null,
                 deliveryAddress: null
             });
             await newPayment.setPayment_status(1)
+            // await newPayment.setPayment_method(0)
             const paymentId=newPayment.id;
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
