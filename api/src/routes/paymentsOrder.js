@@ -26,9 +26,9 @@ router.post('/', async (req, res) => {
         .create({
           items: req.body.items,
           back_urls: {
-            success: `${base_url}/checkout/validate`,
-            failure: `${base_url}/checkout/validate`,
-            pending: `${base_url}/checkout/validate`,
+            success: `${base_url}checkout/validate`,
+            failure: `${base_url}checkout/validate`,
+            pending: `${base_url}checkout/validate`,
           },
         })
         .then((preference) => {
