@@ -6,11 +6,11 @@ module.exports = (sequelize) => {
 	sequelize.define(
 		'payment_mp',
 		{
-            transaction_id: {    // mpID
+            transactionId: {    // mpID
                 type: DataTypes.STRING,
 				allowNull: false,
             },
-            payment_type: {
+            paymentType: {
                 type: DataTypes.STRING,
                 allowNull: false
             },
@@ -18,11 +18,11 @@ module.exports = (sequelize) => {
                 type: DataTypes.FLOAT,
                 allowNull: false
             },
-            payment_type: {
+            statusDetail: {
                 type: DataTypes.STRING,
                 allowNull: false
             },
-            delivery_address: {
+            deliveryAddress: {
                 type: DataTypes.STRING,
                 allowNull: false
             }
