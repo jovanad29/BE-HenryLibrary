@@ -31,5 +31,7 @@ conn.sync({ force: true }).then(async () => {
     console.log(await fillBook())
     console.log('Setting Status table...')
     console.log(await setStatuses())
+    console.log('Setting Payment Methods table...')
+    console.log(await setStatuses())
     console.log(`${await Book.count()} rows added of ${await Apibook.count()} rows total`)
 });
