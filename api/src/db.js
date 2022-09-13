@@ -85,6 +85,14 @@ payment_book = sequelize.define('payment_book', {
 });
 Payment.belongsToMany(Book,{through: 'payment_book'});
 Book.belongsToMany(Payment,{through: 'payment_book'});
+// MERCADOPAGO
+payment_mp_book = sequelize.define('payment_mp_book', {
+  quantity: Sequelize.INTEGER,
+  price: sequelize.Sequelize.FLOAT
+});
+Payment_mp.belongsToMany(Book,{through: 'payment_mp_book', foreignKey: 'payment_mp_id'});
+Book.belongsToMany(Payment_mp,{through: 'payment_mp_book', foreignKey: 'book_id'});
+// MERCADOPAGO
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
 User.belongsToMany(Review,{through:'review_user'})
