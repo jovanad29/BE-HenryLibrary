@@ -9,7 +9,6 @@ module.exports = (sequelize) => {
             transaction_id: {    // mpID
                 type: DataTypes.STRING,
 				allowNull: false,
-				primaryKey:true,
             },
             payment_type: {
                 type: DataTypes.STRING,
