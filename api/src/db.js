@@ -42,6 +42,8 @@ const {
   Payment,
   PaymentsOrder,
   Payment_method,
+  Payment_mp,
+  Payment_status,
   Review
 } = sequelize.models;
 
@@ -84,6 +86,48 @@ payment_book = sequelize.define('payment_book', {
 });
 Payment.belongsToMany(Book,{through: 'payment_book'});
 Book.belongsToMany(Payment,{through: 'payment_book'});
+Payment_status.hasMany(Payment, {
+  foreignKey: 'statusId',
+  onUpdate: 'CASCADE',
+});
+Payment.belongsTo(Payment_status, {
+  foreignKey: 'statusId',
+  onUpdate: 'CASCADE',
+});
+// MERCADOPAGO
+payment_mp_book = sequelize.define('payment_mp_book', {
+  quantity: Sequelize.INTEGER,
+  price: sequelize.Sequelize.FLOAT
+});
+Payment_mp.belongsToMany(Book,{through: 'payment_mp_book', foreignKey: 'paymentMpId'});
+Book.belongsToMany(Payment_mp,{through: 'payment_mp_book', foreignKey: 'bookId'});
+User.hasMany(Payment_mp, {
+  foreignKey: 'userId',
+  onUpdate: 'CASCADE',
+});
+Payment_mp.belongsTo(User, {
+  foreignKey: 'userId',
+  onUpdate: 'CASCADE',
+});
+Payment_method.hasMany(Payment_mp, {
+  foreignKey: 'paymentMethodId',
+  onUpdate: 'CASCADE',
+});
+Payment_mp.belongsTo(Payment_method, {
+  foreignKey: 'paymentMethodId',
+  onUpdate: 'CASCADE',
+});
+Payment_status.hasMany(Payment_mp, {
+  foreignKey: 'statusId',
+  targetKey: 'id',
+  onUpdate: 'CASCADE',
+});
+Payment_mp.belongsTo(Payment_status, {
+  foreignKey: 'statusId',
+  targetKey: 'id',
+  onUpdate: 'CASCADE',
+});
+// MERCADOPAGO
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
 User.belongsToMany(Review,{through:'review_user'})
