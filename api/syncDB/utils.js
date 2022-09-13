@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require("axios");
-const { Apibook, Book, Author, Category, Publisher } = require("../src/db");
+const { Apibook, Book, Author, Category, Publisher, Payment_status } = require("../src/db");
 const requestImageSize = require('request-image-size');
 
 
@@ -208,10 +208,23 @@ async function fillBook() {
     return 'Done'
 }
 
+async function setStatuses(){
+  const statuses = ["ACTIVE", "PENDING", "PENDING_APPROVAL", "APPROVED", "SUBMITTED", "DELETED", "REJECTED"]
+  try {
+    for (let s of statuses) {
+      await Payment_status.create({ description: s })
+    }    
+  } catch (error) {
+    console.log(error)
+  }
+  return 'Done'
+}
+
 module.exports = {
   fillApi,
   fillCategories,
   fillAuthors,
   fillPublisher,
   fillBook,
+  setStatuses
 };
