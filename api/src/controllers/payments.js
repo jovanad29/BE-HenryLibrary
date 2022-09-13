@@ -551,7 +551,6 @@ exports.putUpdateStatus = async function (req, res) {
         //     return res.status(404).json({ menssage: "No se encontro el carrito" });
         // }
         const toUpdate = await Payment.findByPk(paymentId)
-        console.log(getAllFuncs(toUpdate))
         if (toUpdate){
             await toUpdate.setPayment_status(statusId)
             return res.status(204).json({ menssage: "Se actualizó el status" });
