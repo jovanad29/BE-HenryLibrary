@@ -184,7 +184,7 @@ exports.putAllByUserId = async function (req, res) {
         const payment = await Payment.update(
         {
             totalAmount: totalAmount,
-            methodId: methodId,
+            // methodId: methodId,
             transactionId: transactionId,
             deliveryAddress: deliveryAddress
         },
@@ -194,7 +194,8 @@ exports.putAllByUserId = async function (req, res) {
             },
         }
         );
-        await payment.setStatus(statusId)
+        await payment.setPayment_status(statusId)
+        await payment.setPayment_method(methodId)
         const updatedPayment = await Payment.findAll({
             where: {
                 userUid: userUid,
@@ -218,7 +219,7 @@ exports.putAllById = async function (req, res) {
         const payment = await Payment.update(
         {
             totalAmount: totalAmount,
-            methodId: methodId,
+            // methodId: methodId,
             transactionId: transactionId,
             deliveryAddress: deliveryAddress
         },
@@ -228,7 +229,8 @@ exports.putAllById = async function (req, res) {
             },
         }
         );
-        await payment.setStatus(statusId)
+        await payment.setPayment_status(statusId)
+        await payment.setPayment_method(methodId)
         const updatedPayment = await Payment.findOne({
             where: {
                 id: id,
