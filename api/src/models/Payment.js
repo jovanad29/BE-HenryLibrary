@@ -14,20 +14,19 @@ module.exports = (sequelize) => {
 			userUid: {
 				type: DataTypes.STRING,
 				allowNull: false,
-			},
-			
-			methodId: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-			},
+			},			
+			// methodId: {
+			// 	type: DataTypes.INTEGER,
+			// 	allowNull: false,
+			// },
 			totalAmount: {
 				type: DataTypes.FLOAT,
 				allowNull: false,
 			},
-			statusId: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-			},
+			// statusId: {
+			// 	type: DataTypes.INTEGER,
+			// 	allowNull: false,
+			// },
 			deliveryAddress: {
 				type: DataTypes.STRING,
 				allowNull: true,
