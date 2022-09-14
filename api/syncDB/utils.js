@@ -238,5 +238,6 @@ module.exports = {
   fillAuthors,
   fillPublisher,
   fillBook,
-  setStatuses
+  setStatuses,
+  setPaymentMethods
 };
