@@ -41,7 +41,8 @@ exports.getAllByUserId = async function (req, res) {
                 {
                     model: Payment_status,
                     attributes: ["id", "description"],
-                    where: { id: 1 },
+                    // no corresponde filtrar por id 1, este metodo tiene que traer todos los registros de payment para el usuario
+                    // where: { id: 1 },
                 },
             ],
             where: {
