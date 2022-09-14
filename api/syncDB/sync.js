@@ -10,7 +10,8 @@ const {
     fillAuthors,
     fillPublisher,
     fillBook,
-    setStatuses
+    setStatuses,
+    setPaymentMethods
 } = require('./utils.js')
 
 conn.sync({ force: true }).then(async () => {
