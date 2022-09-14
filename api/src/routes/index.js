@@ -11,6 +11,7 @@ router.use('/user', require('./user'));
 router.use('/reviews', require('./reviews'));
 router.use('/payments', require('./payments'));
 router.use('/paymentsOrder', require('./paymentsOrder'));
+router.use('/mercadopago', require('./paymentMP'));
 router.use('/publisher', require('./publisher'));
 router.use('/payment-method', require('./paymentMethod'));
 
