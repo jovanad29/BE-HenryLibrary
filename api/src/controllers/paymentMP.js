@@ -1,4 +1,4 @@
-const { Payment_mp, User, Book } = require('../db');
+const { Payment_mp, User, Book, payment_mp_book } = require('../db');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MP_TOKEN } = process.env;
