@@ -57,7 +57,7 @@ const getBienvenida = (name) => {
             <li>¡Pagar todo con tu cuenta MercadoPago!</li>
         </ul>
         <p>Librería Henry. Tu librería de confianza.</p>
-        <h3 style="margin: auto;">Vuelve a visitarnos 👉<a
+        <h3 style="margin: auto;">¡Realiza tu primera compra! 👉<a
         href="http://henry-library.netlify.app/" target="_blank"
         style="text-decoration: none;">LH</a></h3>
         `;
