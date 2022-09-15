@@ -74,7 +74,7 @@ exports.createPayments = async (req, res) => {
         const user = await newPaymentMP.getUser()
         const html = getTemplate('purchaseReceipt', body={user,association})
         await sendEmail(user.email, 'Recibo de Pago - Librería Henry', html);
-        return res.status(201).json(newPaymentMP)
+        return res.status(201).json(association)
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)
