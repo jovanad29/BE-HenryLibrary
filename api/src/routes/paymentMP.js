@@ -12,23 +12,8 @@ const {
 } = require('../controllers/paymentMP')
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
 
-router.post('/', setMercadoPago);
-router.post('/create', createPayments) // => { // crea el pago en la BD más no lo devuelve
-//   // const { userID, items, total, ID, status ,status_detail} = req.body;
-//   console.log("estoy en /payments/create", req.body)
-//   try {
-//     console.log(await createPayments(req.body));   
-//    // items.length > 1 ? await deleteCart(userID) : null; //  Aqui tengo que actualizar el estado de CARTS!!!!!
-//    // emails
-//    //   ? res.json({ message: 'eBook email sent' })
-//    //   : res.status(404).json({ message: 'Cannot send eBook' });
-//    // await orderEmail(userID, items, total, ID);  //VER tema del mail!!!
-//    //let emails = await eBookEmail(userID, items);
-//   } catch (err) {
-//     console.log(err);
-//     res.status(404).json({ message: 'Cannot create payment' });
-//   }
-// });
+router.post('/', setMercadoPago)
+router.post('/create', createPayments)
 router.get('/', async (req, res) => {
   console.log("estoy en paymentOrders")
   try {

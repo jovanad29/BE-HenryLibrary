@@ -1,5 +1,6 @@
 const { Payment_mp, User, Book, payment_mp_book } = require('../db');
 const jwt = require('jsonwebtoken');
+const { getTemplate, sendEmail } = require('../config/nodemailer.config');
 require('dotenv').config();
 const { MP_TOKEN } = process.env;
 const mercadopago = require('mercadopago');
@@ -64,7 +65,13 @@ exports.createPayments = async (req, res) => {
             } catch (error) {
                 console.log(error)
             }
-        });
+        })
+        // Buscar los books en newPaymentMp funciona solo si getBooks se hace después de buscar las asociaciones ¡NO BORRAR O ARREGLAR!
+        const association = await Payment_mp.findOne({ where: {id: newPaymentMP.id},  include: [{ model: Book}] })
+        const items = await newPaymentMP.getBooks()
+        const user = await newPaymentMP.getUser()
+        const html = getTemplate('purchaseReceipt', body={user,association,items})
+        await sendEmail(user.email, 'Recibo de Pago - Librería Henry', html);
         return res.status(201).json(newPaymentMP)
     } catch (error) {
         console.log(error)
