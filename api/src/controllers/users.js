@@ -1,4 +1,4 @@
-const { User, Payment, Review, Book } = require('../db');
+const { User, Payment, Review, Book, Payment_mp, Payment_mp_book } = require('../db');
 const { Op } = require('sequelize');
 const { getTemplate, sendEmail } = require('../config/nodemailer.config');
 
@@ -195,3 +195,36 @@ exports.getUserFavorites = async (req, res) => {
 		return res.status(500).json(error);
 	}
 }
+
+
+exports.getUserPaymentsBook = async (req, res) => {
+	const { uid } = req.params  //id usuario
+    const { id } = req.query  //id libro
+
+    console.log(id)
+    console.log(uid)
+
+	try {
+		const userBooks = await Payment_mp.findOne({
+
+            where:{
+                userId: uid 
+            },
+            
+			// include: {
+			// 	model: Payment_mp_book,
+            //     where:{
+            //         bookId: id 
+            //     }
+			// }
+		})
+        if (userBooks) {
+            return res.json(userBooks) 
+        }
+        return res.status(404).json([]);
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json(error);
+	}
+}
+
