@@ -26,6 +26,33 @@ exports.getAll = async (req, res) => {
     }
 }
 
+//----------- GET -----------//
+exports.getAllReviewByUser = async (req, res) => {
+    const {uid} = req.query
+    try {
+        const reviews = await Review.findAll({
+            include: [{
+                model: User, 
+                attributes: ['uid',"nameUser","email"],
+                through: { attributes: [] },
+                where:{
+                    uid : uid
+                }
+            },            {
+                model: Book, 
+                attributes: ['id', "title"],
+                through: { attributes: [] }
+            }]
+        });
+        // const orderReviews = reviews.map(review => review.toJSON());
+        if (reviews) return res.json(reviews)
+        return res.status(404).json({status: 404, message: 'No se encontraron reviews'});
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error);
+    }
+}
+
 
 exports.getAllReviewsByBook = async (req, res) => {
     const { id } = req.params;    
