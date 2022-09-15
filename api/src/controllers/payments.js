@@ -35,7 +35,7 @@ exports.getAllByUserId = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findAll({
-            order: [["id", "ASC"]],
+            order: [["id", "DESC"]],
             include: [
                 { model: Book, attributes: ["id", "title", "image"] },
                 {

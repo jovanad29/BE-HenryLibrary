@@ -79,7 +79,7 @@ exports.createUser = async (req, res) => {
             userCreated.nameUser = nameUser;
             await userCreated.save();
             if (!userExist){
-                console.log("entra");
+                // console.log("entra");
                 // aquí se ejecuta el método para enviar el correo
                 const html = getTemplate('bienvenida',userCreated.dataValues.nameUser)
                 await sendEmail(userCreated.dataValues.email, '¡Bienvenido/a a Librería Henry!', html); 
