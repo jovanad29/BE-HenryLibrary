@@ -41,9 +41,6 @@ exports.createPayments = async (req, res) => {
             statusDetail: payment.statusDetail,
             deliveryAddress: payment.deliveryAddress
         })
-        await newPaymentMP.setPayment_status(status[payment.status]) // transformar string a id
-        await newPaymentMP.setUser(payment.userID)
-        await newPaymentMP.setPayment_method(methods[payment.paymentMethodId]) // transformar string a id
         payment.items.forEach( async i => {
             try {
                 await newPaymentMP.addBook(i.bookId)
@@ -66,11 +63,16 @@ exports.createPayments = async (req, res) => {
                 console.log(error)
             }
         })
-        // Buscar los books en newPaymentMp funciona solo si getBooks se hace después de buscar las asociaciones ¡NO BORRAR O ARREGLAR!
-        const association = await Payment_mp.findOne({ where: {id: newPaymentMP.id},  include: [{ model: Book}] })
-        const items = await newPaymentMP.getBooks()
+        try {
+            await newPaymentMP.setPayment_status(status[payment.status]) // transformar string a id
+            await newPaymentMP.setUser(payment.userID)
+            await newPaymentMP.setPayment_method(methods[payment.paymentMethodId]) // transformar string a id
+        } catch (error) {
+            console.log(error)
+        }
+        const association = await Payment_mp.findByPk(newPaymentMP.id, {include: [{ model: Book }]} )
         const user = await newPaymentMP.getUser()
-        const html = getTemplate('purchaseReceipt', body={user,association,items})
+        const html = getTemplate('purchaseReceipt', body={user,association})
         await sendEmail(user.email, 'Recibo de Pago - Librería Henry', html);
         return res.status(201).json(newPaymentMP)
     } catch (error) {
@@ -79,29 +81,29 @@ exports.createPayments = async (req, res) => {
     }
 }
    
-exports.getPayments = async function () {
-       const payments = await PaymentsOrder.findAll({
-         include: {
-           model: User,        
-         },
-       });
-       return payments;
-     },
+// exports.getPayments = async function () {
+//     const payments = await PaymentsOrder.findAll({
+//         include: {
+//         model: User,        
+//         },
+//     });
+//     return payments;
+// }
    
-exports.getPaymentByID = async function (ID, token) {
-       const userToken = jwt.decode(token, process.env.PASS_TOKEN);
-       if (userToken) {
-         const user = Users.findByPk(userToken.ID);
-         if (user) {
-           const payment = await Payments.findByPk(ID);
-           if (payment) return payment;
-         }
-       } else {
-         const payment = await PaymentsOrder.findByPk(ID, { include: User });
-         return payment;
-       }
-       return undefined;
-     }
+// exports.getPaymentByID = async function (ID, token) {
+//     const userToken = jwt.decode(token, process.env.PASS_TOKEN);
+//     if (userToken) {
+//         const user = User.findByPk(userToken.ID);
+//         if (user) {
+//         const payment = await Payment_mp.findByPk(ID);
+//         if (payment) return payment;
+//         }
+//     } else {
+//         const payment = await Payment_mp.findByPk(ID, { include: User });
+//         return payment;
+//     }
+//     return undefined;
+// }
 //    };
    
 //    module.exports = paymentsModel;
