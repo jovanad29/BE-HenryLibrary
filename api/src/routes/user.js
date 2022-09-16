@@ -11,7 +11,8 @@ const {
   bannedUser,
   addFavorite,
   deleteFavorite,
-  getUserFavorites
+  getUserFavorites,
+  getUserPaymentsBook
 } = require('../controllers/users');
 
 router.get('/', getAll);
@@ -27,5 +28,7 @@ router.put('/:uid', updateAdminUser);
 
 router.delete('/:uid', logicaldeleteUser);
 router.delete('/banned/:uid', bannedUser);
+
+router.get('/bookpayments/:uid',getUserPaymentsBook)
 
 module.exports = router;
