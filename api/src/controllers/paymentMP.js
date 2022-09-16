@@ -28,9 +28,9 @@ exports.setMercadoPago = async (req, res) => {
 
 //    let paymentsModel = {
 exports.createPayments = async (req, res) => {
-    const payment = req.body; // lo que tiene order en el store
-    const status = { approved: 4, rejected: 7 }; // para evitar enviar los ids por url
-    const methods = { account_money: 2, credit_card: 3 }; // para evitar enviar los ids por url
+    const payment = req.body // lo que tiene order en el store
+    const status = {'in_process': 2, 'approved': 4, 'rejected': 7} // para evitar enviar los ids por url
+    const methods = {'account_money': 2, 'credit_card': 3} // para evitar enviar los ids por url
     try {
         const newPaymentMP = await Payment_mp.create({
             transactionId: payment.transactionId,
@@ -74,7 +74,7 @@ exports.createPayments = async (req, res) => {
         const user = await newPaymentMP.getUser()
         const html = getTemplate('purchaseReceipt', body={user,association})
         await sendEmail(user.email, 'Recibo de Pago - Librería Henry', html);
-        return res.status(201).json(newPaymentMP)
+        return res.status(201).json(association)
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
