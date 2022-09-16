@@ -63,21 +63,22 @@ const getBienvenida = (name) => {
         `;
 }
 const getPurchaseReceipt = (body) => {
-    const { user, association, items} = body
-    const rows = items.reduce( (prev, curr, idx) => {
-        console.log(items[idx])
-        console.log(items[idx].payment_mp_book)
+    const { user, association } = body
+    const books = association.books
+    const rows = books.reduce( (prev, curr, idx) => {
         return prev + `
         <tr style="height: 40px;">
-            <td style="margin: 15px; text-align: center; ">${items[idx].title}</td>
-            <td style="text-align: center;">${items[idx].payment_mp_book.quantity}</td>
-            <td style="text-align: center;">$${items[idx].price}</td>
-        </tr> 
+            <td style="margin: 15px; text-align: center; ">${books[idx].title}</td>
+            <td style="text-align: center;">${books[idx].payment_mp_book.quantity}</td>
+            <td style="text-align: center;">$${
+                (parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
+            }</td>
+        </tr>
         `
     },"")
     const html = `
-    <h2 style="text-align: center;">${user.nameUser || 'Usuario'} ¡Gracias su compra!</h2>
-    <h2 style="text-align: center;">A continuación adjuntamos su recibo (${association.transactionId})</h2>
+    <h2 style="text-align: center;">${user.nameUser || 'Usuario'} ¡Gracias tu compra!</h2>
+    <h2 style="text-align: center;">A continuación, adjuntamos su recibo (${association.transactionId})</h2>
     <table style=" table-layout: fixed; width:80%; border-collapse: collapse; border: 3px solid #01A86C;
         margin: auto; margin-top: 50px; margin-bottom: 50px;">
         <tr style="height: 30px;">
@@ -88,7 +89,6 @@ const getPurchaseReceipt = (body) => {
         ${rows}
         <tr style="text-align: center; height: 40px;">
             <td style="text-align: center; font-size: 30px;">Total</td>
-            <td></td>
             <td></td>
             <td style="font-size: 30px;">$${association.total}</td>
         </tr>
