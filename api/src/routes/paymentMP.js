@@ -42,6 +42,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+//route for get all adresses by UserId
 router.get("/adresses/:uid", async (req, res) => {
     const { uid } = req.params;
     try {

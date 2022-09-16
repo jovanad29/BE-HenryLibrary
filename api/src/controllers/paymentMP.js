@@ -14,9 +14,9 @@ exports.setMercadoPago = async (req, res) => {
         const { body } = await mercadopago.preferences.create({
             items: items,
             back_urls: {
-                success: `${base_url}checkout/validate`,
-                failure: `${base_url}checkout/validate`,
-                pending: `${base_url}checkout/validate`,
+                success: `${base_url}/checkout/validate`,
+                failure: `${base_url}/checkout/validate`,
+                pending: `${base_url}/checkout/validate`,
             },
         });
         return res.status(201).json({ preferenceId: body.id });
@@ -104,6 +104,47 @@ exports.createPayments = async (req, res) => {
 //     }
 //     return undefined;
 // }
+
+exports.getPayments = async function () {
+    const payments = await PaymentsOrder.findAll({
+        include: {
+            model: User,
+        },
+    });
+    return payments;
+}
+
+exports.getPaymentByID = async function (ID, token) {
+        const userToken = jwt.decode(token, process.env.PASS_TOKEN);
+        if (userToken) {
+            const user = Users.findByPk(userToken.ID);
+            if (user) {
+                const payment = await Payments.findByPk(ID);
+                if (payment) return payment;
+            }
+        } else {
+            const payment = await PaymentsOrder.findByPk(ID, { include: User });
+            return payment;
+        }
+        return undefined;
+};
+
+exports.getPaymentMPUserAllAdresses = async function (uid) {
+    if (uid) {
+        const userAdresses = Payment_mp.findAll({
+            where: {
+                userId: uid,
+            },
+            attributes: ["deliveryAddress"],
+            group: ["deliveryAddress"],
+        });
+        if (userAdresses) {
+            return userAdresses;
+        }
+    }
+    return undefined;
+};
+
 //    };
 
 //    module.exports = paymentsModel;
