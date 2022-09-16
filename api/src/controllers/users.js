@@ -247,3 +247,20 @@ exports.getUserPaymentsBook = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
+// //----------- PUT -----------//
+exports.updateUserAddress = async (req, res) => {
+    const { uid } = req.params;
+    const { address } = req.body;
+    try {
+        let user = await User.findByPk(uid);
+        if (user && address) {
+            user.address = address;
+            await user.save();
+        }
+        return res.status(204).json({});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
