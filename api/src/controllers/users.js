@@ -4,7 +4,6 @@ const {
     Review,
     Book,
     Payment_mp,
-    Payment_mp_book,
 } = require("../db");
 const { Op } = require("sequelize");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
@@ -225,8 +224,6 @@ exports.getUserPaymentsBook = async (req, res) => {
     const { uid } = req.params; //id usuario
     const { id } = req.query; //id libro
 
-    console.log(id);
-    console.log(uid);
 
     try {
         const userBooks = await Payment_mp.findOne({
