@@ -10,14 +10,13 @@ exports.setMercadoPago = async (req, res) => {
     // solo crea el preferenceID y los backurls en MercadoPago.jsx
     const { base_url, items, uid } = req.body; // id es el id del usuario en firebase que se usa para validar que puede entrar
     // pero parece ya no ser necesario (solo el base_url e items)
-    console.log(base_url)
     try {
         const { body } = await mercadopago.preferences.create({
             items: items,
             back_urls: {
-                success: `${base_url}checkout/validate`,
-                failure: `${base_url}checkout/validate`,
-                pending: `${base_url}checkout/validate`,
+                success: `${base_url}/checkout/validate`,
+                failure: `${base_url}/checkout/validate`,
+                pending: `${base_url}/checkout/validate`,
             },
         });
         return res.status(201).json({ preferenceId: body.id });
