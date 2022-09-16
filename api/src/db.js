@@ -40,7 +40,6 @@ const {
   User,
   Publisher ,
   Payment,
-  PaymentsOrder,
   Payment_method,
   Payment_mp,
   Payment_status,
@@ -136,9 +135,6 @@ Review.belongsToMany(Book,{through:'review_book'})
 Book.belongsToMany(Review,{through:'review_book'})
 User.belongsToMany(Book, {through:'user_favorites'})
 Book.belongsToMany(User, {through:'user_favorites'})
-
-PaymentsOrder.belongsToMany(Book,{through: 'paymentOrder_book'});// para pensar!! 
-Book.belongsToMany(PaymentsOrder,{through: 'paymentOrder_book'});//para pensar !!
 
 module.exports = {
   ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
