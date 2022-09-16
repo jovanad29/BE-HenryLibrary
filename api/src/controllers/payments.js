@@ -1,24 +1,28 @@
-const { Payment, payment_book, Book} = require('../db');
-const { Op } = require('sequelize');
-
+const { Payment, payment_book, Book, Payment_status } = require("../db");
+const { Op } = require("sequelize");
 
 // get payment y payment_book por userId con stausId=1.
 exports.getPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findOne({
-            attributes: ['id','userUid','statusId','totalAmount'],
+            attributes: ["id", "userUid", "totalAmount"],
             include: [
-                { model: Book, attributes: [ 'id','title', 'image'] },
+                { model: Book, attributes: ["id", "title", "image"] },
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
             ],
             where: {
                 userUid: userUid,
-                statusId: 1,
-        },
+            },
         });
 
-        if (payment) return res.status(200).json(payment);
-
+        if (payment) {
+            return res.status(200).json(payment);
+        }
         return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
         console.log(error);
@@ -31,18 +35,27 @@ exports.getAllByUserId = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findAll({
-        order: [['id', 'ASC']],
-        include: [
-                { model: Book, attributes: [ 'id','title','image'] },
-        ],    
-        where: {
-            userUid: userUid,
-        },
+            order: [["id", "DESC"]],
+            include: [
+                { model: Book, attributes: ["id", "title", "image"] },
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    // no corresponde filtrar por id 1, este metodo tiene que traer todos los registros de payment para el usuario
+                    // where: { id: 1 },
+                },
+            ],
+            where: {
+                userUid: userUid,
+            },
         });
-        // extraer los datos que hay en payment  
+        // extraer los datos que hay en payment
         const items = payment.map((item) => item.dataValues);
         if (payment) return res.status(200).json(items);
-        return res.json({ status: 404, message: "No se encontraron registros" });
+        return res.json({
+            status: 404,
+            message: "No se encontraron registros",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -53,15 +66,19 @@ exports.getAllByUserId = async function (req, res) {
 exports.getAllPaymentPaymentBook = async function (req, res) {
     try {
         const payment = await Payment.findAll({
-        order: [['id', 'ASC']],
-        include: [
-                { model: Book, attributes: [ 'id','title','image'] },
-        ],
+            order: [["id", "ASC"]],
+            include: [
+                { model: Book, attributes: ["id", "title", "image"] },
+                { model: Payment_status, attributes: ["id", "description"] },
+            ],
         });
         // extraer los datos que hay en payment
         const items = payment.map((item) => item.dataValues);
         if (payment) return res.status(200).json(items);
-        return res.json({ status: 404, message: "No se encontraron registros" });
+        return res.json({
+            status: 404,
+            message: "No se encontraron registros",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -74,15 +91,21 @@ exports.getCountPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     try {
         const payment = await Payment.findOne({
-        where: {
-            userUid: userUid,
-            statusId: 1,
-        },
+            where: {
+                userUid: userUid,
+            },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
         });
-        if (payment)
-            {const items = await payment_book.findAll({
+        if (payment) {
+            const items = await payment_book.findAll({
                 where: {
-                        paymentId: payment.id,
+                    paymentId: payment.id,
                 },
             });
             const itemsPaymentBook = items.map((item) => item.dataValues);
@@ -91,7 +114,8 @@ exports.getCountPaymentBook = async function (req, res) {
             for (let i = 0; i < itemsPaymentBook.length; i++) {
                 totalQuantity += itemsPaymentBook[i].quantity;
             }
-            return res.status(200).json({ totalQuantity: totalQuantity});}
+            return res.status(200).json({ totalQuantity: totalQuantity });
+        }
 
         return res.json({ status: 404, message: "No se encontró el registro" });
     } catch (error) {
@@ -134,8 +158,6 @@ exports.getCountPaymentBook = async function (req, res) {
 //     }
 // };
 
-
-
 // post /payment por userId Creacion inicial de la cabecera con statusId= 1
 // controlar que no se puedan crear mas de una cabecera con statusId= 1
 exports.postByUserId = async function (req, res) {
@@ -143,23 +165,39 @@ exports.postByUserId = async function (req, res) {
     try {
         //controlar que no exitan registros con statusId= 1
         const payment = await Payment.findOne({
-        where: {
-            userUid: userUid,
-            statusId: 1,
-        },
+            where: {
+                userUid: userUid,
+            },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
         });
-        if (payment) return res.json({ status: 404, message: "Ya existe un registro con statusId= 1" });
+        if (payment)
+            return res.json({
+                status: 404,
+                message: "Ya existe un registro con statusId= 1",
+            });
         //si no existe registro con statusId= 1, crearlo
         const newPayment = await Payment.create({
-        userUid: userUid,
-        statusId: 1,
-        totalAmount: 0,
-        methodId: 0,
-        transactionId: null,
-        deliveryAddress: null
+            userUid: userUid,
+            totalAmount: 0,
+            // methodId: 0,
+            transactionId: null,
+            deliveryAddress: null,
         });
-        if (newPayment) return res.status(201).json(newPayment);
-        return res.json({ status: 404, message: "No se pudo generar el registro" });
+        if (newPayment) {
+            await newPayment.setPayment_status(1);
+            // await newPayment.setPayment_method(0)
+            return res.status(201).json(newPayment);
+        }
+        return res.json({
+            status: 404,
+            message: "No se pudo generar el registro",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -169,31 +207,37 @@ exports.postByUserId = async function (req, res) {
 // put /payment por userId Actualizacion de la cabecera con todos sus datos //
 //OJO ACTUALIZA TODOS LOS REGISTROS, usar solo para limpieza, tal vez tengamos que eliminar este metodo.
 exports.putAllByUserId = async function (req, res) {
-    const { statusId, totalAmount, methodId, transactionId ,deliveryAddress} = req.body;
+    const { statusId, totalAmount, methodId, transactionId, deliveryAddress } =
+        req.body;
     const { userUid } = req.params;
     try {
         const payment = await Payment.update(
-        {
-            
-            statusId: statusId,
-            totalAmount: totalAmount,
-            methodId: methodId,
-            transactionId: transactionId,
-            deliveryAddress: deliveryAddress
-        },
-        {
-            where: {
-            userUid: userUid,
+            {
+                totalAmount: totalAmount,
+                // methodId: methodId,
+                transactionId: transactionId,
+                deliveryAddress: deliveryAddress,
             },
-        }
+            {
+                where: {
+                    userUid: userUid,
+                },
+            }
         );
+        await payment.setPayment_status(statusId);
+        await payment.setPayment_method(methodId);
         const updatedPayment = await Payment.findAll({
-        where: {
-            userUid: userUid,
-        },
+            where: {
+                userUid: userUid,
+            },
         });
-        if (payment) return res.status(200).json(updatedPayment);
-        return res.json({ status: 404, message: "No se pudo actualizar el registro" });
+        if (payment) {
+            return res.status(200).json(updatedPayment);
+        }
+        return res.json({
+            status: 404,
+            message: "No se pudo actualizar el registro",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -202,30 +246,37 @@ exports.putAllByUserId = async function (req, res) {
 
 // put /payment por id Actualizacion de la cabecera con todos sus datos //
 exports.putAllById = async function (req, res) {
-    const { statusId, totalAmount, methodId, transactionId ,deliveryAddress} = req.body;
+    const { statusId, totalAmount, methodId, transactionId, deliveryAddress } =
+        req.body;
     const { id } = req.params;
     try {
         const payment = await Payment.update(
-        {
-            statusId: statusId,
-            totalAmount: totalAmount,
-            methodId: methodId,
-            transactionId: transactionId,
-            deliveryAddress: deliveryAddress
-        },
-        {
-            where: {
-            id: id,
+            {
+                totalAmount: totalAmount,
+                // methodId: methodId,
+                transactionId: transactionId,
+                deliveryAddress: deliveryAddress,
             },
-        }
+            {
+                where: {
+                    id: id,
+                },
+            }
         );
+        await payment.setPayment_status(statusId);
+        await payment.setPayment_method(methodId);
         const updatedPayment = await Payment.findOne({
             where: {
                 id: id,
             },
         });
-        if (payment) return res.status(200).json(updatedPayment);
-        return res.json({ status: 404, message: "No se pudo actualizar el registro" });
+        if (payment) {
+            return res.status(200).json(updatedPayment);
+        }
+        return res.json({
+            status: 404,
+            message: "No se pudo actualizar el registro",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -236,15 +287,21 @@ exports.putAllById = async function (req, res) {
 exports.postPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     //recibir un arreglo por body
-    const localStorage = [...req.body]||[];
+    const localStorage = [...req.body] || [];
     try {
         // preguntar si existe un registro con statusId= 1
         const payment = await Payment.findOne({
-        where: {
-            userUid: userUid,
-            statusId: 1,
-        },
-        });   
+            where: {
+                userUid: userUid,
+            },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
+        });
         if (payment) {
             const items = await payment_book.findAll({
                 where: {
@@ -258,7 +315,9 @@ exports.postPaymentPaymentBook = async function (req, res) {
             // si no existe crear el registro
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
-                const item = itemsPaymentBook.find((item) => item.bookId === element.id);
+                const item = itemsPaymentBook.find(
+                    (item) => item.bookId === element.id
+                );
                 if (item) {
                     //actualizar
                     const updatedPaymentBook = await payment_book.update(
@@ -286,12 +345,13 @@ exports.postPaymentPaymentBook = async function (req, res) {
             // crear el registro en payment
             const newPayment = await Payment.create({
                 userUid: userUid,
-                statusId: 1,
                 totalAmount: 0,
-                methodId: 0,
+                // methodId: 0,
                 transactionId: null,
-                deliveryAddress: null
+                deliveryAddress: null,
             });
+            await newPayment.setPayment_status(1);
+            // await newPayment.setPayment_method(1) // cambiar
             // recorrer el arreglo localStorage y crear los registros en payment_book
             for (let i = 0; i < localStorage.length; i++) {
                 const element = localStorage[i];
@@ -307,8 +367,14 @@ exports.postPaymentPaymentBook = async function (req, res) {
         const paymentUpdated = await Payment.findOne({
             where: {
                 userUid: userUid,
-                statusId: 1,
             },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
         });
 
         //obtener el totalAmount, leer de la tabla payment_book para paymentId===payment.id, multiplicar price * quantity y guardarlo en la tabla payment.totalAmount
@@ -317,7 +383,10 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 paymentId: paymentUpdated.id,
             },
         });
-        const totalAmount = itemsPaymentBook2.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const totalAmount = itemsPaymentBook2.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+        );
         const updatedPayment = await Payment.update(
             {
                 totalAmount: totalAmount,
@@ -333,21 +402,30 @@ exports.postPaymentPaymentBook = async function (req, res) {
                 id: paymentUpdated.id,
             },
         });
-        const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
-        return res.status(200).json({ payment: updatedPayment2, payment_book: newItemsPaymentBook2, menssage: "Se actualizo el carrito" });
+        const newItemsPaymentBook2 = itemsPaymentBook2.map(
+            (item) => item.dataValues
+        );
+        return res.status(200).json({
+            payment: updatedPayment2,
+            payment_book: newItemsPaymentBook2,
+            menssage: "Se actualizo el carrito",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 };
 
-async function  recalculatePaymentTotalAmount(paymentId) {
+async function recalculatePaymentTotalAmount(paymentId) {
     const itemsPaymentBook2 = await payment_book.findAll({
         where: {
             paymentId: paymentId,
         },
     });
-    const totalAmount = itemsPaymentBook2.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const totalAmount = itemsPaymentBook2.reduce(
+        (acc, item) => acc + item.price * item.quantity,
+        0
+    );
     const updatedPayment = await Payment.update(
         {
             totalAmount: totalAmount,
@@ -363,8 +441,10 @@ async function  recalculatePaymentTotalAmount(paymentId) {
             id: paymentId,
         },
     });
-    const newItemsPaymentBook2 = itemsPaymentBook2.map((item) => item.dataValues);
-    return {payment: updatedPayment2, paymentBook: newItemsPaymentBook2};
+    const newItemsPaymentBook2 = itemsPaymentBook2.map(
+        (item) => item.dataValues
+    );
+    return { payment: updatedPayment2, paymentBook: newItemsPaymentBook2 };
 }
 
 // putPaymentPaymentBook. Actualizar la cantidad de un libro en el carrito.
@@ -373,14 +453,19 @@ exports.putPaymentPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     const { id, price, quantity } = req.body;
     try {
-  //findond payment by userUid and statusId=1
+        //findond payment by userUid and statusId=1
         const payment = await Payment.findOne({
             where: {
                 userUid: userUid,
-                statusId: 1,
             },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
         });
-
 
         const paymentBook = await payment_book.findOne({
             where: {
@@ -388,8 +473,8 @@ exports.putPaymentPaymentBook = async function (req, res) {
                 bookId: id,
             },
         });
-        
-        const paymentId=payment.id;
+
+        const paymentId = payment.id;
         if (paymentBook) {
             if (quantity === 0) {
                 //eliminar el registro
@@ -403,36 +488,37 @@ exports.putPaymentPaymentBook = async function (req, res) {
                 const result = await recalculatePaymentTotalAmount(paymentId);
                 return res.status(200).json(result);
             } else {
-            const updatedPaymentBook = await payment_book.update(
-                { quantity: quantity, price: price, },
-                { where: { 
-                        paymentId: paymentId,
-                        bookId: id,
-                    },
-                }
-            );
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-            return res.status(200).json({payment , paymentBook});
-        }}
+                const updatedPaymentBook = await payment_book.update(
+                    { quantity: quantity, price: price },
+                    {
+                        where: {
+                            paymentId: paymentId,
+                            bookId: id,
+                        },
+                    }
+                );
+                const { payment, paymentBook } =
+                    await recalculatePaymentTotalAmount(paymentId);
+                return res.status(200).json({ payment, paymentBook });
+            }
+        }
         if (!paymentBook) {
-            console.log('payment.id', paymentId);
+            console.log("payment.id", paymentId);
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
                 bookId: id,
                 quantity: quantity,
                 price: price,
             });
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-            return res.status(201).json({payment , paymentBook});
+            const { payment, paymentBook } =
+                await recalculatePaymentTotalAmount(paymentId);
+            return res.status(201).json({ payment, paymentBook });
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
 };
-
 
 // putAddItemToPaymentBook. Adiciona un libro en el carrito.
 // recibe el paymentId por parametro y bookId, y price   por body
@@ -440,74 +526,81 @@ exports.putAddItemToPaymentBook = async function (req, res) {
     const { userUid } = req.params;
     const { id, price } = req.body;
     try {
-  //findond payment by userUid and statusId=1
+        //findond payment by userUid and statusId=1
         const payment = await Payment.findOne({
             where: {
                 userUid: userUid,
-                statusId: 1,
             },
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: ["id", "description"],
+                    where: { id: 1 },
+                },
+            ],
         });
 
-
-        if (payment)
-            {
-
+        if (payment) {
             const paymentBook2 = await payment_book.findOne({
-                attributes: ['quantity'],
+                attributes: ["quantity"],
                 where: {
                     paymentId: payment.id,
                     bookId: id,
                 },
             });
-                  
-            {const paymentId=payment.id;
-            if (paymentBook2) {
-                const actualCant = paymentBook2.quantity;
-                const updatedPaymentBook = await payment_book.update(
-                    //sumar 1 a quantity
-                    { quantity: actualCant + 1, price: price, },
-                    { where: { 
-                            paymentId: paymentId,
-                            bookId: id,
-                        },
-                    }
-                );
-                const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-                return res.status(200).json({payment , paymentBook});
+
+            {
+                const paymentId = payment.id;
+                if (paymentBook2) {
+                    const actualCant = paymentBook2.quantity;
+                    const updatedPaymentBook = await payment_book.update(
+                        //sumar 1 a quantity
+                        { quantity: actualCant + 1, price: price },
+                        {
+                            where: {
+                                paymentId: paymentId,
+                                bookId: id,
+                            },
+                        }
+                    );
+                    const { payment, paymentBook } =
+                        await recalculatePaymentTotalAmount(paymentId);
+                    return res.status(200).json({ payment, paymentBook });
+                } else {
+                    const newPaymentBook = await payment_book.create({
+                        paymentId: paymentId,
+                        bookId: id,
+                        quantity: 1,
+                        price: price,
+                    });
+                    const { payment, paymentBook } =
+                        await recalculatePaymentTotalAmount(paymentId);
+                    return res.status(201).json({ payment, paymentBook });
+                }
             }
-            else {
-                const newPaymentBook = await payment_book.create({
-                    paymentId: paymentId,
-                    bookId: id,
-                    quantity: 1,
-                    price: price,
-                });
-                const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)  
-                return res.status(201).json({payment , paymentBook});
-            }
-            }
-            } else {
+        } else {
             // crear el registro en payment
             const newPayment = await Payment.create({
                 userUid: userUid,
-                statusId: 1,
                 totalAmount: 0,
-                methodId: 0,
+                // methodId: 0,
                 transactionId: null,
-                deliveryAddress: null
-            }); 
-            const paymentId=newPayment.id;
+                deliveryAddress: null,
+            });
+            await newPayment.setPayment_status(1);
+            // await newPayment.setPayment_method(0)
+            const paymentId = newPayment.id;
             const newPaymentBook = await payment_book.create({
                 paymentId: paymentId,
                 bookId: id,
                 quantity: 1,
                 price: price,
             });
-            const { payment , paymentBook } =  await recalculatePaymentTotalAmount(paymentId)
-            return res.status(201).json({payment , paymentBook});
-            }
-}
-    catch (error) {
+            const { payment, paymentBook } =
+                await recalculatePaymentTotalAmount(paymentId);
+            return res.status(201).json({ payment, paymentBook });
+        }
+    } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
@@ -518,23 +611,94 @@ exports.putUpdateStatus = async function (req, res) {
     const { paymentId, statusId } = req.params;
 
     try {
-        const updatedPayment = await Payment.update(
-            {
-                statusId: statusId,
-            },
-            {
-                where: {
-                    id: paymentId,
-                },
-            }
-        );
-        if (updatedPayment[0]===1) {
-            return res.status(204).json({ menssage: "Se actualizo el status" });
-            
-        } else {
-            
-            return res.status(404).json({ menssage: "No se encontro el carrito" });
+        // const updatedPayment = await Payment.update(
+        //     {
+        //         where: {
+        //             id: paymentId,
+        //         },
+        //     }
+        // );
+        // if (updatedPayment[0]===1) {
+        //     return res.status(204).json({ menssage: "Se actualizo el status" });
+
+        // } else {
+
+        //     return res.status(404).json({ menssage: "No se encontro el carrito" });
+        // }
+        const toUpdate = await Payment.findByPk(paymentId);
+        if (toUpdate) {
+            await toUpdate.setPayment_status(statusId);
+            return res.status(204).json({ menssage: "Se actualizó el status" });
         }
+        return res.status(404).json({ menssage: "No se encontró el carrito" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+//getPaymentBookById
+exports.getPaymentBookById = async function (req, res) {
+    const { id } = req.params;
+    try {
+        const payment = await Payment.findByPk(id, {
+            include: [
+                { model: Book, attributes: ["id", "title", "image"] },
+                { model: Payment_status, attributes: ["id", "description"] },
+            ],
+        });
+        if (payment) return res.status(200).json(payment);
+        return res.json({
+            status: 404,
+            message: "No se encontraron registros",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+//getPaymentBookById
+exports.getPaymentBookById = async function (req, res) {
+    const { paymentId } = req.params;
+
+    try {
+        const payment = await Payment.findByPk(paymentId, {
+            include: [
+                { model: Book, attributes: ["id", "title", "image"] },
+                { model: Payment_status, attributes: ["id", "description"] },
+            ],
+        });
+        if (payment) return res.status(200).json(payment);
+        return res.json({
+            status: 404,
+            message: "No se encontraron registros",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+exports.getAllPaymentBookByStatus = async function (req, res) {
+    const { statusId } = req.params;
+    try {
+        const payment = await Payment.findAll({
+            order: [["id", "ASC"]],
+            include: [
+                { model: Book, attributes: ["id", "title", "image"] },
+                { model: Payment_status, 
+                    where: { id: statusId },
+                },
+            ],
+        });
+        // extraer los datos que hay en payment
+        const items = payment.map((item) => item.dataValues);
+        if (payment) return res.status(200).json(items);
+        return res.json({
+            status: 404,
+            message: "No se encontraron registros",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);

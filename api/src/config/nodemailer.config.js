@@ -57,34 +57,40 @@ const getBienvenida = (name) => {
             <li>¡Pagar todo con tu cuenta MercadoPago!</li>
         </ul>
         <p>Librería Henry. Tu librería de confianza.</p>
-        <h3 style="margin: auto;">Vuelve a visitarnos 👉<a
+        <h3 style="margin: auto;">¡Realiza tu primera compra! 👉<a
         href="http://henry-library.netlify.app/" target="_blank"
         style="text-decoration: none;">LH</a></h3>
         `;
 }
-const getPurchaseReceipt = (name, bookName, decsription, count, price, total) => {
-    return `
-    <h2 style="text-align: center;">${name || 'Usuario'} ¡Gracias su compra!</h2>
-    <h2 style="text-align: center;">A continuacion adjuntamos su recibo</h2>
+const getPurchaseReceipt = (body) => {
+    const { user, association } = body
+    const books = association.books
+    const rows = books.reduce( (prev, curr, idx) => {
+        return prev + `
+        <tr style="height: 40px;">
+            <td style="margin: 15px; text-align: center; ">${books[idx].title}</td>
+            <td style="text-align: center;">${books[idx].payment_mp_book.quantity}</td>
+            <td style="text-align: center;">$${
+                (parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
+            }</td>
+        </tr>
+        `
+    },"")
+    const html = `
+    <h2 style="text-align: center;">${user.nameUser || 'Usuario'} ¡Gracias tu compra!</h2>
+    <h2 style="text-align: center;">A continuación, adjuntamos su recibo (${association.transactionId})</h2>
     <table style=" table-layout: fixed; width:80%; border-collapse: collapse; border: 3px solid #01A86C;
         margin: auto; margin-top: 50px; margin-bottom: 50px;">
         <tr style="height: 30px;">
             <th style="border-bottom: 2px solid #01A86C;">Libro</th>
-            <th style="border-bottom: 2px solid #01A86C;">Descripcion</th>
-            <th style="border-bottom: 2px solid #01A86C;">cantidad</th>
+            <th style="border-bottom: 2px solid #01A86C;">Cantidad</th>
             <th style="border-bottom: 2px solid #01A86C;">Precio</th>
         </tr>
-        <tr style="height: 40px;">
-            <td style="margin: 15px; text-align: center; ">${bookName}</td>
-            <td style="text-align: center;">${decsription}</td>
-            <td style="text-align: center;">${count}</td>
-            <td style="text-align: center;">${price}</td>
-        </tr>     
+        ${rows}
         <tr style="text-align: center; height: 40px;">
             <td style="text-align: center; font-size: 30px;">Total</td>
             <td></td>
-            <td></td>
-            <td style="font-size: 30px;">${total}</td>
+            <td style="font-size: 30px;">$${association.total}</td>
         </tr>
     </table>
     <div style="display:flex; justify-content: center; flex-direction:
@@ -96,6 +102,8 @@ const getPurchaseReceipt = (name, bookName, decsription, count, price, total) =>
         <h2 style="margin: auto;">Librería Henry. Tu librería de confianza.</h2>
     </div>    
     `
+    // console.log("desde el template", html)
+    return html
 }
 
 
