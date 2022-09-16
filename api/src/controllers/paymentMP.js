@@ -14,9 +14,9 @@ exports.setMercadoPago = async (req, res) => {
         const { body } = await mercadopago.preferences.create({
             items: items,
             back_urls: {
-                success: `${base_url}checkout/validate`,
-                failure: `${base_url}checkout/validate`,
-                pending: `${base_url}checkout/validate`,
+                success: `${base_url}/checkout/validate`,
+                failure: `${base_url}/checkout/validate`,
+                pending: `${base_url}/checkout/validate`,
             },
         });
         return res.status(201).json({ preferenceId: body.id });
