@@ -1,4 +1,4 @@
-const { Payment_mp, User, Book, payment_mp_book, conn } = require("../db");
+const { Payment_mp, User, Book, payment_mp_book, Payment_method, Payment_status } = require("../db");
 const jwt = require("jsonwebtoken");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
 require("dotenv").config();
@@ -78,6 +78,23 @@ exports.createPayments = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
+    }
+}
+
+exports.getAllPayments = async (req, res) => {
+    try {
+        const payments = await Payment_mp.findAll(
+            {
+                include:[
+                    {model: Book},
+                    {model: User},
+                    {model: Payment_status},
+                    {model: Payment_method}
+                ]
+            })
+        return res.json(payments)
+    } catch (error) {
+        console.log(error)
     }
 }
    
