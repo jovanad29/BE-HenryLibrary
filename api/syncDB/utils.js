@@ -209,7 +209,7 @@ async function fillBook() {
 }
 
 async function setStatuses(){
-  const statuses = ["ACTIVE", "PENDING", "PENDING_APPROVAL", "APPROVED", "SUBMITTED", "DELETED", "REJECTED"]
+  const statuses = ["ACTIVO", "PENDIENTE", "APROBACIÓN_PENDIENTE", "APROBADO", "ENVIADO", "BORRADO", "RECHAZADO"]
   try {
     for (let s of statuses) {
       await Payment_status.create({ description: s })
