@@ -9,23 +9,13 @@ const {
     getPaymentByID,
     setMercadoPago,
     getPaymentMPUserAllAdresses,
+    getAllPayments
 } = require("../controllers/paymentMP");
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
 
 router.post("/", setMercadoPago);
 router.post("/create", createPayments);
-router.get("/", async (req, res) => {
-    console.log("estoy en paymentOrders");
-    try {
-        const payments = await getPayments();
-        payments
-            ? res.json({ data: payments, message: "Success" })
-            : res.status(404).json({ message: "No payments..." });
-    } catch (err) {
-        console.log(err);
-        res.status(404).json({ message: "Cannot get payment" });
-    }
-});
+router.get("/", getAllPayments)
 
 router.get("/:id", async (req, res) => {
     const { ID } = req.params;
