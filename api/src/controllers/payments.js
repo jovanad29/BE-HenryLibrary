@@ -8,13 +8,20 @@ exports.getPaymentPaymentBook = async function (req, res) {
         const payment = await Payment.findOne({
             attributes: ["id", "userUid", "totalAmount"],
             include: [
-                { model: Book, attributes: ["id", "title", "image"] },
+                {
+                    model: Book,
+                    attributes: ["id", "title", "image"],
+                    // order: [["title", "ASC"]],
+                },
                 {
                     model: Payment_status,
                     attributes: ["id", "description"],
                     where: { id: 1 },
                 },
             ],
+            order: [
+                [Book, 'title', 'asc']
+              ],
             where: {
                 userUid: userUid,
             },
@@ -687,9 +694,7 @@ exports.getAllPaymentBookByStatus = async function (req, res) {
             order: [["id", "ASC"]],
             include: [
                 { model: Book, attributes: ["id", "title", "image"] },
-                { model: Payment_status, 
-                    where: { id: statusId },
-                },
+                { model: Payment_status, where: { id: statusId } },
             ],
         });
         // extraer los datos que hay en payment
