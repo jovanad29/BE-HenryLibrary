@@ -14,6 +14,7 @@ const {
     getUserFavorites,
     getUserPaymentsBook,
     updateUserAddress,
+    updateUserName,
 } = require("../controllers/users");
 
 router.get("/", getAll);
@@ -32,5 +33,6 @@ router.delete("/banned/:uid", bannedUser);
 
 router.get("/bookpayments/:uid", getUserPaymentsBook);
 router.put("/address/:uid", updateUserAddress);
+router.put("/name/:uid", updateUserName);
 
 module.exports = router;
