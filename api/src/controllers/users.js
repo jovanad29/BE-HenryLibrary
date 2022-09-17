@@ -1,10 +1,4 @@
-const {
-    User,
-    Payment,
-    Review,
-    Book,
-    Payment_mp,
-} = require("../db");
+const { User, Payment, Review, Book, Payment_mp } = require("../db");
 const { Op } = require("sequelize");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
 
@@ -25,12 +19,10 @@ exports.getById = async (req, res) => {
     try {
         const user = await User.findByPk(req.params.uid);
         if (user) return res.json(user);
-        return res
-            .status(404)
-            .json({
-                status: 404,
-                message: "No se encontró el usuario con ese uid ",
-            });
+        return res.status(404).json({
+            status: 404,
+            message: "No se encontró el usuario con ese uid ",
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -81,31 +73,28 @@ exports.createUser = async (req, res) => {
     try {
         // if (!validations(nameUser, email))
         // return res.status(400).json({status: 400, message: 'Error con las validaciones'});
-        const userExist = await User.findByPk(uid);
+        // const userExist = await User.findByPk(uid);
 
-        await User.findOrCreate({
+        const [row, created] = await User.findOrCreate({
             where: { uid: uid },
             defaults: { nameUser, email, profilePic },
         });
-        const userCreated = await User.findByPk(uid);
-        if (userCreated) {
-            userCreated.nameUser = nameUser;
-            await userCreated.save();
-            if (!userExist) {
-                // console.log("entra");
-                // aquí se ejecuta el método para enviar el correo
+        if (created) {
+            try {
                 const html = getTemplate(
                     "bienvenida",
-                    userCreated.dataValues.nameUser
+                    row.dataValues.nameUser
                 );
                 await sendEmail(
-                    userCreated.dataValues.email,
+                    row.dataValues.email,
                     "¡Bienvenido/a a Librería Henry!",
                     html
                 );
+            } catch (err) {
+                
             }
         }
-        return res.status(201).json(userCreated);
+        return res.status(201).json(row);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -210,10 +199,7 @@ exports.getUserFavorites = async (req, res) => {
                 model: Book,
             },
         });
-        if (userFavorites) {
-            return res.json(userFavorites.books);
-        }
-        return res.status(404).json([]);
+        return res.json(userFavorites?.books || []);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
@@ -223,7 +209,6 @@ exports.getUserFavorites = async (req, res) => {
 exports.getUserPaymentsBook = async (req, res) => {
     const { uid } = req.params; //id usuario
     const { id } = req.query; //id libro
-
 
     try {
         const userBooks = await Payment_mp.findOne({
