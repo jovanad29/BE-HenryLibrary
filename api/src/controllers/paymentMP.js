@@ -1,4 +1,4 @@
-const { Payment_mp, User, Book, payment_mp_book, Payment_method, Payment_status } = require("../db");
+const { Payment_mp, User, Book, payment_mp_book, Payment_method, Payment_status, Order_status } = require("../db");
 const jwt = require("jsonwebtoken");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
 require("dotenv").config();
@@ -67,6 +67,7 @@ exports.createPayments = async (req, res) => {
             await newPaymentMP.setPayment_status(status[payment.status]) // transformar string a id
             await newPaymentMP.setUser(payment.userID)
             await newPaymentMP.setPayment_method(methods[payment.paymentMethodId]) // transformar string a id
+            await newPaymentMP.setOrder_status(1) // ESTADO DE DESPACHO
         } catch (error) {
             console.log(error)
         }
@@ -81,29 +82,24 @@ exports.createPayments = async (req, res) => {
     }
 }
 
-exports.getAllPaymentPaymentBook = async (req, res) => {
+exports.getAllPayments = async (req, res) => {
     try {
         const payments = await Payment_mp.findAll(
             {
                 order: [["id", "ASC"]],
                 include:[
-                    {model: Book ,attributes: ["id", "title", "image"] },
-                    {model: User ,attributes: ["uid", "nameUser", "email"] },
-                    {model: Payment_status ,attributes: ["id", "description"] },
-                    {model: Payment_method, attributes: ["id", "descrption"]}
+                    {model: Book, attributes: ["id", "title", "image"] },
+                    {model: User, attributes: ["uid", "nameUser", "email"] },
+                    {model: Payment_status, attributes: ["id", "description"] },
+                    {model: Payment_method, attributes: ["id", "descrption"]},
+                    {model: Order_status, attributes: ["id", "description"]}
                 ]
             })
-         // extraer los datos que hay en payment
-         const items = payments.map((item) => item.dataValues);
-         if (payments) return res.status(200).json(items);
-         return res.json({
-             status: 404,
-             message: "No se encontraron registros",
-         });
-     } catch (error) {
-         console.log(error);
-         return res.status(500).json(error);
-     }
+        return res.json(payments)
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({message: "Error with server"})
+    }
 }
    
 // //getAllPaymentPaymentBook
@@ -129,38 +125,38 @@ exports.getAllPaymentPaymentBook = async (req, res) => {
 //     }
 // };
 
-exports.getPayments = async function () {
-    const payments = await Payment_mp.findAll({
-        include: {
-            model: User,
-        },
-    });
-    return payments;
-}
+// exports.getPayments = async function () {
+//     const payments = await Payment_mp.findAll({
+//         include: {
+//             model: User,
+//         },
+//     });
+//     return payments;
+// }
 
-exports.getPaymentByID = async function (uid) {
+// exports.getPaymentByID = async function (uid) {
        
-       const payment = await Payment_mp.findByPk(uid);
-       if (payment) return payment;
+//        const payment = await Payment_mp.findByPk(uid);
+//        if (payment) return payment;
       
-        return undefined;
-};
+//         return undefined;
+// };
 
-exports.getPaymentMPUserAllAdresses = async function (uid) {
-    if (uid) {
-        const userAdresses = Payment_mp.findAll({
-            where: {
-                userId: uid,
-            },
-            attributes: ["deliveryAddress"],
-            group: ["deliveryAddress"],
-        });
-        if (userAdresses) {
-            return userAdresses;
-        }
-    }
-    return undefined;
-};
+// exports.getPaymentMPUserAllAdresses = async function (uid) {
+//     if (uid) {
+//         const userAdresses = Payment_mp.findAll({
+//             where: {
+//                 userId: uid,
+//             },
+//             attributes: ["deliveryAddress"],
+//             group: ["deliveryAddress"],
+//         });
+//         if (userAdresses) {
+//             return userAdresses;
+//         }
+//     }
+//     return undefined;
+// };
 
 //    };
 
