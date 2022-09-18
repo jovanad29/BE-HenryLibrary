@@ -11,12 +11,14 @@ const {
     getPaymentMPUserAllAdresses,
     getAllPayments,
     getAllPaymentPaymentBook,
+    changeOrderStatus
 } = require("../controllers/paymentMP");
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
 // router.get("/", getAllPaymentPaymentBook); //todos pagos 
 router.post("/", setMercadoPago);
 router.post("/create", createPayments);
 router.get("/", getAllPayments)
+router.put('/:pid/order-status/:oid', changeOrderStatus)
 
 router.get("/:id", async (req, res) => {
     const { ID } = req.params;
