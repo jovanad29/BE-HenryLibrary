@@ -92,7 +92,7 @@ exports.getAllPayments = async (req, res) => {
                     {model: User, attributes: ["uid", "nameUser", "email"] },
                     {model: Payment_status, attributes: ["id", "description"] },
                     {model: Payment_method, attributes: ["id", "descrption"]},
-                    {model: Order_status, attributes: ["id", "descrption"]}
+                    {model: Order_status, attributes: ["id", "description"]}
                 ]
             })
         return res.json(payments)
