@@ -98,6 +98,7 @@ exports.getAllPayments = async (req, res) => {
         return res.json(payments)
     } catch (error) {
         console.log(error)
+        return res.status(500).json({message: "Error with server"})
     }
 }
    
@@ -124,38 +125,38 @@ exports.getAllPayments = async (req, res) => {
 //     }
 // };
 
-exports.getPayments = async function () {
-    const payments = await Payment_mp.findAll({
-        include: {
-            model: User,
-        },
-    });
-    return payments;
-}
+// exports.getPayments = async function () {
+//     const payments = await Payment_mp.findAll({
+//         include: {
+//             model: User,
+//         },
+//     });
+//     return payments;
+// }
 
-exports.getPaymentByID = async function (uid) {
+// exports.getPaymentByID = async function (uid) {
        
-       const payment = await Payment_mp.findByPk(uid);
-       if (payment) return payment;
+//        const payment = await Payment_mp.findByPk(uid);
+//        if (payment) return payment;
       
-        return undefined;
-};
+//         return undefined;
+// };
 
-exports.getPaymentMPUserAllAdresses = async function (uid) {
-    if (uid) {
-        const userAdresses = Payment_mp.findAll({
-            where: {
-                userId: uid,
-            },
-            attributes: ["deliveryAddress"],
-            group: ["deliveryAddress"],
-        });
-        if (userAdresses) {
-            return userAdresses;
-        }
-    }
-    return undefined;
-};
+// exports.getPaymentMPUserAllAdresses = async function (uid) {
+//     if (uid) {
+//         const userAdresses = Payment_mp.findAll({
+//             where: {
+//                 userId: uid,
+//             },
+//             attributes: ["deliveryAddress"],
+//             group: ["deliveryAddress"],
+//         });
+//         if (userAdresses) {
+//             return userAdresses;
+//         }
+//     }
+//     return undefined;
+// };
 
 //    };
 
