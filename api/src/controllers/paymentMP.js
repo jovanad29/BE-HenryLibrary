@@ -101,6 +101,19 @@ exports.getAllPayments = async (req, res) => {
         return res.status(500).json({message: "Error with server"})
     }
 }
+
+exports.changeOrderStatus = async (req, res) => {
+    console.log(req.params)
+    try {
+        const payment = await Payment_mp.findByPk(req.params.pid)
+        const result = await payment.setOrder_status(req.params.oid)
+        console.log(result)
+        return res.status(204).json({})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
    
 // //getAllPaymentPaymentBook
 // exports.getAllPaymentPaymentBook = async function (req, res) {
