@@ -87,6 +87,13 @@ const getPurchaseReceipt = (body) => {
             <th style="border-bottom: 2px solid #01A86C;">Precio</th>
         </tr>
         ${rows}
+        <!-- aquí va el subtotal -->
+        <tr style="height: 40px;">
+            <td style="margin: 15px; text-align: center; "> Gastos de Envío </td>
+            <td style="text-align: center;"> N/A </td>
+            <td style="text-align: center;">$ total del envío </td>
+        </tr>
+        <!-- aquí termina el subtotal -->
         <tr style="text-align: center; height: 40px;">
             <td style="text-align: center; font-size: 30px;">Total</td>
             <td></td>

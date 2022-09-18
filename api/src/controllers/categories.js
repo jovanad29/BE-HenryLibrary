@@ -45,10 +45,19 @@ exports.getBooksByCategory = async (req, res) => {
 
 //----------- POST -----------//
 exports.createCategory = async (req, res) => {
-    const { category } = req.body
+    const { name } = req.body
     try {
-        const newCategory = await Category.create({ name: category });
-        return res.status(201).json(newCategory)        
+        //busca la categoria y si no la encuentra la crea
+        let [category, created] = await Category.findOrCreate({
+            where: { name },
+            defaults: { name }
+        });
+        if (created) {
+            return res.status(201).json(category);
+        } else {
+            return res.status(400).json({status: 400, message: 'La categoría ya existe'});
+        }
+                
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)

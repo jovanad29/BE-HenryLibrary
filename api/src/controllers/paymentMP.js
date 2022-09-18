@@ -81,49 +81,56 @@ exports.createPayments = async (req, res) => {
     }
 }
 
-exports.getAllPayments = async (req, res) => {
+exports.getAllPaymentPaymentBook = async (req, res) => {
     try {
         const payments = await Payment_mp.findAll(
             {
+                order: [["id", "ASC"]],
                 include:[
-                    {model: Book},
-                    {model: User},
-                    {model: Payment_status},
-                    {model: Payment_method}
+                    {model: Book ,attributes: ["id", "title", "image"] },
+                    {model: User ,attributes: ["uid", "nameUser", "email"] },
+                    {model: Payment_status ,attributes: ["id", "description"] },
+                    {model: Payment_method, attributes: ["id", "descrption"]}
                 ]
             })
-        return res.json(payments)
-    } catch (error) {
-        console.log(error)
-    }
+         // extraer los datos que hay en payment
+         const items = payments.map((item) => item.dataValues);
+         if (payments) return res.status(200).json(items);
+         return res.json({
+             status: 404,
+             message: "No se encontraron registros",
+         });
+     } catch (error) {
+         console.log(error);
+         return res.status(500).json(error);
+     }
 }
    
-// exports.getPayments = async function () {
-//     const payments = await PaymentsOrder.findAll({
-//         include: {
-//         model: User,        
-//         },
-//     });
-//     return payments;
-// }
-   
-// exports.getPaymentByID = async function (ID, token) {
-//     const userToken = jwt.decode(token, process.env.PASS_TOKEN);
-//     if (userToken) {
-//         const user = User.findByPk(userToken.ID);
-//         if (user) {
-//         const payment = await Payment_mp.findByPk(ID);
-//         if (payment) return payment;
-//         }
-//     } else {
-//         const payment = await Payment_mp.findByPk(ID, { include: User });
-//         return payment;
+// //getAllPaymentPaymentBook
+// exports.getAllPaymentPaymentBook = async function (req, res) {
+//     try {
+//         const payment = await Payment.findAll({
+//             order: [["id", "ASC"]],
+//             include: [
+//                 { model: Book, attributes: ["id", "title", "image"] },
+//                 { model: Payment_status, attributes: ["id", "description"] },
+//             ],
+//         });
+//         // extraer los datos que hay en payment
+//         const items = payment.map((item) => item.dataValues);
+//         if (payment) return res.status(200).json(items);
+//         return res.json({
+//             status: 404,
+//             message: "No se encontraron registros",
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json(error);
 //     }
-//     return undefined;
-// }
+// };
 
 exports.getPayments = async function () {
-    const payments = await PaymentsOrder.findAll({
+    const payments = await Payment_mp.findAll({
         include: {
             model: User,
         },
@@ -131,18 +138,11 @@ exports.getPayments = async function () {
     return payments;
 }
 
-exports.getPaymentByID = async function (ID, token) {
-        const userToken = jwt.decode(token, process.env.PASS_TOKEN);
-        if (userToken) {
-            const user = Users.findByPk(userToken.ID);
-            if (user) {
-                const payment = await Payments.findByPk(ID);
-                if (payment) return payment;
-            }
-        } else {
-            const payment = await PaymentsOrder.findByPk(ID, { include: User });
-            return payment;
-        }
+exports.getPaymentByID = async function (uid) {
+       
+       const payment = await Payment_mp.findByPk(uid);
+       if (payment) return payment;
+      
         return undefined;
 };
 
