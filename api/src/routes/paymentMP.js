@@ -13,10 +13,10 @@ const {
     getAllPaymentPaymentBook,
 } = require("../controllers/paymentMP");
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
-router.get("/", getAllPaymentPaymentBook); //todos pagos 
+// router.get("/", getAllPaymentPaymentBook); //todos pagos 
 router.post("/", setMercadoPago);
 router.post("/create", createPayments);
-//router.get("/", getAllPgayments)
+router.get("/", getAllPayments)
 
 router.get("/:id", async (req, res) => {
     const { ID } = req.params;
