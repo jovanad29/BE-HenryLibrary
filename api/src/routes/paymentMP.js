@@ -9,13 +9,14 @@ const {
     getPaymentByID,
     setMercadoPago,
     getPaymentMPUserAllAdresses,
-    getAllPayments
+    getAllPayments,
+    getAllPaymentPaymentBook,
 } = require("../controllers/paymentMP");
 //const { isSuspended } = require('../controllers/UsersControllers');HACER!!!
-
+router.get("/", getAllPaymentPaymentBook); //todos pagos 
 router.post("/", setMercadoPago);
 router.post("/create", createPayments);
-router.get("/", getAllPayments)
+//router.get("/", getAllPgayments)
 
 router.get("/:id", async (req, res) => {
     const { ID } = req.params;
@@ -46,5 +47,11 @@ router.get("/adresses/:uid", async (req, res) => {
         res.status(404).json({ message: "Cannot get addresses" });
     }
 });
+//router.get("/detail/:paymentId", getPaymentBookById); //pago  detallado by paymentId
+
+//router.get("/all/:userUid", getAllByUserId); //todos los pagos  de un usuario
+
+//router.get("/status/:statusId", getAllPaymentBookByStatus); //todos los carritos por statusId
+
 
 module.exports = router;
