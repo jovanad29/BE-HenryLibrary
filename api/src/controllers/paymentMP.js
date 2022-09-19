@@ -103,11 +103,11 @@ exports.getAllPayments = async (req, res) => {
 }
 
 exports.changeOrderStatus = async (req, res) => {
-    console.log(req.params)
+    // console.log(req.params)
     try {
         const payment = await Payment_mp.findByPk(req.params.pid)
         const result = await payment.setOrder_status(req.params.oid)
-        console.log(result)
+        // console.log(result)
         return res.status(204).json({})
     } catch (error) {
         console.log(error)
