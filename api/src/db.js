@@ -43,7 +43,8 @@ const {
   Payment_method,
   Payment_mp,
   Payment_status,
-  Review
+  Review,
+  Order_status
 } = sequelize.models;
 
 // Aca vendrían las relaciones
@@ -126,6 +127,16 @@ Payment_mp.belongsTo(Payment_status, {
   targetKey: 'id',
   onUpdate: 'CASCADE',
 });
+Order_status.hasOne(Payment_mp, {
+  foreignKey: 'orderStatusId',
+  targetKey: 'id',
+  onUpdate: 'CASCADE',
+})
+Payment_mp.belongsTo(Order_status, {
+  foreignKey: 'orderStatusId',
+  targetKey: 'id',
+  onUpdate: 'CASCADE',
+})
 // MERCADOPAGO
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
