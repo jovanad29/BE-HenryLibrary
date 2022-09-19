@@ -8,7 +8,6 @@ const {
   getPayments,
   getPaymentByID,
   setMercadoPago,
-  getPaymentMPUserAllAdresses,
   getAllPayments,
   getAllPaymentPaymentBook,
   getAllOrderStatus,
@@ -39,19 +38,6 @@ router.get("/order-status", getAllOrderStatus);
 // });
 
 //route for get all adresses by UserId
-router.get("/adresses/:uid", async (req, res) => {
-  const { uid } = req.params;
-  try {
-    const addresses = await getPaymentMPUserAllAdresses(uid);
-
-    addresses
-      ? res.json(addresses)
-      : res.status(404).json({ message: `No hay direcciones` });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json({ message: "Cannot get addresses" });
-  }
-});
 
 router.get("/mostpaybook", getUserMostBooksBy)
 ;
