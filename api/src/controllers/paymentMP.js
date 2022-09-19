@@ -14,6 +14,7 @@ const { MP_TOKEN } = process.env;
 const mercadopago = require("mercadopago");
 mercadopago.configure({ access_token: MP_TOKEN });
 
+
 exports.setMercadoPago = async (req, res) => {
   // solo crea el preferenceID y los backurls en MercadoPago.jsx
   const { base_url, items, uid } = req.body; // id es el id del usuario en firebase que se usa para validar que puede entrar
