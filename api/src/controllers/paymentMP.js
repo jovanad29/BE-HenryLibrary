@@ -1,4 +1,12 @@
-const { Payment_mp, User, Book, payment_mp_book, Payment_method, Payment_status, Order_status } = require("../db");
+const {
+  Payment_mp,
+  User,
+  Book,
+  payment_mp_book,
+  Payment_method,
+  Payment_status,
+  Order_status,
+} = require("../db");
 const jwt = require("jsonwebtoken");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
 require("dotenv").config();
@@ -7,23 +15,23 @@ const mercadopago = require("mercadopago");
 mercadopago.configure({ access_token: MP_TOKEN });
 
 exports.setMercadoPago = async (req, res) => {
-    // solo crea el preferenceID y los backurls en MercadoPago.jsx
-    const { base_url, items, uid } = req.body; // id es el id del usuario en firebase que se usa para validar que puede entrar
-    // pero parece ya no ser necesario (solo el base_url e items)
-    try {
-        const { body } = await mercadopago.preferences.create({
-            items: items,
-            back_urls: {
-                success: `${base_url}/checkout/validate`,
-                failure: `${base_url}/checkout/validate`,
-                pending: `${base_url}/checkout/validate`,
-            },
-        });
-        return res.status(201).json({ preferenceId: body.id });
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json(error);
-    }
+  // solo crea el preferenceID y los backurls en MercadoPago.jsx
+  const { base_url, items, uid } = req.body; // id es el id del usuario en firebase que se usa para validar que puede entrar
+  // pero parece ya no ser necesario (solo el base_url e items)
+  try {
+    const { body } = await mercadopago.preferences.create({
+      items: items,
+      back_urls: {
+        success: `${base_url}/checkout/validate`,
+        failure: `${base_url}/checkout/validate`,
+        pending: `${base_url}/checkout/validate`,
+      },
+    });
+    return res.status(201).json({ preferenceId: body.id });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
+  }
 };
 
 //    let paymentsModel = {
@@ -101,6 +109,16 @@ exports.getAllPayments = async (req, res) => {
         return res.status(500).json({message: "Error with server"})
     }
 }
+
+exports.getAllOrderStatus = async (req, res) => {
+    try {
+        const orderStatus = await Order_status.findAll({ order: [["id", "ASC"]] });
+        return res.json(orderStatus);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+};
 
 exports.changeOrderStatus = async (req, res) => {
     try {
