@@ -1,6 +1,6 @@
 
-const { Category, Book, Author, Publisher } = require('../db');
-
+const { Category, Book, Author, Publisher, conn } = require('../db');
+const { QueryTypes } = require('sequelize')
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
@@ -91,6 +91,26 @@ exports.deleteCategory = async (req, res) => {
             await dbCategory.save();
         }
         return res.status(204).json({})        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+}
+
+exports.bestSellerCategories = async (req, res) => {
+    // try {                                         // FUNCIONA PERO EL ORDEN NO ES CORRECTO
+    //     const categories = await Category.findAll({
+    //         include: [{model: Book, attributes: ['id', 'title', 'soldCopies']}],
+    //         order: [[Book, 'soldCopies', 'DESC']]
+    //     })
+    //     return res.json(categories)     
+    // } catch (error) {
+    //     console.log(error)
+    //     return res.status(500).json(error)
+    // }
+    try {
+        const categories = await conn.query('SELECT sum("book"."soldCopies") AS "soldCopies", "category"."id", "category"."name" FROM book INNER JOIN book_category ON "book_category"."bookId"="book"."id" INNER JOIN category ON "book_category"."categoryId"="category"."id" GROUP BY "category"."id" ORDER BY "soldCopies" DESC', { type: QueryTypes.SELECT })
+        return res.json(categories)
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)
