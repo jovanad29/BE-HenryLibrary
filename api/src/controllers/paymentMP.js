@@ -1,3 +1,4 @@
+const sequelize = require('sequelize');
 const { Payment_mp, User, Book, payment_mp_book, Payment_method, Payment_status, Order_status } = require("../db");
 const jwt = require("jsonwebtoken");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
@@ -5,6 +6,7 @@ require("dotenv").config();
 const { MP_TOKEN } = process.env;
 const mercadopago = require("mercadopago");
 mercadopago.configure({ access_token: MP_TOKEN });
+
 
 exports.setMercadoPago = async (req, res) => {
     // solo crea el preferenceID y los backurls en MercadoPago.jsx
@@ -161,3 +163,26 @@ exports.getAllPayments = async (req, res) => {
 //    };
 
 //    module.exports = paymentsModel;
+exports.getUserMostBooksBy = async function (req, res) {
+    try {
+     const usersfound = Payment_mp.findAll(
+        {
+            attributes: ['User.nameUser', [sequelize.fn('COUNT', sequelize.col('quantity')), 'CountBookBuy']],
+            include: [
+                
+                    {model: Book, attributes: [] },
+                    {model: User, attributes: ['uid'] },
+                
+            ],
+            group: ['User.uid']
+              
+        }
+    )   
+    return res.status(200).json(usersfound)
+    } 
+    catch (error) {
+        console.log(error)
+        return res.status(500).json({message: "Error with server"})
+    }
+    }
+
