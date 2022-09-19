@@ -1,4 +1,4 @@
-const { Payment, payment_book, Book, Payment_status } = require("../db");
+const { Payment, payment_book, Book, Payment_status, conn } = require("../db");
 const { Op } = require("sequelize");
 
 // get payment y payment_book por userId con stausId=1.
@@ -8,13 +8,18 @@ exports.getPaymentPaymentBook = async function (req, res) {
         const payment = await Payment.findOne({
             attributes: ["id", "userUid", "totalAmount"],
             include: [
-                { model: Book, attributes: ["id", "title", "image"] },
+                {
+                    model: Book,
+                    attributes: ["id", "title", "image"],
+                    // order: [["title", "ASC"]],
+                },
                 {
                     model: Payment_status,
                     attributes: ["id", "description"],
                     where: { id: 1 },
                 },
             ],
+            order: [[Book, "title", "asc"]],
             where: {
                 userUid: userUid,
             },
@@ -687,9 +692,7 @@ exports.getAllPaymentBookByStatus = async function (req, res) {
             order: [["id", "ASC"]],
             include: [
                 { model: Book, attributes: ["id", "title", "image"] },
-                { model: Payment_status, 
-                    where: { id: statusId },
-                },
+                { model: Payment_status, where: { id: statusId } },
             ],
         });
         // extraer los datos que hay en payment
@@ -699,6 +702,32 @@ exports.getAllPaymentBookByStatus = async function (req, res) {
             status: 404,
             message: "No se encontraron registros",
         });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+};
+
+exports.getAllPaymentStadistics = async function (req, res) {
+    try {
+        const payments = await Payment.findAll({
+            attributes: [
+                "payment_status.description",
+                [
+                    conn.fn("COUNT", conn.col("payment_status.description")),
+                    "TotalCount",
+                ],
+            ],
+            include: [
+                {
+                    model: Payment_status,
+                    attributes: [],
+                },
+            ],
+            group: ["payment_status.description"],
+            raw: true,
+        });
+        return res.json(payments);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
