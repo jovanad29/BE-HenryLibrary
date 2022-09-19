@@ -13,6 +13,7 @@ require("dotenv").config();
 const { MP_TOKEN } = process.env;
 const mercadopago = require("mercadopago");
 mercadopago.configure({ access_token: MP_TOKEN });
+const sequelize=require('sequelize')
 
 
 exports.setMercadoPago = async (req, res) => {
@@ -199,20 +200,19 @@ exports.changeOrderStatus = async (req, res) => {
 //    module.exports = paymentsModel;
 exports.getUserMostBooksBy = async function (req, res) {
     try {
-     const usersfound = Payment_mp.findAll(
-        {
-            attributes: ['User.nameUser', [sequelize.fn('COUNT', sequelize.col('quantity')), 'CountBookBuy']],
-            include: [
+     const usersfound = await User.findAll( 
+        {   order: [["totalBookBuy", "DESC"]],
+            attributes: ['nameUser' , [sequelize.fn('SUM', sequelize.col('total')), 'totalBookBuy']],
+             include: [
                 
-                    {model: Book, attributes: [] },
-                    {model: User, attributes: ['uid'] },
-                
-            ],
-            group: ['User.uid']
-              
+                   {model: Payment_mp , attributes: [] , required :false},
+              ],
+          group: ['nameUser','user.uid'],
+        
         }
     )   
-    return res.status(200).json(usersfound)
+    return res.status(200).send(usersfound)
+
     } 
     catch (error) {
         console.log(error)

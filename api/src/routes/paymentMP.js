@@ -53,7 +53,7 @@ router.get("/adresses/:uid", async (req, res) => {
   }
 });
 
-router.get("/mostpaybook/", getUserMostBooksBy)
+router.get("/mostpaybook", getUserMostBooksBy)
 ;
 //router.get("/detail/:paymentId", getPaymentBookById); //pago  detallado by paymentId
 
