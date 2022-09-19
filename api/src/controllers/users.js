@@ -266,3 +266,19 @@ exports.updateUserName = async (req, res) => {
         return res.status(500).json(error);
     }
 };
+
+exports.getPaymentMPUserAllAdresses = async function (uid) {
+    if (uid) {
+        const userAdresses = Payment_mp.findAll({
+            where: {
+                userId: uid,
+            },
+            attributes: ["deliveryAddress"],
+            group: ["deliveryAddress"],
+        });
+        if (userAdresses) {
+            return userAdresses;
+        }
+    }
+    return undefined;
+};

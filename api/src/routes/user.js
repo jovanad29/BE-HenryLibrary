@@ -15,11 +15,25 @@ const {
     getUserPaymentsBook,
     updateUserAddress,
     updateUserName,
+    getPaymentMPUserAllAdresses
 } = require("../controllers/users");
 
 router.get("/", getAll);
 router.get("/byname", getUserByName);
 router.get("/:uid", getById);
+router.get("/:uid/adresses", async (req, res) => {
+    const { uid } = req.params;
+    try {
+      const addresses = await getPaymentMPUserAllAdresses(uid);
+  
+      addresses
+        ? res.json(addresses)
+        : res.status(404).json({ message: `No hay direcciones` });
+    } catch (err) {
+      console.log(err);
+      res.status(404).json({ message: "Cannot get addresses" });
+    }
+});
 
 router.get("/", getUserByName);
 router.post("/", createUser);
