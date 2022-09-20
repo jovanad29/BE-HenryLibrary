@@ -101,7 +101,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-      //----------- PUT -----------//
+//----------- PUT -----------//
 exports.updateAdminUser = async (req, res) => {
     const { uid } = req.params;
     console.log(uid);
@@ -141,15 +141,15 @@ exports.bannedUser = async (req, res) => {
         if (user) {
             user.isBanned = user.isBanned ? false : true;
             await user.save();
-        } if (isBanned) {
+        } if (user) {
             try {
                 const html = getTemplate(
                     "banned",
-                    row.dataValues.nameUser
+                    user.nameUser
                 );
                 await sendEmail(
                     row.dataValues.email,
-                    "¡Usuario Baneado/a!",
+                    "banned",
                     html
                 )
             } catch (err) {
@@ -249,7 +249,7 @@ exports.getUserPaymentsBook = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserAddress = async (req, res) => {
     const { uid } = req.params;
     const { address } = req.body;
@@ -266,7 +266,7 @@ exports.updateUserAddress = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserName = async (req, res) => {
     const { uid } = req.params;
     const { name } = req.body;

@@ -40,7 +40,9 @@ const getTemplate = (template, body) => {
     const templates = {
         'bienvenida': getBienvenida(body),
         'purchaseReceipt': getPurchaseReceipt(body),
-        'banned': getBanned(body)
+        'banned': getBanned(body),
+        'unbanned': getUnBanned(body)
+
     }
     return templates[template]
 }
@@ -122,6 +124,17 @@ const getBanned = (body) => {
         style="text-decoration: none;">Libreria Henry</a></p>
         `
 }
+const getUnBanned = (body) => {
+    const { user } = body
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${user} es un agrado comunicarle que has vuelto favorablemente con nosotros.<br> Es un agrado que estes, ¡Nuevamente!</h2>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a></p>
+        `
+}
+
 
 
 module.exports = {
