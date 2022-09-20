@@ -16,15 +16,15 @@ let transporter = nodemailer.createTransport({
     },
     secure: true, // true for 465, false for other ports (gmail requires 465)
     auth: {
-      user: mail.user, // generated ethereal user
-      pass: mail.pass, // generated ethereal password
+        user: mail.user, // generated ethereal user
+        pass: mail.pass, // generated ethereal password
     },
 });
 
 const sendEmail = async (email, subject, html) => {
-    try {    
+    try {
         await transporter.sendMail({
-            from: `Librería Henry <${ mail.user }>`, // sender address
+            from: `Librería Henry <${mail.user}>`, // sender address
             to: email, // list of receivers
             subject, // Subject line
             // text: '¡Bienvenido/a a Librería Henry!', // plain text body
@@ -36,10 +36,11 @@ const sendEmail = async (email, subject, html) => {
     }
 }
 
-const getTemplate = (template,body) => {
+const getTemplate = (template, body) => {
     const templates = {
         'bienvenida': getBienvenida(body),
-        'purchaseReceipt': getPurchaseReceipt(body)
+        'purchaseReceipt': getPurchaseReceipt(body),
+        'banned': getBanned(body)
     }
     return templates[template]
 }
@@ -47,7 +48,7 @@ const getTemplate = (template,body) => {
 const getBienvenida = (name) => {
     return `
         <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
-        <h2>Hola, ${ name || 'Usuario' }</h2>
+        <h2>Hola, ${name || 'Usuario'}</h2>
         <p>Gracias por preferirnos.</p>
         <p>Ahora que estás regitrado/a, te contamos lo que puedes hacer:</p>
         <ul>
@@ -65,17 +66,16 @@ const getBienvenida = (name) => {
 const getPurchaseReceipt = (body) => {
     const { user, association } = body
     const books = association.books
-    const rows = books.reduce( (prev, curr, idx) => {
+    const rows = books.reduce((prev, curr, idx) => {
         return prev + `
         <tr style="height: 40px;">
             <td style="margin: 15px; text-align: center; ">${books[idx].title}</td>
             <td style="text-align: center;">${books[idx].payment_mp_book.quantity}</td>
-            <td style="text-align: center;">$${
-                (parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
+            <td style="text-align: center;">$${(parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
             }</td>
         </tr>
         `
-    },"")
+    }, "")
     const html = `
     <h2 style="text-align: center;">${user.nameUser || 'Usuario'} ¡Gracias tu compra!</h2>
     <h2 style="text-align: center;">A continuación, adjuntamos su recibo (${association.transactionId})</h2>
@@ -112,7 +112,16 @@ const getPurchaseReceipt = (body) => {
     // console.log("desde el template", html)
     return html
 }
-
+const getBanned = (body) => {
+    const { user } = body
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${user} ha sido baneado/a.<br> Para mayor información, escríbenos a <a href="mailito: henrylibrary@gmail.com">mail Libreria Henry</a> </h2>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a></p>
+        `
+}
 
 
 module.exports = {

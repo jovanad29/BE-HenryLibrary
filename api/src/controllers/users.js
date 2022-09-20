@@ -91,7 +91,7 @@ exports.createUser = async (req, res) => {
                     html
                 );
             } catch (err) {
-                
+
             }
         }
         return res.status(201).json(row);
@@ -101,7 +101,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+      //----------- PUT -----------//
 exports.updateAdminUser = async (req, res) => {
     const { uid } = req.params;
     console.log(uid);
@@ -141,13 +141,29 @@ exports.bannedUser = async (req, res) => {
         if (user) {
             user.isBanned = user.isBanned ? false : true;
             await user.save();
+        } if (isBanned) {
+            try {
+                const html = getTemplate(
+                    "banned",
+                    row.dataValues.nameUser
+                );
+                await sendEmail(
+                    row.dataValues.email,
+                    "¡Usuario Baneado/a!",
+                    html
+                )
+            } catch (err) {
+                console.log(err)
+            }
+            return res.status(204).json({})
         }
-        return res.status(204).json({});
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
-};
+}
+
+
 
 exports.addFavorite = async (req, res) => {
     const { uid, bid } = req.params;
@@ -281,4 +297,4 @@ exports.getPaymentMPUserAllAdresses = async function (uid) {
         }
     }
     return undefined;
-};
+}
