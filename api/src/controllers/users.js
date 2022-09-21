@@ -91,7 +91,7 @@ exports.createUser = async (req, res) => {
                     html
                 );
             } catch (err) {
-                
+
             }
         }
         return res.status(201).json(row);
@@ -101,7 +101,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+//----------- PUT -----------//
 exports.updateAdminUser = async (req, res) => {
     const { uid } = req.params;
     console.log(uid);
@@ -141,13 +141,29 @@ exports.bannedUser = async (req, res) => {
         if (user) {
             user.isBanned = user.isBanned ? false : true;
             await user.save();
+        } if (user) {
+            try {
+                const html = getTemplate(
+                    "banned",
+                    user.nameUser
+                );
+                await sendEmail(
+                    row.dataValues.email,
+                    "banned",
+                    html
+                )
+            } catch (err) {
+                console.log(err)
+            }
+            return res.status(204).json({})
         }
-        return res.status(204).json({});
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
-};
+}
+
+
 
 exports.addFavorite = async (req, res) => {
     const { uid, bid } = req.params;
@@ -233,7 +249,7 @@ exports.getUserPaymentsBook = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserAddress = async (req, res) => {
     const { uid } = req.params;
     const { address } = req.body;
@@ -250,7 +266,7 @@ exports.updateUserAddress = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserName = async (req, res) => {
     const { uid } = req.params;
     const { name } = req.body;
@@ -281,4 +297,4 @@ exports.getPaymentMPUserAllAdresses = async function (uid) {
         }
     }
     return undefined;
-};
+}
