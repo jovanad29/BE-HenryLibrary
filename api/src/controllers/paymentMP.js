@@ -21,12 +21,12 @@ exports.setMercadoPago = async (req, res) => {
 	// pero parece ya no ser necesario (solo el base_url e items)
 	try {
 		const { body } = await mercadopago.preferences.create({
-		items: items,
-		back_urls: {
-			success: `${base_url}/checkout/validate`,
-			failure: `${base_url}/checkout/validate`,
-			pending: `${base_url}/checkout/validate`,
-		},
+			items: items,
+			back_urls: {
+				success: `${base_url}/checkout/validate`,
+				failure: `${base_url}/checkout/validate`,
+				pending: `${base_url}/checkout/validate`,
+			},
 		});
 		return res.status(201).json({ preferenceId: body.id });
 	} catch (error) {
@@ -35,53 +35,52 @@ exports.setMercadoPago = async (req, res) => {
 	}
 };
 
-//    let paymentsModel = {
 exports.createPayments = async (req, res) => {
 	const payment = req.body; // lo que tiene order en el store
-	const status = { 'pending': 2, 'approved': 4, 'rejected': 7 }; // para evitar enviar los ids por url
-	const methods = { 'account_money': 2, 'credit_card': 3, 'debit_card': 4 ,'ticket':5 ,'cash': 1 }; // para evitar enviar los ids por url
+	const status = {'in_process': 2, 'pending': 2, 'approved': 4, 'rejected': 7}; // para evitar enviar los ids por url
+	const methods = {'account_money': 2, 'credit_card': 3, 'debit_card': 4 ,'ticket':5 ,'cash': 6}; // para evitar enviar los ids por url
 	try {
 		const newPaymentMP = await Payment_mp.create({
-		transactionId: payment.transactionId,
-		paymentType: payment.paymentType,
-		total: payment.total,
-		statusDetail: payment.statusDetail,
-		deliveryAddress: payment.deliveryAddress,
+			transactionId: payment.transactionId,
+			paymentType: payment.paymentType,
+			total: payment.total,
+			statusDetail: payment.statusDetail,
+			deliveryAddress: payment.deliveryAddress,
 		});
 		payment.items.forEach(async (i) => {
-		try {
-			await newPaymentMP.addBook(i.bookId);
-			await payment_mp_book.update(
-			{
-				quantity: parseInt(i.quantity),
-				price: parseFloat(i.price),
-			},
-			{
-				where: {
-				bookId: i.bookId,
-				paymentMpId: newPaymentMP.id,
+			try {
+				await newPaymentMP.addBook(i.bookId);
+				await payment_mp_book.update(
+				{
+					quantity: parseInt(i.quantity),
+					price: parseFloat(i.price),
 				},
+				{
+					where: {
+						bookId: i.bookId,
+						paymentMpId: newPaymentMP.id,
+					},
+				}
+				);
+				const book = await Book.findByPk(i.bookId);
+				await book.update({
+					soldCopies: book.soldCopies + parseInt(i.quantity),
+					currentStock: book.currentStock - parseInt(i.quantity),
+				});
+			} catch (error) {
+				console.log(error);
 			}
-			);
-			const book = await Book.findByPk(i.bookId);
-			await book.update({
-			soldCopies: book.soldCopies + parseInt(i.quantity),
-			currentStock: book.currentStock - parseInt(i.quantity),
-			});
+		});
+		try {
+			await newPaymentMP.setPayment_status(status[payment.status]); // transformar string a id
+			await newPaymentMP.setUser(payment.userID);
+			await newPaymentMP.setPayment_method(methods[payment.paymentMethodId]); // transformar string a id
+			await newPaymentMP.setOrder_status(1); // ESTADO DE DESPACHO
 		} catch (error) {
 			console.log(error);
 		}
-		});
-		try {
-		await newPaymentMP.setPayment_status(status[payment.status]); // transformar string a id
-		await newPaymentMP.setUser(payment.userID);
-		await newPaymentMP.setPayment_method(methods[payment.paymentMethodId]); // transformar string a id
-		await newPaymentMP.setOrder_status(1); // ESTADO DE DESPACHO
-		} catch (error) {
-		console.log(error);
-		}
 		const association = await Payment_mp.findByPk(newPaymentMP.id, {
-		include: [{ model: Book }],
+			include: [{ model: Book }],
 		});
 		const user = await newPaymentMP.getUser();
 		const html = getTemplate("purchaseReceipt", (body = { user, association }));
@@ -133,27 +132,22 @@ exports.changeOrderStatus = async (req, res) => {
 	}
 };
 
-
-
-//    module.exports = paymentsModel;
 exports.getUserMostBooksBy = async function (req, res) {
     try {
-     const usersfound = await User.findAll( 
-        {   order: [["totalBookBuy", "DESC"]],
-            attributes: ['nameUser' , [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('total')),0), 'totalBookBuy']],
-			include: [
-				{model: Payment_mp , attributes: [] , required :false},
-			],
-          group: ['nameUser','user.uid'],
-        
-        }
-    )   
-    return res.status(200).send(usersfound)
-
+		const usersfound = await User.findAll( 
+			{   
+				order: [["totalBookBuy", "DESC"]],
+				attributes: ['nameUser' , [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('total')),0), 'totalBookBuy']],
+				include: [
+					{model: Payment_mp , attributes: [] , required :false},
+				],
+				group: ['nameUser','user.uid']     
+			}
+    	)   
+    	return res.status(200).send(usersfound)
     } 
     catch (error) {
         console.log(error)
         return res.status(500).json({message: "Error with server"})
     }
 }
-
