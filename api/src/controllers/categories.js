@@ -89,13 +89,17 @@ exports.deleteCategory = async (req, res) => {
             include : {
                 model: Book,
                 include: [Author, Publisher]
-            }});
+            }
+        });
         //hago delete de category por id, si que no tiene libros asociados
         if (category.dataValues.books.length === 0) {
             await category.destroy();
             return res.status(204).json({})
         } else {
-            return res.status(404).json({status: 404, message: 'No se puede eliminar el género porque tiene libros asociados'})
+            return res.status(409).json({
+                status: 409,
+                message: 'No se puede eliminar el género porque tiene libros asociados'
+            })
         }
       
     } catch (error) {
