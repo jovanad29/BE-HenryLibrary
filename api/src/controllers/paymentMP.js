@@ -139,7 +139,7 @@ exports.changeOrderStatus = async (req, res) => {
 exports.getUserMostBooksBy = async function (req, res) {
     try {
      const usersfound = await User.findAll( 
-        {   order: [["totalBookBuy", "ASC"]],
+        {   order: [["totalBookBuy", "DESC"]],
             attributes: ['nameUser' , [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('total')),0), 'totalBookBuy']],
              include: [
                    {model: Payment_mp , attributes: [] , required :false},
