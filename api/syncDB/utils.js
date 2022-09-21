@@ -221,7 +221,11 @@ async function setStatuses(){
 }
 
 async function setPaymentMethods(){
-  const methods = ["TEST", "ACCOUNT_MONEY", "CREDIT_CARD"] // NA para cuando
+  const methods = ["CASH", //"TEST"
+  "ACCOUNT_MONEY", 
+  "CREDIT_CARD",
+  "DEBIT_CARD",
+  "TICKET",] // NA para cuando
   try {
     for (let m of methods) {
       await Payment_method.create({ descrption: m })
