@@ -2,6 +2,7 @@
 const { Category, Book, Author, Publisher, conn } = require('../db');
 const { QueryTypes } = require('sequelize')
 
+
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
     try {
@@ -13,6 +14,7 @@ exports.getAll = async (req, res) => {
         res.status(500).json(error);
     }
 }
+
 exports.getById = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id);
@@ -23,6 +25,7 @@ exports.getById = async (req, res) => {
         return res.status(500).json(error)
     }
 }
+
 exports.getBooksByCategory = async (req, res) => {
     try {
         const category = await Category.findByPk(req.params.id, {
@@ -31,7 +34,6 @@ exports.getBooksByCategory = async (req, res) => {
                 include: [Author, Publisher]
             }
         });
-        // console.log(category)
         if (category) {
             return res.json(category);
         } else {
@@ -42,7 +44,6 @@ exports.getBooksByCategory = async (req, res) => {
         return res.status(500).json(error)
     }
 }
-
 //----------- POST -----------//
 exports.createCategory = async (req, res) => {
     const { name } = req.body
@@ -56,8 +57,7 @@ exports.createCategory = async (req, res) => {
             return res.status(201).json(category);
         } else {
             return res.status(400).json({status: 400, message: 'La categoría ya existe'});
-        }
-                
+        }                
     } catch (error) {
         console.log(error)
         return res.status(500).json(error)
