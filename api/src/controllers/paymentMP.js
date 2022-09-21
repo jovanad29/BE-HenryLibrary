@@ -137,20 +137,23 @@ exports.changeOrderStatus = async (req, res) => {
 
 //    module.exports = paymentsModel;
 exports.getUserMostBooksBy = async function (req, res) {
-  try {
-    const usersfound = await User.findAll({
-      order: [["totalBookBuy", "DESC"]],
-      attributes: [
-        "nameUser",
-        [sequelize.fn("SUM", sequelize.col("total")), "totalBookBuy"],
-      ],
-      include: [{ model: Payment_mp, attributes: [], required: false }],
-      group: ["nameUser", "user.uid"],
-    });
-    return res.status(200).send(usersfound);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Error with server" });
-  }
-};
+    try {
+     const usersfound = await User.findAll( 
+        {   order: [["totalBookBuy", "ASC"]],
+            attributes: ['nameUser' , [sequelize.fn('COALESCE', sequelize.fn('SUM', sequelize.col('total')),0), 'totalBookBuy']],
+             include: [
+                   {model: Payment_mp , attributes: [] , required :false},
+              ],
+          group: ['nameUser','user.uid'],
+        
+        }
+    )   
+    return res.status(200).send(usersfound)
+
+    } 
+    catch (error) {
+        console.log(error)
+        return res.status(500).json({message: "Error with server"})
+    }
+    }
 
