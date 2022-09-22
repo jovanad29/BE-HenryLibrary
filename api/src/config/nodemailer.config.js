@@ -27,7 +27,6 @@ const sendEmail = async (email, subject, html) => {
             from: `Librería Henry <${mail.user}>`, // sender address
             to: email, // list of receivers
             subject, // Subject line
-            // text: '¡Bienvenido/a a Librería Henry!', // plain text body
             html, // html body
         });
 
@@ -36,15 +35,17 @@ const sendEmail = async (email, subject, html) => {
     }
 }
 
-const getTemplate = (template, body) => {
+const getTemplate = (template,body) => {
     const templates = {
-        'bienvenida': getBienvenida(body),
-        'purchaseReceipt': getPurchaseReceipt(body),
-        'banned': getBanned(body),
-        'unbanned': getUnBanned(body)
-
+        bienvenida: getBienvenida,
+        banned: getBanned,
+        unbanned: getUnBanned,
+        compraDespachada: getDespachada,
+        purchaseReceipt: getPurchaseReceipt,
+        userEliminado: getUserEliminado,
+        userRestaurado: getUserRestaurado
     }
-    return templates[template]
+    return templates[template](body)
 }
 
 const getBienvenida = (name) => {
@@ -90,11 +91,11 @@ const getPurchaseReceipt = (body) => {
         </tr>
         ${rows}
         <!-- aquí va el subtotal -->
-        <tr style="height: 40px;">
+        <!-- <tr style="height: 40px;">
             <td style="margin: 15px; text-align: center; "> Gastos de Envío </td>
             <td style="text-align: center;"> N/A </td>
             <td style="text-align: center;">$ total del envío </td>
-        </tr>
+        </tr> -->
         <!-- aquí termina el subtotal -->
         <tr style="text-align: center; height: 40px;">
             <td style="text-align: center; font-size: 30px;">Total</td>
@@ -111,30 +112,71 @@ const getPurchaseReceipt = (body) => {
         <h2 style="margin: auto;">Librería Henry. Tu librería de confianza.</h2>
     </div>    
     `
-    // console.log("desde el template", html)
     return html
 }
-const getBanned = (body) => {
-    const { user } = body
+const getBanned = (name) => {
     return `
     <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
-    <h2>Estimado/a ${user} ha sido baneado/a.<br> Para mayor información, escríbenos a <a href="mailito: henrylibrary@gmail.com">mail Libreria Henry</a> </h2>
-    <p>Atte. <a
+    <h2>Estimado/a ${name}, has sido baneado/a.
+        <br>
+        Para mayor información, escríbenos a <a href="mailito:henrylibrary@gmail.com">henrylibrary@gmail.com</a>
+    </h2>
+    <p>
+        <strong>
+        Atte. <a
         href="http://henry-library.netlify.app/" target="_blank"
-        style="text-decoration: none;">Libreria Henry</a></p>
-        `
+        style="text-decoration: none;">Librería Henry</a>
+        </strong>
+    </p>
+    `
 }
-const getUnBanned = (body) => {
-    const { user } = body
+const getUnBanned = (name) => {
     return `
     <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
-    <h2>Estimado/a ${user} es un agrado comunicarle que has vuelto favorablemente con nosotros.<br> Es un agrado que estes, ¡Nuevamente!</h2>
+    <h2>Estimado/a ${name}, es un agrado comunicarte que has vuelto, favorablemente, con nosotros.<br> ¡Qué gusto tenerte de regreso!</h2>
     <p>Atte. <a
         href="http://henry-library.netlify.app/" target="_blank"
-        style="text-decoration: none;">Libreria Henry</a></p>
-        `
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
 }
-
+const getDespachada = (body) => {
+    const { user, transactionId, deliveryAddress } = body
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <p>Estimado/a <strong>${user.nameUser}</strong>, te informamos que tu compra (<strong>${transactionId}</strong>) ha sido despachada a la dirección <strong>${deliveryAddress}</strong> confirmada durante la compra.</p>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
+}
+const getUserEliminado = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, tu cuenta ha sido eliminada satisfactoriamente.
+        <br>
+        Si esta solicitud no la hiciste tú, escríbenos a <a href="mailito:henrylibrary@gmail.com">henrylibrary@gmail.com</a>
+    </h2>
+    <p>
+        <strong>
+        Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Librería Henry</a>
+        </strong>
+    </p>
+    `
+}
+const getUserRestaurado = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, es un agrado comunicarte que tu cuenta ha sido restaurada.<br> ¡Qué gusto tenerte de regreso!</h2>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
+}
 
 
 module.exports = {
