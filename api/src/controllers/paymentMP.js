@@ -122,9 +122,17 @@ exports.getAllOrderStatus = async (req, res) => {
 };
 
 exports.changeOrderStatus = async (req, res) => {
+	const DESPACHO = '2'
 	try {
 		const payment = await Payment_mp.findByPk(req.params.pid);
 		await payment.setOrder_status(req.params.oid);
+		const user = await payment.getUser()
+		const deliveryAddress = payment.deliveryAddress
+		const transactionId = payment.transactionId
+		if (req.params.oid === DESPACHO) {
+			const html = getTemplate('compraDespachada', body={user, transactionId, deliveryAddress})
+			await sendEmail(user.email,`Informe sobre tu compra (${transactionId})`,html)
+		}
 		return res.status(204).json({});
 	} catch (error) {
 		console.log(error);
