@@ -1,6 +1,7 @@
 const { User, Payment, Review, Book, Payment_mp } = require("../db");
 const { Op } = require("sequelize");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
+const { use } = require("../routes/categories");
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
@@ -91,7 +92,7 @@ exports.createUser = async (req, res) => {
                     html
                 );
             } catch (err) {
-
+                console.log(err)
             }
         }
         return res.status(201).json(row);
@@ -126,6 +127,30 @@ exports.logicaldeleteUser = async (req, res) => {
         if (user) {
             user.isActive = user.isActive ? false : true;
             await user.save();
+            if (!user.isActive){
+                console.log(user)
+                console.log(user.nameUser)
+                console.log(user.dataValues.nameUser)
+                const html = getTemplate(
+                    "userEliminado",
+                    user.nameUser
+                );
+                await sendEmail(
+                    user.email,
+                    "Lamentamos que te vayas",
+                    html
+                );
+            } else {
+                const html = getTemplate(
+                    "userRestaurado",
+                    user.nameUser
+                );
+                await sendEmail(
+                    user.email,
+                    "¡Bienvenido/a de vuelta a Librería Henry!",
+                    html
+                );
+            }
         }
         return res.status(204).json({});
     } catch (error) {
@@ -141,17 +166,14 @@ exports.bannedUser = async (req, res) => {
         if (user) {
             user.isBanned = user.isBanned ? false : true;
             await user.save();
-        } if (user) {
+            if (user.isBanned) {
+                const html = getTemplate("banned", user.nameUser);
+                await sendEmail(user.email,'Estatus de usuario',html)
+            } else {
+                const html = getTemplate("unbanned", user.nameUser);
+                await sendEmail(user.email,'Estatus de usuario',html)
+            }
             try {
-                const html = getTemplate(
-                    "banned",
-                    user.nameUser
-                );
-                await sendEmail(
-                    row.dataValues.email,
-                    "banned",
-                    html
-                )
             } catch (err) {
                 console.log(err)
             }

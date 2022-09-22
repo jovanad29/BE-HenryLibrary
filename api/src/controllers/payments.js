@@ -1,4 +1,4 @@
-const { Payment, payment_book, Book, Payment_status, conn } = require("../db");
+const { Payment, payment_book, Book, Payment_status, conn, Payment_method } = require("../db");
 const { Op } = require("sequelize");
 
 // get payment y payment_book por userId con stausId=1.
@@ -46,6 +46,12 @@ exports.getAllByUserId = async function (req, res) {
                 {
                     model: Payment_status,
                     attributes: ["id", "description"],
+                    // no corresponde filtrar por id 1, este metodo tiene que traer todos los registros de payment para el usuario
+                    // where: { id: 1 },
+                },
+                {
+                    model: Payment_method,
+                    attributes: ["id", "descrption"],
                     // no corresponde filtrar por id 1, este metodo tiene que traer todos los registros de payment para el usuario
                     // where: { id: 1 },
                 },
@@ -613,26 +619,16 @@ exports.putAddItemToPaymentBook = async function (req, res) {
 
 //putUpdateStatus
 exports.putUpdateStatus = async function (req, res) {
-    const { paymentId, statusId } = req.params;
-
+    const { paymentId, statusId } = req.params; // paymentId es el id del carrito
+    const { transactionId, paymentMethod, deliveryAddress } = req.body
+    console.log(req.body)
     try {
-        // const updatedPayment = await Payment.update(
-        //     {
-        //         where: {
-        //             id: paymentId,
-        //         },
-        //     }
-        // );
-        // if (updatedPayment[0]===1) {
-        //     return res.status(204).json({ menssage: "Se actualizo el status" });
-
-        // } else {
-
-        //     return res.status(404).json({ menssage: "No se encontro el carrito" });
-        // }
         const toUpdate = await Payment.findByPk(paymentId);
         if (toUpdate) {
+            await toUpdate.update({ transactionId, deliveryAddress });
             await toUpdate.setPayment_status(statusId);
+            // await toUpdate.addPayment_method(paymentMethod);
+            await toUpdate.setPayment_method(paymentMethod)
             return res.status(204).json({ menssage: "Se actualizó el status" });
         }
         return res.status(404).json({ menssage: "No se encontró el carrito" });

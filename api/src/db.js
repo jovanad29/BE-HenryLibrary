@@ -140,6 +140,7 @@ Payment_mp.belongsTo(Order_status, {
 // MERCADOPAGO
 User.hasMany(Payment);
 Payment_method.hasMany(Payment);
+Payment.belongsTo(Payment_method)
 User.belongsToMany(Review,{through:'review_user'})
 Review.belongsToMany(User,{through:'review_user'})
 Review.belongsToMany(Book,{through:'review_book'})
