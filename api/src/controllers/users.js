@@ -1,6 +1,7 @@
 const { User, Payment, Review, Book, Payment_mp } = require("../db");
 const { Op } = require("sequelize");
 const { getTemplate, sendEmail } = require("../config/nodemailer.config");
+const { use } = require("../routes/categories");
 
 //----------- GET -----------//
 exports.getAll = async (req, res) => {
@@ -91,7 +92,7 @@ exports.createUser = async (req, res) => {
                     html
                 );
             } catch (err) {
-                
+                console.log(err)
             }
         }
         return res.status(201).json(row);
@@ -101,7 +102,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+//----------- PUT -----------//
 exports.updateAdminUser = async (req, res) => {
     const { uid } = req.params;
     console.log(uid);
@@ -126,6 +127,30 @@ exports.logicaldeleteUser = async (req, res) => {
         if (user) {
             user.isActive = user.isActive ? false : true;
             await user.save();
+            if (!user.isActive){
+                console.log(user)
+                console.log(user.nameUser)
+                console.log(user.dataValues.nameUser)
+                const html = getTemplate(
+                    "userEliminado",
+                    user.nameUser
+                );
+                await sendEmail(
+                    user.email,
+                    "Lamentamos que te vayas",
+                    html
+                );
+            } else {
+                const html = getTemplate(
+                    "userRestaurado",
+                    user.nameUser
+                );
+                await sendEmail(
+                    user.email,
+                    "¡Bienvenido/a de vuelta a Librería Henry!",
+                    html
+                );
+            }
         }
         return res.status(204).json({});
     } catch (error) {
@@ -141,13 +166,26 @@ exports.bannedUser = async (req, res) => {
         if (user) {
             user.isBanned = user.isBanned ? false : true;
             await user.save();
+            if (user.isBanned) {
+                const html = getTemplate("banned", user.nameUser);
+                await sendEmail(user.email,'Estatus de usuario',html)
+            } else {
+                const html = getTemplate("unbanned", user.nameUser);
+                await sendEmail(user.email,'Estatus de usuario',html)
+            }
+            try {
+            } catch (err) {
+                console.log(err)
+            }
+            return res.status(204).json({})
         }
-        return res.status(204).json({});
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);
     }
-};
+}
+
+
 
 exports.addFavorite = async (req, res) => {
     const { uid, bid } = req.params;
@@ -233,7 +271,7 @@ exports.getUserPaymentsBook = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserAddress = async (req, res) => {
     const { uid } = req.params;
     const { address } = req.body;
@@ -250,7 +288,7 @@ exports.updateUserAddress = async (req, res) => {
     }
 };
 
-// //----------- PUT -----------//
+ //----------- PUT -----------//
 exports.updateUserName = async (req, res) => {
     const { uid } = req.params;
     const { name } = req.body;
@@ -281,4 +319,4 @@ exports.getPaymentMPUserAllAdresses = async function (uid) {
         }
     }
     return undefined;
-};
+}

@@ -221,7 +221,7 @@ async function setStatuses(){
 }
 
 async function setPaymentMethods(){
-  const methods = ["TEST", "ACCOUNT_MONEY", "CREDIT_CARD"] // NA para cuando
+  const methods = ["TEST", "ACCOUNT_MONEY", "CREDIT_CARD", "DEBIT_CARD", "TICKET", "CASH"]
   try {
     for (let m of methods) {
       await Payment_method.create({ descrption: m })
@@ -232,7 +232,7 @@ async function setPaymentMethods(){
   return 'Done'
 }
 async function setOrderStatuses(){
-  const status = ["CREADA", "DESPACHADA", "COMPLETADA", "CANCELADA"] // NA para cuando
+  const status = ["CREADA", "DESPACHADA", "COMPLETADA", "CANCELADA"]
   try {
     for (let s of status) {
       await Order_status.create({ description: s })

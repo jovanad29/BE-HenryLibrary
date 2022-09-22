@@ -16,18 +16,17 @@ let transporter = nodemailer.createTransport({
     },
     secure: true, // true for 465, false for other ports (gmail requires 465)
     auth: {
-      user: mail.user, // generated ethereal user
-      pass: mail.pass, // generated ethereal password
+        user: mail.user, // generated ethereal user
+        pass: mail.pass, // generated ethereal password
     },
 });
 
 const sendEmail = async (email, subject, html) => {
-    try {    
+    try {
         await transporter.sendMail({
-            from: `Librería Henry <${ mail.user }>`, // sender address
+            from: `Librería Henry <${mail.user}>`, // sender address
             to: email, // list of receivers
             subject, // Subject line
-            // text: '¡Bienvenido/a a Librería Henry!', // plain text body
             html, // html body
         });
 
@@ -38,16 +37,21 @@ const sendEmail = async (email, subject, html) => {
 
 const getTemplate = (template,body) => {
     const templates = {
-        'bienvenida': getBienvenida(body),
-        'purchaseReceipt': getPurchaseReceipt(body)
+        bienvenida: getBienvenida,
+        banned: getBanned,
+        unbanned: getUnBanned,
+        compraDespachada: getDespachada,
+        purchaseReceipt: getPurchaseReceipt,
+        userEliminado: getUserEliminado,
+        userRestaurado: getUserRestaurado
     }
-    return templates[template]
+    return templates[template](body)
 }
 
 const getBienvenida = (name) => {
     return `
         <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
-        <h2>Hola, ${ name || 'Usuario' }</h2>
+        <h2>Hola, ${name || 'Usuario'}</h2>
         <p>Gracias por preferirnos.</p>
         <p>Ahora que estás regitrado/a, te contamos lo que puedes hacer:</p>
         <ul>
@@ -65,17 +69,16 @@ const getBienvenida = (name) => {
 const getPurchaseReceipt = (body) => {
     const { user, association } = body
     const books = association.books
-    const rows = books.reduce( (prev, curr, idx) => {
+    const rows = books.reduce((prev, curr, idx) => {
         return prev + `
         <tr style="height: 40px;">
             <td style="margin: 15px; text-align: center; ">${books[idx].title}</td>
             <td style="text-align: center;">${books[idx].payment_mp_book.quantity}</td>
-            <td style="text-align: center;">$${
-                (parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
+            <td style="text-align: center;">$${(parseFloat(books[idx].price) * parseFloat(books[idx].payment_mp_book.quantity)).toFixed(2)
             }</td>
         </tr>
         `
-    },"")
+    }, "")
     const html = `
     <h2 style="text-align: center;">${user.nameUser || 'Usuario'} ¡Gracias tu compra!</h2>
     <h2 style="text-align: center;">A continuación, adjuntamos su recibo (${association.transactionId})</h2>
@@ -88,11 +91,11 @@ const getPurchaseReceipt = (body) => {
         </tr>
         ${rows}
         <!-- aquí va el subtotal -->
-        <tr style="height: 40px;">
+        <!-- <tr style="height: 40px;">
             <td style="margin: 15px; text-align: center; "> Gastos de Envío </td>
             <td style="text-align: center;"> N/A </td>
             <td style="text-align: center;">$ total del envío </td>
-        </tr>
+        </tr> -->
         <!-- aquí termina el subtotal -->
         <tr style="text-align: center; height: 40px;">
             <td style="text-align: center; font-size: 30px;">Total</td>
@@ -109,10 +112,71 @@ const getPurchaseReceipt = (body) => {
         <h2 style="margin: auto;">Librería Henry. Tu librería de confianza.</h2>
     </div>    
     `
-    // console.log("desde el template", html)
     return html
 }
-
+const getBanned = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, has sido baneado/a.
+        <br>
+        Para mayor información, escríbenos a <a href="mailito:henrylibrary@gmail.com">henrylibrary@gmail.com</a>
+    </h2>
+    <p>
+        <strong>
+        Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Librería Henry</a>
+        </strong>
+    </p>
+    `
+}
+const getUnBanned = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, es un agrado comunicarte que has vuelto, favorablemente, con nosotros.<br> ¡Qué gusto tenerte de regreso!</h2>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
+}
+const getDespachada = (body) => {
+    const { user, transactionId, deliveryAddress } = body
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <p>Estimado/a <strong>${user.nameUser}</strong>, te informamos que tu compra (<strong>${transactionId}</strong>) ha sido despachada a la dirección <strong>${deliveryAddress}</strong> confirmada durante la compra.</p>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
+}
+const getUserEliminado = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, tu cuenta ha sido eliminada satisfactoriamente.
+        <br>
+        Si esta solicitud no la hiciste tú, escríbenos a <a href="mailito:henrylibrary@gmail.com">henrylibrary@gmail.com</a>
+    </h2>
+    <p>
+        <strong>
+        Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Librería Henry</a>
+        </strong>
+    </p>
+    `
+}
+const getUserRestaurado = (name) => {
+    return `
+    <img src='https://i.ibb.co/MN512MH/logo-Hen-Ry-Library.jpg' alt='HenryLibraryLogo'>
+    <h2>Estimado/a ${name}, es un agrado comunicarte que tu cuenta ha sido restaurada.<br> ¡Qué gusto tenerte de regreso!</h2>
+    <p>Atte. <a
+        href="http://henry-library.netlify.app/" target="_blank"
+        style="text-decoration: none;">Libreria Henry</a>
+    </p>
+    `
+}
 
 
 module.exports = {

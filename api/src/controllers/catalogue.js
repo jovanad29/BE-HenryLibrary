@@ -7,6 +7,7 @@ exports.getAll = async function () {
   try {
     const catalog = await Book.findAll({
       order: [["title", "ASC"]],
+      where: {isActive: true},
       include: [
         { model: Category },
         { model: Author },
