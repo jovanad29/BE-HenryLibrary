@@ -51,16 +51,16 @@ exports.createPayments = async (req, res) => {
 			try {
 				await newPaymentMP.addBook(i.bookId);
 				await payment_mp_book.update(
-				{
-					quantity: parseInt(i.quantity),
-					price: parseFloat(i.price),
-				},
-				{
-					where: {
-						bookId: i.bookId,
-						paymentMpId: newPaymentMP.id,
+					{
+						quantity: parseInt(i.quantity),
+						price: parseFloat(i.price),
 					},
-				}
+					{
+						where: {
+							bookId: i.bookId,
+							paymentMpId: newPaymentMP.id,
+						},
+					}
 				);
 				const book = await Book.findByPk(i.bookId);
 				await book.update({
