@@ -1,13 +1,13 @@
 # BE-HenryLibrary
 Proyecto Grupal Henry Bootcamp
 
- <img src = "./front/public/home.jpg" >
+ <img src = "./public/HomeLibrery.png" >
  
  <br />
 
 #
 
-# E.Commerce sobre una libreria -> "Libreria Henry"
+# E.Commerce sobre una librería -> "Librería Henry"
 
 ## Tecnologías utilizadas:
 
